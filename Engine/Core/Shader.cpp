@@ -2,18 +2,23 @@
 #include <iostream>
 #include <fstream>
 
-static string vertex_seperator = "$vertex_shader";
-static string fragment_seperator = "$fragment_shader";
-static string geometry_seperator = "$geometry_shader";
+static string shader_seperators[5] = { "$vertex_shader",
+"$control_shader",
+"$evaluation_shader",
+"$geometry_shader",
+"$fragment_shader"};
 
-
-uint32 Shader::ShaderTypes[3] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_GEOMETRY_SHADER};
+uint32 Shader::ShaderTypes[] = {GL_VERTEX_SHADER,
+GL_TESS_CONTROL_SHADER,
+GL_TESS_EVALUATION_SHADER,
+GL_GEOMETRY_SHADER,
+GL_FRAGMENT_SHADER};
 
 Shader::Shader()
 {
-	_shaders[VERTEX_SHADER] = 0;
-	_shaders[FRAGMENT_SHADER] = 0;
-	_shaders[GEOMETRY_SHADER] = 0;
+	for(int i = 0; i < SHADER_STAGES_NO; i++)
+		_shaders[i] = 0;
+
 	_attributeList.clear();
 	_uniformLocationList.clear();
 }
@@ -25,9 +30,12 @@ Shader::~Shader()
 	_uniformLocationList.clear();
 }
 
-void Shader::LoadFromString(ShaderType InShaderType, const string& source)
+void Shader::LoadFromString(int32 ShaderIdx, const string& source)
 {
-	GLuint shader = glCreateShader(ShaderTypes[InShaderType]);
+	if(source.empty())
+		return;
+
+	GLuint shader = glCreateShader(ShaderTypes[ShaderIdx]);
 	
 	const char* ptmp = source.c_str();
 	glShaderSource(shader, 1, &ptmp, NULL);
@@ -45,63 +53,39 @@ void Shader::LoadFromString(ShaderType InShaderType, const string& source)
 		cerr << "Compile log: " << infoLog << endl;
 		delete[] infoLog;
 	}
-	_shaders[InShaderType] = shader;
+	_shaders[ShaderIdx] = shader;
 }
 
-void Shader::LoadFromFile(const string& filename)
+void Shader::CompileShader(const string& filename)
 {
 	ifstream fp;
 	fp.open(filename.c_str(), ios_base::in);
 	if (fp) {
-		string line, frag_buffer, vert_buffer, geo_buffer;
+		string line, shader_buffers[SHADER_STAGES_NO];
 		int16 Mode = 0;
 		while (getline(fp, line)) {
-			if (line == vertex_seperator)
+			bool ModeChanged = false;
+			for (int i = 0; i < SHADER_STAGES_NO; i++)
 			{
-				Mode = 0;
-				continue;
-			}
-			else if (line == fragment_seperator)
-			{
-				Mode = 1;
-				continue;
-			}
-			else if (line == geometry_seperator)
-			{
-				Mode = 2;
-				continue;
-			}
-			switch (Mode)
-			{
-				case  0:
+				if (line == shader_seperators[i])
 				{
-					vert_buffer.append(line);
-					vert_buffer.append("\r\n");
+					Mode = i;
+					ModeChanged = true;
+					break;
 				}
-				break;
-				case  1:
-				{
-					frag_buffer.append(line);
-					frag_buffer.append("\r\n");
-				}
-				break;
-				case  2:
-				{
-					geo_buffer.append(line);
-					geo_buffer.append("\r\n");
-				}
-				break;
 			}
 
+			if (!ModeChanged)
+			{
+				shader_buffers[Mode].append(line);
+				shader_buffers[Mode].append("\r\n");
+			}
 		}
 
-		//copy to source
-		if(!vert_buffer.empty())
-			LoadFromString(VERTEX_SHADER, vert_buffer);
-		if (!frag_buffer.empty())
-			LoadFromString(FRAGMENT_SHADER, frag_buffer);
-		if (!geo_buffer.empty())
-			LoadFromString(GEOMETRY_SHADER, geo_buffer);
+		for (int i = 0; i < SHADER_STAGES_NO; i++)
+		{
+			LoadFromString(i, shader_buffers[i]);
+		}
 	}
 	else {
 		cerr << "Error loading shader: " << filename << endl;
@@ -114,12 +98,10 @@ void Shader::LoadFromFile(const string& filename)
 void Shader::CreateAndLinkProgram()
 {
 	_program = glCreateProgram();
-	if (_shaders[VERTEX_SHADER] != 0)
-		glAttachShader(_program, _shaders[VERTEX_SHADER]);
-	if (_shaders[FRAGMENT_SHADER] != 0)
-		glAttachShader(_program, _shaders[FRAGMENT_SHADER]);
-	if (_shaders[GEOMETRY_SHADER] != 0)
-		glAttachShader(_program, _shaders[GEOMETRY_SHADER]);
+
+	for (int i = 0; i < SHADER_STAGES_NO; i++)
+		if (_shaders[i] != 0)
+			glAttachShader(_program, _shaders[i]);
 
 	//link and check whether the program links fine
 	GLint status;
@@ -135,12 +117,10 @@ void Shader::CreateAndLinkProgram()
 		delete[] infoLog;
 	}
 
-	if (_shaders[VERTEX_SHADER] != 0)
-		glDeleteShader(_shaders[VERTEX_SHADER]);
-	if (_shaders[FRAGMENT_SHADER] != 0)
-		glDeleteShader(_shaders[FRAGMENT_SHADER]);
-	if (_shaders[GEOMETRY_SHADER] != 0)
-		glDeleteShader(_shaders[GEOMETRY_SHADER]);
+	for (int i = 0; i < SHADER_STAGES_NO; i++)
+		if (_shaders[i] != 0)
+			glDeleteShader(_shaders[i]);
+
 }
 
 void Shader::Use()

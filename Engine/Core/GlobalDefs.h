@@ -2,6 +2,14 @@
 #include "GL/gl3w.h"
 #include "GLFW/glfw3.h"
 
+#define FORCEINLINE __forceinline
+
+enum EForceInit
+{
+	ForceInit,
+	ForceInitToZero
+};
+
 typedef signed char        int8;
 typedef short              int16;
 typedef int                int32;

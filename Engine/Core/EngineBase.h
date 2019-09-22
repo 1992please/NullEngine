@@ -34,15 +34,15 @@ public:
 
 	EngineBase();
 	virtual void Run();
-
 protected:
 	APPINFO EngineConfigs;
 	Input mInput;
 	float CurrentTime;
 	virtual void Init();
 	virtual void StartUp() {};
-	virtual void Update(float DeltaTime);
-	virtual void Shutdown() {};
+	virtual void Update(float DeltaTime) {}
+	virtual void Render() {}
+	virtual void Shutdown() {}
 	virtual void OnFrameBufferResize(uint32 Width, uint32 Height) {}
 	virtual void OnResize(uint32 Width, uint32 Height) {}
 	inline void Quit() { bIsRunning = false; }
@@ -55,7 +55,7 @@ protected:
 		const GLchar* message);
 private:
 	bool bIsRunning;
-
+	void MainLoop();
 	static void KeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods);
 	static void MouseButtonCallback(GLFWwindow* pWindow, int Button, int Action, int Mode);
 	static void MouseWheelCallback(GLFWwindow* window, double xoffset, double yoffset);

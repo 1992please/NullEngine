@@ -8,6 +8,9 @@
     <Filter Include="Include">
       <UniqueIdentifier>{08e0c649-0c73-481d-999f-830aa71772fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{59ba6f43-f52c-4c87-9c39-63ef9b4dbe09}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Core\EngineBase.cpp">
@@ -28,6 +31,18 @@
     <ClCompile Include="Engine\Core\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Core\Math\Vector.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\Math\Matrix.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\Math\NullMath.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\FreeCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\EngineBase.h">
@@ -40,6 +55,24 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Core\Shader.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Math\Vector.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Math\Matrix.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Math\NullMath.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Util\NullMemory.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\GlobalDefs.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\FreeCamera.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>

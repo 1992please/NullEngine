@@ -65,10 +65,6 @@ void EngineBase::Init()
 #endif
 }
 
-void EngineBase::Update(float DeltaTime)
-{
-}
-
 void EngineBase::OnDebugMessage(GLenum source,
 	GLenum type,
 	GLuint id,
@@ -153,23 +149,27 @@ void EngineBase::Run()
 	}
 
 	StartUp();
+	MainLoop();
+	Shutdown();
+
+	glfwDestroyWindow(Window);
+	glfwTerminate();
+}
+
+void EngineBase::MainLoop()
+{
 	double LastTime = glfwGetTime();
-	do 
+	do
 	{
 		double lCurrentTime = glfwGetTime();
 		CurrentTime = (float)lCurrentTime;
 		float DeltaTime = (float)(CurrentTime - LastTime);
 		Update(DeltaTime);
+		Render();
 		mInput.Update(DeltaTime);
-
 		LastTime = lCurrentTime;
 		glfwSwapBuffers(Window);
 		glfwPollEvents();
 		bIsRunning &= (glfwWindowShouldClose(Window) != GL_TRUE);
 	} while (bIsRunning);
-
-	Shutdown();
-
-	glfwDestroyWindow(Window);
-	glfwTerminate();
 }

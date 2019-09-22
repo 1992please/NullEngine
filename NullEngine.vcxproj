@@ -20,17 +20,27 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Core\EngineBase.cpp" />
+    <ClCompile Include="Engine\Core\FreeCamera.cpp" />
     <ClCompile Include="Engine\Core\gl3w.c" />
     <ClCompile Include="Engine\Core\Input.cpp" />
+    <ClCompile Include="Engine\Core\Math\Matrix.cpp" />
+    <ClCompile Include="Engine\Core\Math\NullMath.cpp" />
+    <ClCompile Include="Engine\Core\Math\Vector.cpp" />
     <ClCompile Include="Engine\Core\NullEngine.cpp" />
     <ClCompile Include="Engine\Core\Shader.cpp" />
     <ClCompile Include="Engine\Core\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\EngineBase.h" />
+    <ClInclude Include="Engine\Core\FreeCamera.h" />
+    <ClInclude Include="Engine\Core\GlobalDefs.h" />
     <ClInclude Include="Engine\Core\Input.h" />
+    <ClInclude Include="Engine\Core\Math\Matrix.h" />
+    <ClInclude Include="Engine\Core\Math\NullMath.h" />
+    <ClInclude Include="Engine\Core\Math\Vector.h" />
     <ClInclude Include="Engine\Core\NullEngine.h" />
     <ClInclude Include="Engine\Core\Shader.h" />
+    <ClInclude Include="Engine\Core\Util\NullMemory.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -84,10 +94,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>C:\NullEngine\Engine\Core;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>C:\NullEngine\Engine\Core;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
