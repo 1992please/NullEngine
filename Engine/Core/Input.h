@@ -1,7 +1,7 @@
 #pragma once
 #include "GlobalDefs.h"
 
-enum class EAxis : uint8
+enum class EMovementAxis : uint8
 {
 	MOVEUP,
 	MOVERIGHT,
@@ -83,7 +83,7 @@ enum class EKeyState : uint8
 class Input
 {
 public:
-	inline float GetAxis(EAxis axis) { return mAixValues[(int)axis]; }
+	inline float GetAxis(EMovementAxis axis) { return mAixValues[(int)axis]; }
 	ECommand FitchCommand();
 	inline ECommand GetCommand(){return mCommand;}
 	void Update(const float p_deltaTime);
@@ -95,7 +95,7 @@ public:
 	static void GetCursorPosition(double* xpos, double* ypos);
 	double MouseX, MouseY;
 protected:
-	float mAixValues[EAxis::NUM];
+	float mAixValues[EMovementAxis::NUM];
 	ECommand mCommand;
 
 	bool bFirstUpdate = true;

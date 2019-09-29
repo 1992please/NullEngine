@@ -1,9 +1,8 @@
 #pragma once
-#include "NullMath.h"
 #include "Util/NullMemory.h"
 #include "Vector.h"
 
-class alignas(16) FMatrix
+struct alignas(16) FMatrix
 {
 public:
 	float M[4][4];
@@ -38,6 +37,9 @@ public:
 	inline operator const float*() const { return &M[0][0]; }
 
 	FORCEINLINE FMatrix GetTransposed() const;
+
+	inline FVector GetScaledAxis(EAxis::Type Axis) const;
+
 	static FMatrix Translate(float X, float Y, float Z)
 	{
 		FMatrix Result;

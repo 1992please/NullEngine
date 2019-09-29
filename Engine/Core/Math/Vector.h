@@ -1,6 +1,17 @@
 #pragma once 
 #include "NullMath.h"
 
+namespace EAxis
+{
+	enum Type
+	{
+		None,
+		X,
+		Y,
+		Z,
+	};
+}
+
 struct FVector
 {
 public:

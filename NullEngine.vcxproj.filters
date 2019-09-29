@@ -43,6 +43,12 @@
     <ClCompile Include="Engine\Core\FreeCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Core\Math\Quat.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\Math\Rotator.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\EngineBase.h">
@@ -74,6 +80,15 @@
     </ClInclude>
     <ClInclude Include="Engine\Core\FreeCamera.h">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Math\FRotationTranslationMatrix.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Math\Quat.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Math\Rotator.h">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

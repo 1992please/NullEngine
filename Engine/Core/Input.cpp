@@ -10,22 +10,22 @@ ECommand Input::FitchCommand()
 
 void Input::Update(const float p_deltaTime)
 {
-	for(int i = 0; i < (int32)EAxis::NUM; i++)
+	for(int i = 0; i < (int32)EMovementAxis::NUM; i++)
 		mAixValues[i] = 0.0f;
 
 	// Keyboard axis
 	if (GetKey(EKeyboardKey::W))
-		mAixValues[(int32)EAxis::MOVEFORWARD] += 1;
+		mAixValues[(int32)EMovementAxis::MOVEFORWARD] += 1;
 	if (GetKey(EKeyboardKey::S))
-		mAixValues[(int32)EAxis::MOVEFORWARD] -= 1;
+		mAixValues[(int32)EMovementAxis::MOVEFORWARD] -= 1;
 	if (GetKey(EKeyboardKey::D))
-		mAixValues[(int32)EAxis::MOVERIGHT] += 1;
+		mAixValues[(int32)EMovementAxis::MOVERIGHT] += 1;
 	if (GetKey(EKeyboardKey::A))
-		mAixValues[(int32)EAxis::MOVERIGHT] -= 1;
+		mAixValues[(int32)EMovementAxis::MOVERIGHT] -= 1;
 	if (GetKey(EKeyboardKey::E))
-		mAixValues[(int32)EAxis::MOVEUP] += 1;
+		mAixValues[(int32)EMovementAxis::MOVEUP] += 1;
 	if (GetKey(EKeyboardKey::Q))
-		mAixValues[(int32)EAxis::MOVEUP] -= 1;
+		mAixValues[(int32)EMovementAxis::MOVEUP] -= 1;
 
 	// Mouse axis
 	double InMouseX, InMouseY;
@@ -38,8 +38,8 @@ void Input::Update(const float p_deltaTime)
 		bFirstUpdate = false;
 	}
 
-	mAixValues[(int32)EAxis::TURN] = float(InMouseX - MouseX);
-	mAixValues[(int32)EAxis::LOOKUP] = float(InMouseY - MouseY);
+	mAixValues[(int32)EMovementAxis::TURN] = float(InMouseX - MouseX);
+	mAixValues[(int32)EMovementAxis::LOOKUP] = float(InMouseY - MouseY);
 
 	MouseX = InMouseX;
 	MouseY = InMouseY;

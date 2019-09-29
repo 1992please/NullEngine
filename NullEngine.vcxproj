@@ -25,6 +25,8 @@
     <ClCompile Include="Engine\Core\Input.cpp" />
     <ClCompile Include="Engine\Core\Math\Matrix.cpp" />
     <ClCompile Include="Engine\Core\Math\NullMath.cpp" />
+    <ClCompile Include="Engine\Core\Math\Quat.cpp" />
+    <ClCompile Include="Engine\Core\Math\Rotator.cpp" />
     <ClCompile Include="Engine\Core\Math\Vector.cpp" />
     <ClCompile Include="Engine\Core\NullEngine.cpp" />
     <ClCompile Include="Engine\Core\Shader.cpp" />
@@ -35,8 +37,11 @@
     <ClInclude Include="Engine\Core\FreeCamera.h" />
     <ClInclude Include="Engine\Core\GlobalDefs.h" />
     <ClInclude Include="Engine\Core\Input.h" />
+    <ClInclude Include="Engine\Core\Math\FRotationTranslationMatrix.h" />
     <ClInclude Include="Engine\Core\Math\Matrix.h" />
     <ClInclude Include="Engine\Core\Math\NullMath.h" />
+    <ClInclude Include="Engine\Core\Math\Quat.h" />
+    <ClInclude Include="Engine\Core\Math\Rotator.h" />
     <ClInclude Include="Engine\Core\Math\Vector.h" />
     <ClInclude Include="Engine\Core\NullEngine.h" />
     <ClInclude Include="Engine\Core\Shader.h" />
@@ -116,6 +121,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3dll.lib;glu32.lib;opengl32.lib</AdditionalDependencies>
@@ -145,6 +151,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
