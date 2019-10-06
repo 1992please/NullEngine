@@ -1,11 +1,12 @@
 #include "Mesh.h"
+#include "GL/gl3w.h"
 
 void Mesh::InitBuffers(
-	std::vector<GLuint> * indices,
-	std::vector<GLfloat> * points,
-	std::vector<GLfloat> * normals,
-	std::vector<GLfloat> * texCoords,
-	std::vector<GLfloat> * tangents
+	std::vector<uint32> * indices,
+	std::vector<float> * points,
+	std::vector<float> * normals,
+	std::vector<float> * texCoords,
+	std::vector<float> * tangents
 ) {
 
 	if (!buffers.empty()) deleteBuffers();

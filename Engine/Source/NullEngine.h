@@ -1,6 +1,7 @@
 #pragma  once
 #include "EngineBase.h"
 #include "Shader.h"
+#include "Drawables/TorusMesh.h"
 
 class NullEngine : public EngineBase
 {
@@ -11,7 +12,7 @@ private:
 	virtual void Shutdown() override;
 	virtual void Init();
 	Shader mShader;
-	uint32 vao;
+	TorusMesh Mesh;
 public:
 	NullEngine();
 	~NullEngine();

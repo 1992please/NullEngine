@@ -46,10 +46,6 @@ EngineBase::EngineBase() : CurrentTime(0), bIsRunning(false)
 		fprintf(stderr, "No Two instances of the same engine can run in the same app\n");
 	}
 
-}
-
-void EngineBase::Init()
-{
 	strcpy_s(EngineConfigs.title, "NULL ENGINE");
 	EngineConfigs.windowWidth = 800;
 	EngineConfigs.windowHeight = 800;
@@ -63,6 +59,7 @@ void EngineBase::Init()
 #ifdef _DEBUG
 	EngineConfigs.flags.debug = 1;
 #endif
+
 }
 
 void EngineBase::OnResize(uint32 Width, uint32 Height)

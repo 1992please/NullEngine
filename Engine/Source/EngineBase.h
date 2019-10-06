@@ -38,8 +38,8 @@ protected:
 	APPINFO EngineConfigs;
 	Input mInput;
 	float CurrentTime;
-	virtual void Init();
-	virtual void StartUp() {};
+	virtual void Init() {}
+	virtual void StartUp() {}
 	virtual void Update(float DeltaTime) {}
 	virtual void Render() {}
 	virtual void Shutdown() {}

@@ -5,102 +5,123 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Include">
-      <UniqueIdentifier>{08e0c649-0c73-481d-999f-830aa71772fc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Math">
       <UniqueIdentifier>{59ba6f43-f52c-4c87-9c39-63ef9b4dbe09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Drawables">
+      <UniqueIdentifier>{9cd2eab4-9969-4d40-8514-7291ab4cc67a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc">
+      <UniqueIdentifier>{08e0c649-0c73-481d-999f-830aa71772fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\Core\EngineBase.cpp">
+    <ClCompile Include="Engine\Source\EngineBase.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\FreeCamera.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\gl3w.c">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Input.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\NullEngine.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Shader.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Core\gl3w.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Core\Input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Core\Source.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Core\NullEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Core\Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Core\Math\Vector.cpp">
+    <ClCompile Include="Engine\Source\Math\Matrix.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Core\Math\Matrix.cpp">
+    <ClCompile Include="Engine\Source\Math\NullMath.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Core\Math\NullMath.cpp">
+    <ClCompile Include="Engine\Source\Math\Quat.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Core\FreeCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Core\Math\Quat.cpp">
+    <ClCompile Include="Engine\Source\Math\Rotator.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Core\Math\Rotator.cpp">
+    <ClCompile Include="Engine\Source\Math\Vector.cpp">
       <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Drawables\CubeMesh.cpp">
+      <Filter>Drawables</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Drawables\Mesh.cpp">
+      <Filter>Drawables</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Drawables\TorusMesh.cpp">
+      <Filter>Drawables</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\Core\EngineBase.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="Engine\Source\EngineBase.h">
+      <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Input.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="Engine\Source\FreeCamera.h">
+      <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\NullEngine.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="Engine\Source\GlobalDefs.h">
+      <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Shader.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="Engine\Source\Input.h">
+      <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Math\Vector.h">
+    <ClInclude Include="Engine\Source\NullEngine.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Shader.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Math\Matrix.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Math\Matrix.h">
+    <ClInclude Include="Engine\Source\Math\NullMath.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Math\NullMath.h">
+    <ClInclude Include="Engine\Source\Math\Plane.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Util\NullMemory.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Core\GlobalDefs.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Core\FreeCamera.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Core\Math\Quat.h">
+    <ClInclude Include="Engine\Source\Math\PrespectiveMatrix.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Math\Rotator.h">
+    <ClInclude Include="Engine\Source\Math\Quat.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Math\RotationTranslationMatrix.h">
+    <ClInclude Include="Engine\Source\Math\RotationTranslationMatrix.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Math\Plane.h">
+    <ClInclude Include="Engine\Source\Math\Rotator.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Math\PrespectiveMatrix.h">
+    <ClInclude Include="Engine\Source\Math\Vector.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Math\Vector4.h">
+    <ClInclude Include="Engine\Source\Math\Vector2.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Math\Vector2.h">
+    <ClInclude Include="Engine\Source\Math\Vector4.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Drawables\CubeMesh.h">
+      <Filter>Drawables</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Drawables\Drawable.h">
+      <Filter>Drawables</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Drawables\Mesh.h">
+      <Filter>Drawables</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Drawables\TorusMesh.h">
+      <Filter>Drawables</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

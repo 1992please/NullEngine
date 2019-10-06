@@ -30,6 +30,7 @@ public:
 	static const FVector LeftVector;
 
 	FORCEINLINE FVector();
+	FVector(struct FVector4 V);
 	explicit FORCEINLINE FVector(float InF);
 	FORCEINLINE FVector(float InX, float InY, float InZ);
 	//// Cross Product

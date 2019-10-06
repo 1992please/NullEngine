@@ -4,5 +4,5 @@
 class CubeMesh : public Mesh
 {
 public:
-	CubeMesh(GLfloat size = 1.0f);
+	CubeMesh(float size = 1.0f);
 };

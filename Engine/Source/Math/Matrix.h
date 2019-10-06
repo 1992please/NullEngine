@@ -1,6 +1,7 @@
 #pragma once
 #include "Util/NullMemory.h"
 #include "Plane.h"
+#include "Vector4.h"
 
 struct alignas(16) FMatrix
 {
@@ -27,7 +28,7 @@ public:
 	FMatrix(float value);
 	FORCEINLINE float* operator[](int32 Other){ return M[Other]; }
 	FORCEINLINE void operator*=(const FMatrix& Other);
-	FORCEINLINE FMatrix operator*(const FMatrix& Other) const ;
+	FORCEINLINE FMatrix operator*(const FMatrix& Other) const;
 	FORCEINLINE FMatrix operator+ (const FMatrix& Other) const;
 	FORCEINLINE void operator+=(const FMatrix& Other);
 	FORCEINLINE FMatrix operator* (float Other) const;
@@ -39,7 +40,30 @@ public:
 
 	FORCEINLINE FMatrix GetTransposed() const;
 
+	inline FMatrix InverseFast() const;
+
 	inline FVector GetScaledAxis(EAxis::Type Axis) const;
+
+	// Homogeneous transform.
+	FORCEINLINE FVector4 TransformFVector4(const FVector4& V) const;
+
+	/** Transform a location - will take into account translation part of the FMatrix. */
+	FORCEINLINE FVector4 TransformPosition(const FVector &V) const;
+
+	/** Inverts the matrix and then transforms V - correctly handles scaling in this matrix. */
+	FORCEINLINE FVector InverseTransformPosition(const FVector &V) const;
+
+	/**
+	 *	Transform a direction vector - will not take into account translation part of the FMatrix.
+	 *	If you want to transform a surface normal (or plane) and correctly account for non-uniform scaling you should use TransformByUsingAdjointT.
+	 */
+	FORCEINLINE FVector4 TransformVector(const FVector& V) const;
+
+	/**
+	 *	Transform a direction vector by the inverse of this matrix - will not take into account translation part.
+	 *	If you want to transform a surface normal (or plane) and correctly account for non-uniform scaling you should use TransformByUsingAdjointT with adjoint of matrix inverse.
+	 */
+	FORCEINLINE FVector InverseTransformVector(const FVector &V) const;
 
 	static FMatrix Translate(float X, float Y, float Z)
 	{
@@ -104,6 +128,15 @@ public:
 		return RotateMat;
 	}
 
+};
+
+struct FLookAtMatrix : FMatrix
+{
+	/**
+	 * Creates a view matrix given an eye position, a position to look at, and an up vector.
+	 * This does the same thing as D3DXMatrixLookAtLH.
+	 */
+	FLookAtMatrix(const FVector& EyePosition, const FVector& LookAtPosition, const FVector& UpVector);
 };
 
 FORCEINLINE FMatrix::FMatrix()
@@ -224,4 +257,69 @@ inline bool FMatrix::operator==(const FMatrix& Other) const
 inline bool FMatrix::operator!=(const FMatrix& Other) const
 {
 	return !(*this == Other);
+}
+
+
+FORCEINLINE FLookAtMatrix::FLookAtMatrix(const FVector& EyePosition, const FVector& LookAtPosition, const FVector& UpVector)
+{
+	const FVector ZAxis = (LookAtPosition - EyePosition).GetSafeNormal();
+	const FVector XAxis = (UpVector ^ ZAxis).GetSafeNormal();
+	const FVector YAxis = ZAxis ^ XAxis;
+
+	for (uint32 RowIndex = 0; RowIndex < 3; RowIndex++)
+	{
+		M[RowIndex][0] = (&XAxis.X)[RowIndex];
+		M[RowIndex][1] = (&YAxis.X)[RowIndex];
+		M[RowIndex][2] = (&ZAxis.X)[RowIndex];
+		M[RowIndex][3] = 0.0f;
+	}
+	M[3][0] = -EyePosition | XAxis;
+	M[3][1] = -EyePosition | YAxis;
+	M[3][2] = -EyePosition | ZAxis;
+	M[3][3] = 1.0f;
+}
+
+// Homogeneous transform.
+
+FORCEINLINE FVector4 FMatrix::TransformFVector4(const FVector4 &P) const
+{
+	FVector4 Result;
+	VectorRegister VecP = VectorLoadAligned(&P);
+	VectorRegister VecR = VectorTransformVector(VecP, this);
+	VectorStoreAligned(VecR, &Result);
+	return Result;
+}
+
+
+// Transform position
+
+/** Transform a location - will take into account translation part of the FMatrix. */
+FORCEINLINE FVector4 FMatrix::TransformPosition(const FVector &V) const
+{
+	return TransformFVector4(FVector4(V.X, V.Y, V.Z, 1.0f));
+}
+
+/** Inverts the matrix and then transforms V - correctly handles scaling in this matrix. */
+FORCEINLINE FVector FMatrix::InverseTransformPosition(const FVector &V) const
+{
+	FMatrix InvSelf = InverseFast();
+	return InvSelf.TransformPosition(V);
+}
+
+// Transform vector
+
+/**
+ *	Transform a direction vector - will not take into account translation part of the FMatrix.
+ *	If you want to transform a surface normal (or plane) and correctly account for non-uniform scaling you should use TransformByUsingAdjointT.
+ */
+FORCEINLINE FVector4 FMatrix::TransformVector(const FVector& V) const
+{
+	return TransformFVector4(FVector4(V.X, V.Y, V.Z, 0.0f));
+}
+
+/** Faster version of InverseTransformVector that assumes no scaling. WARNING: Will NOT work correctly if there is scaling in the matrix. */
+FORCEINLINE FVector FMatrix::InverseTransformVector(const FVector &V) const
+{
+	FMatrix InvSelf = InverseFast();
+	return InvSelf.TransformVector(V);
 }

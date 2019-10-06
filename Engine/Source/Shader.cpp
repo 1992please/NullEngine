@@ -6,8 +6,9 @@
 #include "Math/Vector.h"
 #include "Math/Vector4.h"
 #include "Math/Vector2.h"
+#include "Math/Matrix.h"
 
-static string shader_seperators[5] = { 
+static std::string shader_seperators[5] = { 
 	"$vertex_shader",
 	"$control_shader",
 	"$evaluation_shader",
@@ -25,17 +26,26 @@ static uint32 ShaderTypes[] = {
 
 Shader::Shader()
 {
+	bLinked = false;
 }
 
 
 Shader::~Shader()
 {
+	if(bLinked)
+		DeleteShaderProgram();
 }
 
-uint32 Shader::LoadFromString(int32 ShaderIdx, const string& source)
+uint32 Shader::LoadFromString(int32 ShaderIdx, const std::string& source)
 {
 	if(source.empty())
 		return 0;
+
+	if (bLinked)
+	{
+		bLinked = false;
+		DeleteShaderProgram();
+	}
 
 	GLuint shader = glCreateShader(ShaderTypes[ShaderIdx]);
 	
@@ -52,22 +62,22 @@ uint32 Shader::LoadFromString(int32 ShaderIdx, const string& source)
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
 		GLchar *infoLog = new GLchar[infoLogLength];
 		glGetShaderInfoLog(shader, infoLogLength, NULL, infoLog);
-		cerr << "Compile log: " << infoLog << endl;
+		std::cerr << "Compile log: " << infoLog << std::endl;
 		delete[] infoLog;
 	}
 
 	return shader;
 }
 
-void Shader::CompileShader(const string& filename)
+void Shader::CompileShader(const std::string& filename)
 {
 	uint32 Shaders[SHADER_STAGES_NO];
 	FMemory::Memzero(Shaders, sizeof(Shaders));
 
-	ifstream fp;
-	fp.open(filename.c_str(), ios_base::in);
+	std::ifstream fp;
+	fp.open(filename.c_str(), std::ios_base::in);
 	if (fp) {
-		string line, shader_buffers[SHADER_STAGES_NO];
+		std::string line, shader_buffers[SHADER_STAGES_NO];
 		int16 Mode = 0;
 		while (getline(fp, line)) {
 			bool ModeChanged = false;
@@ -94,7 +104,7 @@ void Shader::CompileShader(const string& filename)
 		}
 	}
 	else {
-		cerr << "Error loading shader: " << filename << endl;
+		std::cerr << "Error loading shader: " << filename << std::endl;
 	}
 	fp.close();
 
@@ -119,8 +129,13 @@ void Shader::CreateAndLinkProgram(uint32* _shaders)
 		glGetProgramiv(Handle, GL_INFO_LOG_LENGTH, &infoLogLength);
 		GLchar *infoLog = new GLchar[infoLogLength];
 		glGetProgramInfoLog(Handle, infoLogLength, NULL, infoLog);
-		cerr << "Link log: " << infoLog << endl;
+		std::cerr << "Link log: " << infoLog << std::endl;
 		delete[] infoLog;
+	}
+	else
+	{
+		FindUniformLocations();
+		bLinked = true;
 	}
 
 	for (int i = 0; i < SHADER_STAGES_NO; i++)
@@ -131,14 +146,9 @@ void Shader::CreateAndLinkProgram(uint32* _shaders)
 
 void Shader::Use()
 {
-	glUseProgram(Handle);
+	if(bLinked)
+		glUseProgram(Handle);
 }
-
-void Shader::UnUse()
-{
-	glUseProgram(0);
-}
-
 
 void Shader::DeleteShaderProgram()
 {
@@ -147,7 +157,7 @@ void Shader::DeleteShaderProgram()
 }
 
 int Shader::GetUniformLocation(const char *name) {
-	std::map<string, int>::iterator UniformElement = UniformLocations.find(name);
+	std::map<std::string, int>::iterator UniformElement = UniformLocations.find(name);
 	if (UniformLocations.end() == UniformLocations.find(name)) {
 		GLint loc = glGetUniformLocation(Handle, name);
 		UniformLocations[name] = loc;
@@ -210,6 +220,35 @@ void Shader::SetUniform(const char *name, bool val)
 
 void Shader::SetUniform(const char *name, uint32 val)
 {
-	int loc = GetUniformLocation(name);
+	GLint loc = GetUniformLocation(name);
 	glUniform1ui(loc, val);
+}
+
+void Shader::SetUniform(const char *name, const FMatrix& m)
+{
+	GLint loc = GetUniformLocation(name);
+	glUniformMatrix4fv(loc, 1, GL_FALSE, m);
+}
+
+void Shader::FindUniformLocations()
+{
+	UniformLocations.clear();
+
+	GLint numUniforms = 0;
+
+	glGetProgramInterfaceiv(Handle, GL_UNIFORM, GL_ACTIVE_RESOURCES, &numUniforms);
+	GLenum properties[] = { GL_NAME_LENGTH, GL_TYPE, GL_LOCATION, GL_BLOCK_INDEX };
+
+
+	for (GLint i = 0; i < numUniforms; ++i) {
+		GLint results[4];
+		glGetProgramResourceiv(Handle, GL_UNIFORM, i, 4, properties, 4, NULL, results);
+
+		if (results[3] != -1) continue;  // Skip uniforms in blocks
+		GLint nameBufSize = results[0] + 1;
+		char * name = new char[nameBufSize];
+		glGetProgramResourceName(Handle, GL_UNIFORM, i, nameBufSize, NULL, name);
+		UniformLocations[name] = results[2];
+		delete[] name;
+	}
 }

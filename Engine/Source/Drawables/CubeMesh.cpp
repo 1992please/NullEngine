@@ -1,10 +1,10 @@
 #include "CubeMesh.h"
 
-Cube::Cube(GLfloat side)
+CubeMesh::CubeMesh(float side)
 {
-	GLfloat side2 = side * 0.5f;
+	float side2 = side * 0.5f;
 
-	std::vector<GLfloat> p = {
+	std::vector<float> p = {
 		// Front
 	   -side2, -side2, side2, side2, -side2, side2, side2,  side2, side2,  -side2,  side2, side2,
 	   // Right
@@ -19,7 +19,7 @@ Cube::Cube(GLfloat side)
 		-side2,  side2, side2, side2,  side2, side2, side2,  side2, -side2, -side2,  side2, -side2
 	};
 
-	std::vector<GLfloat> n = {
+	std::vector<float> n = {
 		// Front
 		0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 		// Right
@@ -34,7 +34,7 @@ Cube::Cube(GLfloat side)
 		0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f
 	};
 
-	std::vector<GLfloat> tex = {
+	std::vector<float> tex = {
 		// Front
 		0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
 		// Right
@@ -49,7 +49,7 @@ Cube::Cube(GLfloat side)
 		0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
 	};
 
-	std::vector<GLuint> el = {
+	std::vector<uint32> el = {
 		0,1,2,0,2,3,
 		4,5,6,4,6,7,
 		8,9,10,8,10,11,

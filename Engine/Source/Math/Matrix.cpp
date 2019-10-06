@@ -20,6 +20,14 @@ FMatrix::FMatrix(float value)
 	M[3][0] = 1.f; M[3][1] = 1.f;  M[3][2] = 1.f;  M[3][3] = 1.f;
 }
 
+inline FMatrix FMatrix::InverseFast() const
+{
+	FMatrix Result;
+	VectorMatrixInverse(&Result, this);
+	return Result;
+}
+
+
 inline FVector FMatrix::GetScaledAxis(EAxis::Type InAxis) const
 {
 	switch (InAxis)
