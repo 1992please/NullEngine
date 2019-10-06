@@ -1,6 +1,6 @@
 #include "EngineBase.h"
-#include <stdio.h>
-#include <string.h>
+#include "GL/gl3w.h"
+#include "GLFW/glfw3.h"
 
 void EngineBase::KeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
 {
@@ -19,13 +19,13 @@ void EngineBase::MouseWheelCallback(GLFWwindow* window, double xoffset, double y
 
 void EngineBase::glfw_FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-	EngineBase::Engine->OnFrameBufferResize(width, height);
-}
-
-void EngineBase::glfw_ReSizeCallback(GLFWwindow* window, int width, int height)
-{
 	EngineBase::Engine->OnResize(width, height);
 }
+
+//void EngineBase::glfw_ReSizeCallback(GLFWwindow* window, int width, int height)
+//{
+//	EngineBase::Engine->OnResize(width, height);
+//}
 
 
 void DebugCallBack(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam)
@@ -52,7 +52,7 @@ void EngineBase::Init()
 {
 	strcpy_s(EngineConfigs.title, "NULL ENGINE");
 	EngineConfigs.windowWidth = 800;
-	EngineConfigs.windowHeight = 600;
+	EngineConfigs.windowHeight = 800;
 	EngineConfigs.windowPosX = 100;
 	EngineConfigs.windowPosY = 100;
 	EngineConfigs.majorVersion = 4;
@@ -65,14 +65,11 @@ void EngineBase::Init()
 #endif
 }
 
-void EngineBase::OnDebugMessage(GLenum source,
-	GLenum type,
-	GLuint id,
-	GLenum severity,
-	GLsizei length,
-	const GLchar* message)
+void EngineBase::OnResize(uint32 Width, uint32 Height)
 {
-	fprintf(stdout, "%s\n", message);
+	EngineConfigs.windowWidth = Width;
+	EngineConfigs.windowHeight = Height;
+	glViewport(0, 0, Width, Height);
 }
 
 void EngineBase::Run()
@@ -119,7 +116,7 @@ void EngineBase::Run()
 	glfwMakeContextCurrent(Window);
 
 	glfwSetFramebufferSizeCallback(Window, glfw_FrameBufferSizeCallback);
-	glfwSetWindowSizeCallback(Window, glfw_ReSizeCallback);
+	//glfwSetWindowSizeCallback(Window, glfw_ReSizeCallback);
 	glfwSetKeyCallback(Window, KeyCallback);
 	glfwSetMouseButtonCallback(Window, MouseButtonCallback);
 	glfwSetScrollCallback(Window, MouseWheelCallback);

@@ -1,5 +1,6 @@
 #pragma once 
 #include "NullMath.h"
+#include "Rotator.h"
 
 namespace EAxis
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include "Util/NullMemory.h"
-#include "Vector.h"
+#include "Plane.h"
 
 struct alignas(16) FMatrix
 {
@@ -23,6 +23,7 @@ public:
 	inline void SetIdentity();
 
 	FORCEINLINE FMatrix(const FVector& InX, const FVector& InY, const FVector& InZ, const FVector& InW);
+	FORCEINLINE FMatrix(const FPlane& InX, const FPlane& InY, const FPlane& InZ, const FPlane& InW);
 	FMatrix(float value);
 	FORCEINLINE float* operator[](int32 Other){ return M[Other]; }
 	FORCEINLINE void operator*=(const FMatrix& Other);
@@ -115,6 +116,14 @@ FORCEINLINE FMatrix::FMatrix(const FVector& InX, const FVector& InY, const FVect
 	M[1][0] = InY.X; M[1][1] = InY.Y;  M[1][2] = InY.Z;  M[1][3] = 0.0f;
 	M[2][0] = InZ.X; M[2][1] = InZ.Y;  M[2][2] = InZ.Z;  M[2][3] = 0.0f;
 	M[3][0] = InW.X; M[3][1] = InW.Y;  M[3][2] = InW.Z;  M[3][3] = 1.0f;
+}
+
+FORCEINLINE FMatrix::FMatrix(const FPlane& InX, const FPlane& InY, const FPlane& InZ, const FPlane& InW)
+{
+	M[0][0] = InX.X; M[0][1] = InX.Y;  M[0][2] = InX.Z;  M[0][3] = InX.W;
+	M[1][0] = InY.X; M[1][1] = InY.Y;  M[1][2] = InY.Z;  M[1][3] = InY.W;
+	M[2][0] = InZ.X; M[2][1] = InZ.Y;  M[2][2] = InZ.Z;  M[2][3] = InZ.W;
+	M[3][0] = InW.X; M[3][1] = InW.Y;  M[3][2] = InW.Z;  M[3][3] = InW.W;
 }
 
 FORCEINLINE FMatrix FMatrix::operator+(const FMatrix& Other) const

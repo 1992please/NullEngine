@@ -1,7 +1,6 @@
 #pragma once
-#include "GL/gl3w.h"
-#include "GLFW/glfw3.h"
-#include "stdio.h"
+#include <string.h>
+#include <stdio.h>
 
 #define FORCEINLINE __forceinline
 
@@ -10,6 +9,8 @@ enum EForceInit
 	ForceInit,
 	ForceInitToZero
 };
+
+enum ENoInit { NoInit };
 
 typedef signed char        int8;
 typedef short              int16;

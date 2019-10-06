@@ -43,16 +43,9 @@ protected:
 	virtual void Update(float DeltaTime) {}
 	virtual void Render() {}
 	virtual void Shutdown() {}
-	virtual void OnFrameBufferResize(uint32 Width, uint32 Height) {}
-	virtual void OnResize(uint32 Width, uint32 Height) {}
+	virtual void OnResize(uint32 Width, uint32 Height);
 	inline void Quit() { bIsRunning = false; }
 	inline Input* GetInput() { return &mInput; }
-	virtual void OnDebugMessage(GLenum source,
-		GLenum type,
-		GLuint id,
-		GLenum severity,
-		GLsizei length,
-		const GLchar* message);
 private:
 	bool bIsRunning;
 	void MainLoop();
@@ -60,5 +53,5 @@ private:
 	static void MouseButtonCallback(GLFWwindow* pWindow, int Button, int Action, int Mode);
 	static void MouseWheelCallback(GLFWwindow* window, double xoffset, double yoffset);
 	static void glfw_FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
-	static void glfw_ReSizeCallback(GLFWwindow* window, int width, int height);
+	//static void glfw_ReSizeCallback(GLFWwindow* window, int width, int height);
 };

@@ -37,12 +37,16 @@
     <ClInclude Include="Engine\Core\FreeCamera.h" />
     <ClInclude Include="Engine\Core\GlobalDefs.h" />
     <ClInclude Include="Engine\Core\Input.h" />
-    <ClInclude Include="Engine\Core\Math\FRotationTranslationMatrix.h" />
+    <ClInclude Include="Engine\Core\Math\Plane.h" />
+    <ClInclude Include="Engine\Core\Math\PrespectiveMatrix.h" />
+    <ClInclude Include="Engine\Core\Math\RotationTranslationMatrix.h" />
     <ClInclude Include="Engine\Core\Math\Matrix.h" />
     <ClInclude Include="Engine\Core\Math\NullMath.h" />
     <ClInclude Include="Engine\Core\Math\Quat.h" />
     <ClInclude Include="Engine\Core\Math\Rotator.h" />
     <ClInclude Include="Engine\Core\Math\Vector.h" />
+    <ClInclude Include="Engine\Core\Math\Vector2.h" />
+    <ClInclude Include="Engine\Core\Math\Vector4.h" />
     <ClInclude Include="Engine\Core\NullEngine.h" />
     <ClInclude Include="Engine\Core\Shader.h" />
     <ClInclude Include="Engine\Core\Util\NullMemory.h" />

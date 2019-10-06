@@ -19,6 +19,7 @@ FQuat FRotator::Quaternion() const
 	const float YawNoWinding = FMath::Fmod(Yaw, 360.0f);
 	const float RollNoWinding = FMath::Fmod(Roll, 360.0f);
 
+
 	FMath::SinCos(&SP, &CP, PitchNoWinding * RADS_DIVIDED_BY_2);
 	FMath::SinCos(&SY, &CY, YawNoWinding * RADS_DIVIDED_BY_2);
 	FMath::SinCos(&SR, &CR, RollNoWinding * RADS_DIVIDED_BY_2);

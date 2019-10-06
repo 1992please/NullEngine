@@ -81,13 +81,25 @@
     <ClInclude Include="Engine\Core\FreeCamera.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Math\FRotationTranslationMatrix.h">
-      <Filter>Math</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Core\Math\Quat.h">
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Core\Math\Rotator.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Math\RotationTranslationMatrix.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Math\Plane.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Math\PrespectiveMatrix.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Math\Vector4.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Math\Vector2.h">
       <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>

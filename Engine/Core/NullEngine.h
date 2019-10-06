@@ -1,6 +1,5 @@
 #pragma  once
 #include "EngineBase.h"
-#include "FreeCamera.h"
 #include "Shader.h"
 
 class NullEngine : public EngineBase
@@ -12,8 +11,7 @@ private:
 	virtual void Shutdown() override;
 	virtual void Init();
 	Shader mShader;
-	GLuint vao;
-	FreeCamera Cam;
+	uint32 vao;
 public:
 	NullEngine();
 	~NullEngine();
