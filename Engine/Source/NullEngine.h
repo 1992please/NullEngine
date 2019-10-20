@@ -1,7 +1,8 @@
 #pragma  once
 #include "EngineBase.h"
 #include "Shader.h"
-#include "Drawables/TorusMesh.h"
+
+#include "Math/Vector.h"
 
 class NullEngine : public EngineBase
 {
@@ -12,7 +13,11 @@ private:
 	virtual void Shutdown() override;
 	virtual void Init();
 	Shader mShader;
-	TorusMesh Mesh;
+	class Drawable* mDrawable;
+	FVector CameraPos;
+
+	uint32 VBO, VAO;
+
 public:
 	NullEngine();
 	~NullEngine();

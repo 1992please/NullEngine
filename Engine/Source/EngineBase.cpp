@@ -103,7 +103,9 @@ void EngineBase::Run()
 	}
 
 	// Create the Window
+	
 	Window = glfwCreateWindow(EngineConfigs.windowWidth, EngineConfigs.windowHeight, EngineConfigs.title, EngineConfigs.flags.fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
+	//glfwGetWindowSize(Window, &EngineConfigs.windowWidth, &EngineConfigs.windowHeight);
 
 	if (!Window) {
 		fprintf(stderr, "Failed to open window\n");
@@ -141,7 +143,6 @@ void EngineBase::Run()
 			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		}
 	}
-
 	StartUp();
 	MainLoop();
 	Shutdown();

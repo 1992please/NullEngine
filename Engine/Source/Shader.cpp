@@ -227,7 +227,7 @@ void Shader::SetUniform(const char *name, uint32 val)
 void Shader::SetUniform(const char *name, const FMatrix& m)
 {
 	GLint loc = GetUniformLocation(name);
-	glUniformMatrix4fv(loc, 1, GL_FALSE, m);
+	glUniformMatrix4fv(loc, 1, GL_TRUE, m);
 }
 
 void Shader::FindUniformLocations()
