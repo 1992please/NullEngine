@@ -1,7 +1,7 @@
 #pragma  once
 #include "EngineBase.h"
 #include "Shader.h"
-
+#include "FreeCamera.h"
 #include "Math/Vector.h"
 
 class NullEngine : public EngineBase
@@ -14,8 +14,7 @@ private:
 	virtual void Init();
 	Shader mShader;
 	class Drawable* mDrawable;
-	FVector CameraPos;
-
+	FreeCamera Camera;
 	uint32 VBO, VAO;
 
 public:

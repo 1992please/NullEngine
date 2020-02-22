@@ -61,6 +61,9 @@
     <ClCompile Include="Engine\Source\Drawables\TorusMesh.cpp">
       <Filter>Drawables</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Source\Math\RotationMatrix.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Source\EngineBase.h">
@@ -122,6 +125,9 @@
     </ClInclude>
     <ClInclude Include="Engine\Source\Drawables\TorusMesh.h">
       <Filter>Drawables</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Math\RotationMatrix.h">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

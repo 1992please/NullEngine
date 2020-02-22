@@ -95,6 +95,30 @@ public:
 	 * @param F		Floating point value to convert
 	 * @return		Truncated integer value.
 	 */
+	 /**
+  *	Checks if two floating point numbers are nearly equal.
+  *	@param A				First number to compare
+  *	@param B				Second number to compare
+  *	@param ErrorTolerance	Maximum allowed difference for considering them as 'nearly equal'
+  *	@return					true if A and B are nearly equal
+  */
+	static FORCEINLINE bool IsNearlyEqual(float A, float B, float ErrorTolerance = SMALL_NUMBER)
+	{
+		return Abs<float>(A - B) <= ErrorTolerance;
+	}
+
+	/**
+	 *	Checks if two floating point numbers are nearly equal.
+	 *	@param A				First number to compare
+	 *	@param B				Second number to compare
+	 *	@param ErrorTolerance	Maximum allowed difference for considering them as 'nearly equal'
+	 *	@return					true if A and B are nearly equal
+	 */
+	static FORCEINLINE bool IsNearlyEqual(double A, double B, double ErrorTolerance = SMALL_NUMBER)
+	{
+		return Abs<double>(A - B) <= ErrorTolerance;
+	}
+
 	static FORCEINLINE float TruncToFloat(float F)
 	{
 		return (float)TruncToInt(F);

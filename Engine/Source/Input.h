@@ -20,9 +20,10 @@ enum class ECommand : uint8
 
 enum class EMouseKey : uint8
 {
-	Left = 0,
-	Right = 1,
-	Middle = 2
+	Left,
+	Right,
+	Middle,
+	NUM
 };
 
 enum class EKeyboardKey : uint16
@@ -91,6 +92,7 @@ public:
 	void OnMouseAction(EMouseKey key, EKeyState state);
 	void OnMouseWheel(int32 yoffset);
 	bool GetKey(EKeyboardKey key);
+	bool GetMouseKey(EMouseKey Key);
 	static void SetMousePos(uint32 x, uint32 y);
 	static void GetCursorPosition(double* xpos, double* ypos);
 	double MouseX, MouseY;

@@ -44,6 +44,7 @@ void Input::Update(const float p_deltaTime)
 
 	MouseX = InMouseX;
 	MouseY = InMouseY;
+	//printf("MouseX: %f, MouseY: %f\n", mAixValues[(int32)EMovementAxis::TURN], InMouseY);
 }
 
 void Input::OnKeyboardAction(EKeyboardKey key, EKeyState state)
@@ -75,6 +76,11 @@ void Input::OnMouseWheel(int32 yoffset)
 bool Input::GetKey(EKeyboardKey key)
 {
 	return (bool)glfwGetKey(EngineBase::Engine->Window, (int)key);
+}
+
+bool Input::GetMouseKey(EMouseKey Key)
+{
+	return (bool)glfwGetMouseButton(EngineBase::Engine->Window, (int)Key);
 }
 
 void Input::SetMousePos(uint32 x, uint32 y)

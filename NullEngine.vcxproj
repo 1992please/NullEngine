@@ -29,6 +29,7 @@
     <ClCompile Include="Engine\Source\Math\Matrix.cpp" />
     <ClCompile Include="Engine\Source\Math\NullMath.cpp" />
     <ClCompile Include="Engine\Source\Math\Quat.cpp" />
+    <ClCompile Include="Engine\Source\Math\RotationMatrix.cpp" />
     <ClCompile Include="Engine\Source\Math\Rotator.cpp" />
     <ClCompile Include="Engine\Source\Math\Vector.cpp" />
     <ClCompile Include="Engine\Source\NullEngine.cpp" />
@@ -49,6 +50,7 @@
     <ClInclude Include="Engine\Source\Math\Plane.h" />
     <ClInclude Include="Engine\Source\Math\PrespectiveMatrix.h" />
     <ClInclude Include="Engine\Source\Math\Quat.h" />
+    <ClInclude Include="Engine\Source\Math\RotationMatrix.h" />
     <ClInclude Include="Engine\Source\Math\RotationTranslationMatrix.h" />
     <ClInclude Include="Engine\Source\Math\Rotator.h" />
     <ClInclude Include="Engine\Source\Math\Vector.h" />

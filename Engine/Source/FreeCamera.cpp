@@ -1,148 +1,120 @@
 #include "FreeCamera.h"
+#include "Math/PrespectiveMatrix.h"
+#include "Math/RotationMatrix.h"
 
 
-static FMatrix YawPitchRoll
-(
-	float const yaw,
-	float const pitch,
-	float const roll
-)
+FreeCamera::FreeCamera()
 {
-	float tmp_ch = FMath::Cos(yaw);
-	float tmp_sh = FMath::Sin(yaw);
-	float tmp_cp = FMath::Cos(pitch);
-	float tmp_sp = FMath::Sin(pitch);
-	float tmp_cb = FMath::Cos(roll);
-	float tmp_sb = FMath::Sin(roll);
-
-	FMatrix Result;
-	Result[0][0] = tmp_ch * tmp_cb + tmp_sh * tmp_sp * tmp_sb;
-	Result[0][1] = tmp_sb * tmp_cp;
-	Result[0][2] = -tmp_sh * tmp_cb + tmp_ch * tmp_sp * tmp_sb;
-	Result[0][3] = 0;
-	Result[1][0] = -tmp_ch * tmp_sb + tmp_sh * tmp_sp * tmp_cb;
-	Result[1][1] = tmp_cb * tmp_cp;
-	Result[1][2] = tmp_sb * tmp_sh + tmp_ch * tmp_sp * tmp_cb;
-	Result[1][3] = 0;
-	Result[2][0] = tmp_sh * tmp_cp;
-	Result[2][1] = -tmp_sp;
-	Result[2][2] = tmp_ch * tmp_cp;
-	Result[2][3] = 0;
-	Result[3][0] = 0;
-	Result[3][1] = 0;
-	Result[3][2] = 0;
-	Result[3][3] = 1;
-	return Result;
+	HalfFOV = 30.0f;
+	Width = 500;
+	Height = 500;
+	MinZ = 0.3f;
+	MaxZ = 6000.0f;
+	CamUP = FVector(0.0f, 0.0f, 1.0f);
+	Location = FVector(-5.0f, 0.0f, 0.0f);
+	CamForward = FVector(1.0f, 0.0f, 0.0f);
+	HAngle = 0.f;
+	VAngle = 0.f;
+	bUpdate = true;
 }
 
-
-FreeCamera::FreeCamera() :
-	mPosition(FVector(0)),
-	mYaw(0),
-	mRoll(0),
-	mPitch(0),
-	mZNear(0.1f),
-	mZFar(1000.0f),
-	mFOV(45.0f)
+void FreeCamera::InitCameraProjection(float InHalfFOV, float InWidth, float InHeight, float InMinZ, float InMaxZ)
 {
-	mTranslation = FVector(0);
-	mSpeed = 2.0f;
+	HalfFOV = InHalfFOV;
+	Width = InWidth;
+	Height = InHeight;
+	MinZ = InMinZ;
+	MaxZ = InMaxZ;
+	UpdateProjectionMatrix();
 }
 
-
-FreeCamera::~FreeCamera()
+void FreeCamera::MoveForward(float Distance)
 {
+	if (Distance)
+	{
+		Location += CamForward * Distance;
+		bUpdate = true;
+	}
 }
 
-void FreeCamera::Update()
+void FreeCamera::MoveUp(float Distance)
 {
-	//mPosition += mTranslation;
-	//mTranslation = glm::vec3(0.0f);
-
-	//// we need to find a better function
-	//FMatrix R = YawPitchRoll(mYaw, mPitch, mRoll);
-
-	//mLook = FVector(R * FVector(0, 0, 1, 0));
-	//mUp = FVector(R * FVector(0, 1, 0, 0));
-	//mRight = FVector::CrossProduct(mLook, mUp);
-
-	//glm::vec3 target = mPosition + mLook;
-
-	//mV = glm::lookAt(mPosition, target, mUp);
+	if (Distance)
+	{
+		Location += CamUP * Distance;
+		bUpdate = true;
+	}
 }
 
-void FreeCamera::Walk(const float dt)
+void FreeCamera::MoveRight(float Distance)
 {
-	mTranslation += (mLook * mSpeed * dt);
+	if (Distance)
+	{
+		Location += CamRight * Distance;
+		bUpdate = true;
+	}
 }
 
-void FreeCamera::Strafe(const float dt)
+void FreeCamera::OnUpdate(float DeltaTime)
 {
-	mTranslation += (mRight * mSpeed * dt);
+	if (bUpdate)
+	{
+		UpdateViewMatrix();
+		bUpdate = false;
+	}
 }
 
-void FreeCamera::Lift(const float dt)
+void FreeCamera::Turn(float value)
 {
-	mTranslation += (mUp * mSpeed * dt);
+	if (value)
+	{
+		HAngle += value;
+		bUpdate = true;
+	}
 }
 
-void FreeCamera::SetTranslation(const FVector& t)
+void FreeCamera::LookUp(float value)
 {
-	mTranslation = t;
+	if (value)
+	{
+		VAngle += value;
+		bUpdate = true;
+	}
 }
 
-void FreeCamera::SetSpeed(const float speed)
+void FreeCamera::UpdateViewMatrix()
 {
-	mSpeed = speed;
+	FRotationMatrix RotMatrix(FRotator(VAngle, HAngle, 0.0f));
+	//CamForward = FVector(RotMatrix[0][0], RotMatrix[1][0], RotMatrix[2][0]);
+	CamForward = RotMatrix.TransformVector(FVector::ForwardVector);
+	const FVector ZAxis = CamForward;
+	const FVector XAxis = (CamUP ^ ZAxis).GetSafeNormal();
+	const FVector YAxis = ZAxis ^ XAxis;
+
+	CamRight = XAxis;
+
+	for (uint32 RowIndex = 0; RowIndex < 3; RowIndex++)
+	{
+		ViewMat[RowIndex][0] = (&XAxis.X)[RowIndex];
+		ViewMat[RowIndex][1] = (&YAxis.X)[RowIndex];
+		ViewMat[RowIndex][2] = (&ZAxis.X)[RowIndex];
+		ViewMat[RowIndex][3] = 0.0f;
+	}
+	ViewMat[3][0] = -Location | XAxis;
+	ViewMat[3][1] = -Location | YAxis;
+	ViewMat[3][2] = -Location | ZAxis;
+	ViewMat[3][3] = 1.0f;
+
+	//ViewMat *= RotMatrix;
 }
 
-
-void FreeCamera ::Rotate(const float yaw, const float pitch, const float roll)
+void FreeCamera::UpdateTargetVector()
 {
-	mYaw += FMath::DegreesToRadian(yaw);
-	mPitch += FMath::DegreesToRadian(pitch);
-	mRoll += FMath::DegreesToRadian(roll);
+
 }
 
-
-void FreeCamera::SetupProjection(const float aspectRatio)
+void FreeCamera::UpdateProjectionMatrix()
 {
-	mAspectRatio = aspectRatio;
-
-	float q = 1.0f / FMath::Tan(FMath::DegreesToRadian(0.5f * mFOV));
-	float A = q / mAspectRatio;
-	float B = (mZNear + mZFar) / (mZNear - mZFar);
-	float C = (2.0f * mZNear * mZFar) / (mZNear - mZFar);
-
-	mP[0][0] = A;
-	mP[1][1] = q;
-	mP[2][2] = B;
-	mP[2][3] = -1.0f;
-	mP[3][2] = C;
+	ProjectionMat = FPerspectiveMatrix(FMath::DegreesToRadian(HalfFOV), Width, Height, MinZ, MaxZ);
 }
 
-void FreeCamera::SetupProjection(const float fovy, const float aspectRatio, const float InNear /*= 0.1f*/, const float InFar /*= 1000.f*/)
-{
-	mZNear = InNear;
-	mZFar = InFar;
-	mFOV = fovy;
-	mAspectRatio = aspectRatio;
-	SetupProjection(aspectRatio);
-}
-
-void FreeCamera::SetRotation(const float yaw, const float pitch, const float roll)
-{
-	mYaw = FMath::DegreesToRadian(yaw);
-	mPitch = FMath::DegreesToRadian(pitch);
-	mRoll = FMath::DegreesToRadian(roll);
-}
-
-void FreeCamera::SetPosition(const FVector& v)
-{
-	mPosition = v;
-}
-
-void FreeCamera::SetFOV(const float fov)
-{
-	mFOV = fov;
-}
