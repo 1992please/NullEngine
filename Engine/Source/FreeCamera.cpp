@@ -78,6 +78,7 @@ void FreeCamera::LookUp(float value)
 	if (value)
 	{
 		VAngle += value;
+		VAngle = FMath::Clamp(VAngle, -89.0f, 89.0f);
 		bUpdate = true;
 	}
 }

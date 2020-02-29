@@ -14,11 +14,12 @@ void NullEngine::StartUp()
 	// initializations
 	glEnable(GL_DEPTH_TEST);
 	mShader.CompileShader("Engine/Shaders/TestShader.glsl");
+
 	Camera.InitCameraProjection(30.0f, (float)EngineConfigs.windowWidth, (float)EngineConfigs.windowHeight, 0.3f, 6000.0f);
 
 
 	Input::SetMousePos(EngineConfigs.windowWidth / 2, EngineConfigs.windowHeight / 2);
-	mDrawable = new TorusMesh(1, 2, 10, 30);
+	mDrawable = new TorusMesh(0.7f, 0.3f, 100, 100);
 }
 
 void NullEngine::Update(float DeltaTime)
@@ -28,8 +29,8 @@ void NullEngine::Update(float DeltaTime)
 	Camera.MoveUp(mInput.GetAxis(EMovementAxis::MOVEUP) * DeltaTime * 5);
 	if (mInput.GetMouseKey(EMouseKey::Right))
 	{
-		Camera.Turn(mInput.GetAxis(EMovementAxis::TURN) * DeltaTime * 100);
-		Camera.LookUp(-mInput.GetAxis(EMovementAxis::LOOKUP) * DeltaTime * 100);
+		Camera.Turn(mInput.GetAxis(EMovementAxis::TURN) * DeltaTime * 200);
+		Camera.LookUp(-mInput.GetAxis(EMovementAxis::LOOKUP) * DeltaTime * 200);
 	}
 	Camera.OnUpdate(DeltaTime);
 }
@@ -42,8 +43,8 @@ void NullEngine::Render()
 	glClearBufferfv(GL_COLOR, 0, green);
 	glClearBufferfv(GL_DEPTH, 0, &one);
 
-	FRotationTranslationMatrix Model(FRotator(0), FVector(0.0f));
-	FMatrix MMP = Model* Camera.GetViewMatrix() * Camera.GetProjectionMatrix();
+	FRotationTranslationMatrix Model(FRotator(-35, 35, 0.0f), FVector(0.0f));
+	FMatrix MVP = Model* Camera.GetViewMatrix() * Camera.GetProjectionMatrix();
 	//FVector TestVect(0.5f, -0.5f, 0.f);
 	//FVector TestVect1(-0.5f, -0.5f, 0.f);
 	//FVector TestVect2(0.0f, 0.5f, 0.f);
@@ -56,7 +57,12 @@ void NullEngine::Render()
 	//printf("%f\n", CameraPos.Z);
 	mShader.Use();
 	
-	mShader.SetUniform("MVP", MMP);
+	mShader.SetUniform("Kd", 0.9f, 0.5f, 0.3f);
+	mShader.SetUniform("Ld", 1.0f, 1.0f, 1.0f);
+	mShader.SetUniform("LightPosition", 5.0f, 5.0f, 2.0f);
+
+	mShader.SetUniform("Model", Model);
+	mShader.SetUniform("MVP", MVP);
 	//mShader.SetUniform("Projection", ProjectionMatrix);
 	//mShader.SetUniform("UnlitColor", FVector(1.0f,1.0f,1.0f));
 	//mShader.SetUniform("Kd", 0.9f, 0.5f, 0.3f);

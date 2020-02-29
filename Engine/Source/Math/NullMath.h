@@ -124,6 +124,13 @@ public:
 		return (float)TruncToInt(F);
 	}
 
+	/** Clamps X to be between Min and Max, inclusive */
+	template< class T >
+	static FORCEINLINE T Clamp(const T X, const T Min, const T Max)
+	{
+		return X < Min ? Min : X < Max ? X : Max;
+	}
+
 	/**
 	 * Converts a float to a nearest less or equal integer.
 	 * @param F		Floating point value to convert
