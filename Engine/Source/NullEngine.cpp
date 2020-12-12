@@ -4,6 +4,7 @@
 #include "GL/gl3w.h"
 #include "Drawables/CubeMesh.h"
 #include "Drawables/TorusMesh.h"
+#include "Drawables/FbxMesh.h"
 NullEngine::NullEngine()
 {
 	mDrawable = nullptr;
@@ -13,13 +14,18 @@ void NullEngine::StartUp()
 {
 	// initializations
 	glEnable(GL_DEPTH_TEST);
+	glFrontFace(GL_CCW);
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
 	mShader.CompileShader("Engine/Shaders/TestShader.glsl");
 
 	Camera.InitCameraProjection(30.0f, (float)EngineConfigs.windowWidth, (float)EngineConfigs.windowHeight, 0.3f, 6000.0f);
 
 
 	Input::SetMousePos(EngineConfigs.windowWidth / 2, EngineConfigs.windowHeight / 2);
-	mDrawable = new TorusMesh(0.7f, 0.3f, 100, 100);
+	mDrawable = new FbxMesh("Engine/InputFiles/basic_shapes/quad.fbx");
+	mMeshObject = new FbxMesh("Engine/InputFiles/basic_shapes/quad.fbx");
+	//mDrawable = new CubeMesh(1.0f);
 }
 
 void NullEngine::Update(float DeltaTime)
@@ -43,33 +49,54 @@ void NullEngine::Render()
 	glClearBufferfv(GL_COLOR, 0, green);
 	glClearBufferfv(GL_DEPTH, 0, &one);
 
-	FRotationTranslationMatrix Model(FRotator(-35, 35, 0.0f), FVector(0.0f));
-	FMatrix MVP = Model* Camera.GetViewMatrix() * Camera.GetProjectionMatrix();
-	//FVector TestVect(0.5f, -0.5f, 0.f);
-	//FVector TestVect1(-0.5f, -0.5f, 0.f);
-	//FVector TestVect2(0.0f, 0.5f, 0.f);
-	//FVector Result = Model.TransformPosition(TestVect);
-	//FVector Result1 = Model.TransformPosition(TestVect1);
-	//FVector Result2 = Model.TransformPosition(TestVect2);
-	//FVector4 Result3 = ProjectionMatrix.TransformFVector4(Result);
-	//FVector4 Result4 = ProjectionMatrix.TransformFVector4(Result1);
-	//FVector4 Result5 = ProjectionMatrix.TransformFVector4(Result2);
-	//printf("%f\n", CameraPos.Z);
+	FMatrix View = Camera.GetViewMatrix();
+	FVector WorldLight(5.0f, 5.0f, 2.0f);
+
 	mShader.Use();
 	
-	mShader.SetUniform("Kd", 0.9f, 0.5f, 0.3f);
-	mShader.SetUniform("Ld", 1.0f, 1.0f, 1.0f);
-	mShader.SetUniform("LightPosition", 5.0f, 5.0f, 2.0f);
+	GLuint adsIndex = glGetSubroutineIndex(mShader.GetHandle(),
+		GL_VERTEX_SHADER,
+		"phongModel");
+	GLuint diffuseIndex = glGetSubroutineIndex(mShader.GetHandle(),
+		GL_VERTEX_SHADER,
+		"diffuseOnly");
 
-	mShader.SetUniform("Model", Model);
-	mShader.SetUniform("MVP", MVP);
-	//mShader.SetUniform("Projection", ProjectionMatrix);
-	//mShader.SetUniform("UnlitColor", FVector(1.0f,1.0f,1.0f));
-	//mShader.SetUniform("Kd", 0.9f, 0.5f, 0.3f);
-	//mShader.SetUniform("Ld", 1.0f, 1.0f, 1.0f);
-	//mShader.SetUniform("LightPosition", View.TransformFVector4(FVector4(5.0f, 5.0f, 2.0f, 1.0f)));
+	mShader.SetUniform("Material.Kd", 0.9f, 0.5f, 0.3f);
+	mShader.SetUniform("Light.Ld", 1.0f, 1.0f, 1.0f);
+	mShader.SetUniform("Light.Position", FVector(View.TransformPosition(WorldLight)));
+	mShader.SetUniform("Material.Ka", 0.9f, 0.5f, 0.3f);
+	mShader.SetUniform("Light.La", 0.1f, 0.1f, 0.1f);
+	mShader.SetUniform("Material.Ks", 0.8f, 0.8f, 0.8f);
+	mShader.SetUniform("Light.Ls", 1.0f, 1.0f, 1.0f);
+	mShader.SetUniform("Material.Shininess", 100.0f);
 
-	mDrawable->render();
+	{
+		glUniformSubroutinesuiv(GL_VERTEX_SHADER, 1, &adsIndex);
+		FRotationTranslationMatrix Model(FRotator(0, 0, 0.0f), FVector(-2.0f, 0.0f, 0.0f));
+		FMatrix ModelView = Model * View;
+		FMatrix MVP = ModelView * Camera.GetProjectionMatrix();
+
+		mShader.SetUniform("ModelView", ModelView);
+		mShader.SetUniform("Model", Model);
+		mShader.SetUniform("View", View);
+		mShader.SetUniform("MVP", MVP);
+		//mDrawable->render();
+		mMeshObject->render();
+	}
+
+	{
+		glUniformSubroutinesuiv(GL_VERTEX_SHADER, 1, &diffuseIndex);
+		FRotationTranslationMatrix Model(FRotator(0, 0, 0.0f), FVector(2.0f, 0.0f, 0.0f));
+		FMatrix ModelView = Model * View;
+		FMatrix MVP = ModelView * Camera.GetProjectionMatrix();
+
+		mShader.SetUniform("ModelView", ModelView);
+		mShader.SetUniform("Model", Model);
+		mShader.SetUniform("View", View);
+		mShader.SetUniform("MVP", MVP);
+		mDrawable->render();
+	}
+	
 	//glBindVertexArray(VAO);
 	//glDrawArrays(GL_TRIANGLES, 0, 3);
 

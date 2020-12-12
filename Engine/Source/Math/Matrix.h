@@ -40,7 +40,12 @@ public:
 
 	FORCEINLINE FMatrix GetTransposed() const;
 
-	inline FMatrix InverseFast() const;
+	inline FMatrix InverseFast() const
+	{
+		FMatrix Result;
+		VectorMatrixInverse(&Result, this);
+		return Result;
+	}
 
 	inline FVector GetScaledAxis(EAxis::Type Axis) const;
 

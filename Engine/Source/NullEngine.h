@@ -14,6 +14,7 @@ private:
 	virtual void Init();
 	Shader mShader;
 	class Drawable* mDrawable;
+	class Drawable* mMeshObject;
 	FreeCamera Camera;
 	uint32 VBO, VAO;
 
