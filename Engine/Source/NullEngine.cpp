@@ -5,6 +5,7 @@
 #include "Drawables/CubeMesh.h"
 #include "Drawables/TorusMesh.h"
 #include "Drawables/FbxMesh.h"
+#include "Drawables/TestTriangleMesh.h"
 NullEngine::NullEngine()
 {
 	mDrawable = nullptr;
@@ -23,8 +24,8 @@ void NullEngine::StartUp()
 
 
 	Input::SetMousePos(EngineConfigs.windowWidth / 2, EngineConfigs.windowHeight / 2);
-	mDrawable = new FbxMesh("Engine/InputFiles/basic_shapes/quad.fbx");
-	mMeshObject = new FbxMesh("Engine/InputFiles/basic_shapes/quad.fbx");
+	mDrawable = new TestTriangleMesh();
+	mMeshObject = new FbxMesh("Engine/InputFiles/humanoid.fbx");
 	//mDrawable = new CubeMesh(1.0f);
 }
 

@@ -22,6 +22,7 @@
     <ClCompile Include="Engine\Source\Drawables\CubeMesh.cpp" />
     <ClCompile Include="Engine\Source\Drawables\FbxMesh.cpp" />
     <ClCompile Include="Engine\Source\Drawables\Mesh.cpp" />
+    <ClCompile Include="Engine\Source\Drawables\TestTriangleMesh.cpp" />
     <ClCompile Include="Engine\Source\Drawables\TorusMesh.cpp" />
     <ClCompile Include="Engine\Source\EngineBase.cpp" />
     <ClCompile Include="Engine\Source\FbxUtil.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="Engine\Source\Drawables\Drawable.h" />
     <ClInclude Include="Engine\Source\Drawables\FbxMesh.h" />
     <ClInclude Include="Engine\Source\Drawables\Mesh.h" />
+    <ClInclude Include="Engine\Source\Drawables\TestTriangleMesh.h" />
     <ClInclude Include="Engine\Source\Drawables\TorusMesh.h" />
     <ClInclude Include="Engine\Source\EngineBase.h" />
     <ClInclude Include="Engine\Source\FbxUtil.h" />

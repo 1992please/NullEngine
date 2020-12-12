@@ -70,6 +70,9 @@
     <ClCompile Include="Engine\Source\Drawables\FbxMesh.cpp">
       <Filter>Drawables</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Source\Drawables\TestTriangleMesh.cpp">
+      <Filter>Drawables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Source\EngineBase.h">
@@ -139,6 +142,9 @@
       <Filter>Misc</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Source\Drawables\FbxMesh.h">
+      <Filter>Drawables</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Drawables\TestTriangleMesh.h">
       <Filter>Drawables</Filter>
     </ClInclude>
   </ItemGroup>

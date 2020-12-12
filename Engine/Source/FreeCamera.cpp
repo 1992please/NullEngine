@@ -86,7 +86,7 @@ void FreeCamera::LookUp(float value)
 void FreeCamera::UpdateViewMatrix()
 {
 	FRotationMatrix RotMatrix(FRotator(VAngle, HAngle, 0.0f));
-	//CamForward = FVector(RotMatrix[0][0], RotMatrix[1][0], RotMatrix[2][0]);
+
 	CamForward = RotMatrix.TransformVector(FVector::ForwardVector);
 	const FVector ZAxis = CamForward;
 	const FVector XAxis = (CamUP ^ ZAxis).GetSafeNormal();
@@ -101,12 +101,10 @@ void FreeCamera::UpdateViewMatrix()
 		ViewMat[RowIndex][2] = (&ZAxis.X)[RowIndex];
 		ViewMat[RowIndex][3] = 0.0f;
 	}
-	ViewMat[3][0] = -Location | XAxis;
-	ViewMat[3][1] = -Location | YAxis;
-	ViewMat[3][2] = -Location | ZAxis;
+	ViewMat[3][0] = -(Location | XAxis);
+	ViewMat[3][1] = -(Location | YAxis);
+	ViewMat[3][2] = -(Location | ZAxis);
 	ViewMat[3][3] = 1.0f;
-
-	//ViewMat *= RotMatrix;
 }
 
 void FreeCamera::UpdateTargetVector()
