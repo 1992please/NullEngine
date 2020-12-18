@@ -7,6 +7,7 @@ FbxMesh::FbxMesh(const char* InFileName)
 	FbxUtil::GetStaticMesh(InFileName, CachedMesh);
 	if (CachedMesh)
 	{
+
 		std::vector<uint32> indices(CachedMesh->IndicesData, CachedMesh->IndicesData + CachedMesh->mPolygonCount * 3);
 		std::vector<float> points(CachedMesh->VerticesData, CachedMesh->VerticesData + CachedMesh->mPolygonVertexCount * 3);
 		std::vector<float> normals(CachedMesh->NormalsData, CachedMesh->NormalsData + CachedMesh->mPolygonVertexCount * 3);

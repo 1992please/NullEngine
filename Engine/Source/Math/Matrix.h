@@ -133,6 +133,9 @@ public:
 		return RotateMat;
 	}
 
+	/** Apply Scale to this matrix **/
+	inline FMatrix ApplyScale(float Scale) const;
+
 };
 
 struct FLookAtMatrix : FMatrix
@@ -327,4 +330,18 @@ FORCEINLINE FVector FMatrix::InverseTransformVector(const FVector &V) const
 {
 	FMatrix InvSelf = InverseFast();
 	return InvSelf.TransformVector(V);
+}
+
+/**
+ * Apply Scale to this matrix
+ */
+inline FMatrix FMatrix::ApplyScale(float Scale) const
+{
+	FMatrix ScaleMatrix(
+		FPlane(Scale, 0.0f, 0.0f, 0.0f),
+		FPlane(0.0f, Scale, 0.0f, 0.0f),
+		FPlane(0.0f, 0.0f, Scale, 0.0f),
+		FPlane(0.0f, 0.0f, 0.0f, 1.0f)
+	);
+	return ScaleMatrix * (*this);
 }
