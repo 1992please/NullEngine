@@ -13,7 +13,7 @@ FreeCamera::FreeCamera()
 	CamUP = FVector(0.0f, 0.0f, 1.0f);
 	Location = FVector(-5.0f, 0.0f, 0.0f);
 	CamForward = FVector(1.0f, 0.0f, 0.0f);
-	HAngle = 0.f;
+	Rotation = FRotator::ZeroRotator;
 	VAngle = 0.f;
 	bUpdate = true;
 }
@@ -68,7 +68,7 @@ void FreeCamera::Turn(float value)
 {
 	if (value)
 	{
-		HAngle += value;
+		Rotation.Yaw += value;
 		bUpdate = true;
 	}
 }
@@ -77,15 +77,15 @@ void FreeCamera::LookUp(float value)
 {
 	if (value)
 	{
-		VAngle += value;
-		VAngle = FMath::Clamp(VAngle, -89.0f, 89.0f);
+		Rotation.Pitch += value;
+		Rotation.Pitch = FMath::Clamp(Rotation.Pitch, -89.0f, 89.0f);
 		bUpdate = true;
 	}
 }
 
 void FreeCamera::UpdateViewMatrix()
 {
-	FRotationMatrix RotMatrix(FRotator(VAngle, HAngle, 0.0f));
+	FRotationMatrix RotMatrix(Rotation);
 
 	CamForward = RotMatrix.TransformVector(FVector::ForwardVector);
 	const FVector ZAxis = CamForward;

@@ -7,9 +7,6 @@ layout (location = 1) in vec3 VertexNormal;
 out vec3 Position;
 out vec3 Normal;
 
-uniform vec3 Kd;            // Diffuse reflectivity
-uniform vec3 Ld;            // Diffuse light intensity
-
 uniform mat4 ModelView;
 uniform mat4 Model;
 uniform mat4 View;

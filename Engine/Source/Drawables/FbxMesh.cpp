@@ -3,9 +3,9 @@
 
 FbxMesh::FbxMesh(const char* InFileName)
 {
-	FCachedMesh* CachedMesh;
+	FCachedMesh* CachedMesh = nullptr;
 	FbxUtil::GetStaticMesh(InFileName, CachedMesh);
-	if (CachedMesh)
+	if (CachedMesh && CachedMesh->IndicesData && CachedMesh->VerticesData && CachedMesh->NormalsData)
 	{
 
 		std::vector<uint32> indices(CachedMesh->IndicesData, CachedMesh->IndicesData + CachedMesh->mPolygonCount * 3);

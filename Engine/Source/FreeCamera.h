@@ -7,6 +7,8 @@ public:
 	FreeCamera();
 
 	void InitCameraProjection(float HalfFOV, float Width, float Height, float MinZ, float MaxZ);
+	void SetLocation(FVector InLocation) { Location = InLocation; }
+	void SetRotation(FRotator InRotator) { Rotation = InRotator; }
 	void MoveForward(float Distance);
 	void MoveUp(float Distance);
 	void MoveRight(float Distance);	
@@ -24,6 +26,7 @@ private:
 
 	bool bUpdate;
 
+	FRotator Rotation;
 	FVector Location;
 	FVector CamForward;
 	FVector CamUP;

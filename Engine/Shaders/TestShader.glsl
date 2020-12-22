@@ -23,9 +23,6 @@ uniform struct MaterialInfo {
   float Shininess;    // Specular shininess factor
 } Material;
 
-uniform vec3 Kd;            // Diffuse reflectivity
-uniform vec3 Ld;            // Diffuse light intensity
-
 uniform mat4 ModelView;
 uniform mat4 Model;
 uniform mat4 View;

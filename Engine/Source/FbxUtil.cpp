@@ -274,6 +274,11 @@ bool GetStaticMeshInfo(FbxNode * pNode, FCachedMesh* _Mesh)
 	// Congregate all the data of a mesh to be cached in VBOs.
 	// If normal or UV is by polygon vertex, record all vertex attributes by polygon vertex.
 	bool lHasNormal = pFbxMesh->GetElementNormalCount() > 0;
+	if (!lHasNormal)
+	{
+		pFbxMesh->GenerateNormals(false, true);
+		lHasNormal = pFbxMesh->GetElementNormalCount() > 0;
+	}
 	bool lHasUV = pFbxMesh->GetElementUVCount() > 0;
 	bool lAllByControlPoint = true;
 
@@ -352,9 +357,9 @@ bool GetStaticMeshInfo(FbxNode * pNode, FCachedMesh* _Mesh)
 		{
 			// Save the vertex position.
 			lCurrentVertex = lControlPoints[lIndex];
-			lVertices[lIndex * VERTEX_STRIDE] = -static_cast<float>(lCurrentVertex[2]);
-			lVertices[lIndex * VERTEX_STRIDE + 1] = static_cast<float>(lCurrentVertex[0]);
-			lVertices[lIndex * VERTEX_STRIDE + 2] = static_cast<float>(lCurrentVertex[1]);
+			lVertices[lIndex * VERTEX_STRIDE] = static_cast<float>(lCurrentVertex[0]);
+			lVertices[lIndex * VERTEX_STRIDE + 1] = -static_cast<float>(lCurrentVertex[1]);
+			lVertices[lIndex * VERTEX_STRIDE + 2] = static_cast<float>(lCurrentVertex[2]);
 
 			// Save the normal.
 			if (lHasNormal)
@@ -365,9 +370,9 @@ bool GetStaticMeshInfo(FbxNode * pNode, FCachedMesh* _Mesh)
 					lNormalIndex = lNormalElement->GetIndexArray().GetAt(lIndex);
 				}
 				lCurrentNormal = lNormalElement->GetDirectArray().GetAt(lNormalIndex);
-				lNormals[lIndex * NORMAL_STRIDE] = -static_cast<float>(lCurrentNormal[2]);
-				lNormals[lIndex * NORMAL_STRIDE + 1] = static_cast<float>(lCurrentNormal[0]);
-				lNormals[lIndex * NORMAL_STRIDE + 2] = static_cast<float>(lCurrentNormal[1]);
+				lNormals[lIndex * NORMAL_STRIDE] = static_cast<float>(lCurrentNormal[0]);
+				lNormals[lIndex * NORMAL_STRIDE + 1] = -static_cast<float>(lCurrentNormal[1]);
+				lNormals[lIndex * NORMAL_STRIDE + 2] = static_cast<float>(lCurrentNormal[2]);
 			}
 
 			// Save the UV.
@@ -411,16 +416,16 @@ bool GetStaticMeshInfo(FbxNode * pNode, FCachedMesh* _Mesh)
 				lIndices[lIndexOffset + lVerticeIndex] = static_cast<unsigned int>(lVertexCount);
 
 				lCurrentVertex = lControlPoints[lControlPointIndex];
-				lVertices[lVertexCount * VERTEX_STRIDE] = -static_cast<float>(lCurrentVertex[2]);
-				lVertices[lVertexCount * VERTEX_STRIDE + 1] = static_cast<float>(lCurrentVertex[0]);
-				lVertices[lVertexCount * VERTEX_STRIDE + 2] = static_cast<float>(lCurrentVertex[1]);
+				lVertices[lVertexCount * VERTEX_STRIDE] = static_cast<float>(lCurrentVertex[0]);
+				lVertices[lVertexCount * VERTEX_STRIDE + 1] = -static_cast<float>(lCurrentVertex[1]);
+				lVertices[lVertexCount * VERTEX_STRIDE + 2] = static_cast<float>(lCurrentVertex[2]);
 
 				if (lHasNormal)
 				{
 					pFbxMesh->GetPolygonVertexNormal(lPolygonIndex, lVerticeIndex, lCurrentNormal);
-					lNormals[lVertexCount * NORMAL_STRIDE] = -static_cast<float>(lCurrentNormal[2]);
-					lNormals[lVertexCount * NORMAL_STRIDE + 1] = static_cast<float>(lCurrentNormal[0]);
-					lNormals[lVertexCount * NORMAL_STRIDE + 2] = static_cast<float>(lCurrentNormal[1]);
+					lNormals[lVertexCount * NORMAL_STRIDE] = static_cast<float>(lCurrentNormal[0]);
+					lNormals[lVertexCount * NORMAL_STRIDE + 1] = -static_cast<float>(lCurrentNormal[1]);
+					lNormals[lVertexCount * NORMAL_STRIDE + 2] = static_cast<float>(lCurrentNormal[2]);
 				}
 
 				if (lHasUV)
@@ -513,9 +518,10 @@ bool LoadMeshNodes(const char* InFileName,
 	{
 		// Convert Axis System to what is used in this example, if needed
 		FbxAxisSystem SceneAxisSystem = ImportedScene->GetGlobalSettings().GetAxisSystem();
-		FbxAxisSystem OurAxisSystem(FbxAxisSystem::eYAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eRightHanded);
+		FbxAxisSystem OurAxisSystem(FbxAxisSystem::eZAxis, FbxAxisSystem::eParityEven, FbxAxisSystem::eRightHanded);
 		if (SceneAxisSystem != OurAxisSystem)
 		{
+			//FbxRootNodeUtility::RemoveAllFbxRoots(ImportedScene);
 			OurAxisSystem.DeepConvertScene(ImportedScene);
 		}
 		// Convert Unit System to what is used in this example, if needed

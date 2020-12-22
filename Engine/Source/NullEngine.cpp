@@ -21,17 +21,20 @@ void NullEngine::StartUp()
 	glFrontFace(GL_CCW);
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
-	mShader.CompileShader("Engine/Shaders/FragmentShading.glsl");
+	mShader.CompileShader("Engine/Shaders/Fog.glsl");
 
 	Camera.InitCameraProjection(30.0f, (float)EngineConfigs.windowWidth, (float)EngineConfigs.windowHeight, 0.3f, 6000.0f);
-
-
+	Camera.SetLocation(FVector(-500, 0, 100));
 	Input::SetMousePos(EngineConfigs.windowWidth / 2, EngineConfigs.windowHeight / 2);
-	mDrawable = new TestTriangleMesh(200);
+	mDrawable = new FbxMesh("Engine/InputFiles/basic_shapes/quad.fbx");
 	mDrawable1 = new FbxMesh("Engine/InputFiles/basic_shapes/cube.fbx");
-	mDrawable2 = new FbxMesh("Engine/InputFiles/humanoid.fbx");
+	mDrawable2 = new FbxMesh("Engine/InputFiles/spot_triangulated.fbx");
 
 	//mDrawable = new CubeMesh(1.0f);
+	mShader.Use();
+	mShader.SetUniform("Fog.MaxDist", 1000.0f);
+	mShader.SetUniform("Fog.MinDist", 100.0f);
+	mShader.SetUniform("Fog.Color", 0.5f, 0.5f, 0.5f);
 }
 
 void NullEngine::Update(float DeltaTime)
@@ -70,7 +73,7 @@ void NullEngine::Render()
 	mShader.SetUniform("Lights[1].Position", View.TransformPosition(WorldLight1));
 	mShader.SetUniform("Lights[2].Position", View.TransformPosition(WorldLight2));
 	mShader.SetUniform("Lights[3].Position", View.TransformPosition(WorldLight3));
-	mShader.SetUniform("Lights[4].Position", View.TransformVector(LightDirection));
+	mShader.SetUniform("Lights[4].Position", View.TransformPosition(WorldLight2));
 						
 	//mShader.SetUniform("Lights[0].L", 0.0f, 0.8f, 0.8f);
 	//mShader.SetUniform("Lights[1].L", 0.0f, 0.0f, 0.8f);
@@ -84,6 +87,8 @@ void NullEngine::Render()
 	//mShader.SetUniform("Lights[3].La", 0.0f, 0.2f, 0.0f);
 	mShader.SetUniform("Lights[4].La", 0.2f, 0.2f, 0.2f);
 
+
+
 	mShader.SetUniform("Material.Shininess", 100.0f);
 	mShader.SetUniform("Material.Ka", 0.9f, 0.5f, 0.3f);
 	mShader.SetUniform("Material.Kd", 0.9f, 0.5f, 0.3f);
@@ -91,7 +96,8 @@ void NullEngine::Render()
 
 
 	{
-		FRotationTranslationMatrix Model(FRotator(0, 0, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+		FRotationTranslationMatrix UnScaledModel(FRotator(0, 0, 0.0f), FVector(0.0f, 0.f, 0.0f));
+		FMatrix Model = UnScaledModel.ApplyScale(700);
 		FMatrix ModelView = Model * View;
 		FMatrix MVP = ModelView * Camera.GetProjectionMatrix();
 
@@ -103,7 +109,7 @@ void NullEngine::Render()
 	}
 	
 	{
-		FRotationTranslationMatrix UnScaledModel(FRotator(0, 0, 0.0f), FVector(0.0f, 300.f, 0.0f));
+		FRotationTranslationMatrix UnScaledModel(FRotator(0, 0, 0.0f), FVector(0.0f, 300.f, 50.0f));
 		FMatrix Model = UnScaledModel.ApplyScale(100);
 		FMatrix ModelView = Model * View;
 		FMatrix MVP = ModelView * Camera.GetProjectionMatrix();
@@ -116,7 +122,8 @@ void NullEngine::Render()
 	}
 
 	{
-		FRotationTranslationMatrix Model(FRotator(0, 0, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+		FRotationTranslationMatrix UnScaledModel(FRotator(0, 0, 0.0f), FVector(0.0f, 0.0f, 70.0f));
+		FMatrix Model = UnScaledModel.ApplyScale(100);
 		FMatrix ModelView = Model * View;
 		FMatrix MVP = ModelView * Camera.GetProjectionMatrix();
 
