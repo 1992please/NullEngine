@@ -68,7 +68,7 @@ float geomSmith( float dotProd ) {
 }
 
 vec3 schlickFresnel(float lDotH){
-  vec3 f0 = ve3(0.04);
+  vec3 f0 = vec3(0.04);
   if(Material.Metal){
     f0 = Material.Color;
   }
@@ -81,10 +81,10 @@ vec3 microfacetModel( int lightIdx, vec3 position, vec3 n ) {
     diffuseBrdf = Material.Color;
   }
 
-  vec3 l = vec3(0.0)
+  vec3 l = vec3(0.0);
   vec3 lightI = Light[lightIdx].L;
   if( Light[lightIdx].Position.w == 0.0 ){
-    l = normalize(Light[lightIdx].Position);
+    l = normalize(Light[lightIdx].Position.xyz);
   }
   else{
     l = Light[lightIdx].Position.xyz - position;
@@ -113,7 +113,7 @@ void main() {
   // fogFactor = clamp( fogFactor, 0.0, 1.0 );
   // Evaluate the lighting equation, for each light
   vec3 shadeColor = vec3(0.0);
-  for( int i = 0; i < 5; i++ ){
+  for( int i = 0; i < 3; i++ ){
     shadeColor += microfacetModel( i, Position, Normal );
   }
   // vec3 Color = mix( Fog.Color, shadeColor, fogFactor );

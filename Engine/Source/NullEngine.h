@@ -21,6 +21,9 @@ private:
 	FreeCamera Camera;
 	uint32 VBO, VAO;
 
+	float lightAngle;
+	FVector lightPos;
+	void RenderSpot(FVector Pos, float rough, bool metal, FVector Color);
 public:
 	NullEngine();
 	~NullEngine();

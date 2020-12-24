@@ -12,6 +12,7 @@
 NullEngine::NullEngine()
 {
 	mDrawable = nullptr;
+	lightAngle = 0.0f;
 }
 
 void NullEngine::StartUp()
@@ -21,7 +22,7 @@ void NullEngine::StartUp()
 	glFrontFace(GL_CCW);
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
-	mShader.CompileShader("Engine/Shaders/Fog.glsl");
+	mShader.CompileShader("Engine/Shaders/PhysicallyBasedRendering.glsl");
 
 	Camera.InitCameraProjection(30.0f, (float)EngineConfigs.windowWidth, (float)EngineConfigs.windowHeight, 0.3f, 6000.0f);
 	Camera.SetLocation(FVector(-500, 0, 100));
@@ -48,6 +49,11 @@ void NullEngine::Update(float DeltaTime)
 		Camera.LookUp(-mInput.GetAxis(EMovementAxis::LOOKUP) * DeltaTime * 200);
 	}
 	Camera.OnUpdate(DeltaTime);
+
+	lightAngle = FMath::Fmod(lightAngle + DeltaTime * 1.5f, 2 * PI);
+	lightPos.X = FMath::Cos(lightAngle) * 700.0f;
+	lightPos.Y = FMath::Sin(lightAngle) * 700.0f;
+	lightPos.Z = 300.0f;
 }
 
 void NullEngine::Render()
@@ -59,80 +65,65 @@ void NullEngine::Render()
 	glClearBufferfv(GL_DEPTH, 0, &one);
 
 	FMatrix View = Camera.GetViewMatrix();
-	FVector WorldLight0(-5000.0f, -5000.0f, 5000.0f);
-	FVector WorldLight1(5000.0f, -5000.0f, 5000.0f);
-	FVector WorldLight2(-5000.0f, 5000.0f, 5000.0f);
-	FVector WorldLight3(5000.0f, 5000.0f, 5000.0f);
-	FVector WorldLight4(0.0f, 0.0f, 5000.0f);
-
-	FVector LightDirection(1.0f, 1.0f, 1.0f);
 
 	mShader.Use();
 
-	mShader.SetUniform("Lights[0].Position", View.TransformPosition(WorldLight0));
-	mShader.SetUniform("Lights[1].Position", View.TransformPosition(WorldLight1));
-	mShader.SetUniform("Lights[2].Position", View.TransformPosition(WorldLight2));
-	mShader.SetUniform("Lights[3].Position", View.TransformPosition(WorldLight3));
-	mShader.SetUniform("Lights[4].Position", View.TransformPosition(WorldLight2));
-						
-	//mShader.SetUniform("Lights[0].L", 0.0f, 0.8f, 0.8f);
-	//mShader.SetUniform("Lights[1].L", 0.0f, 0.0f, 0.8f);
-	//mShader.SetUniform("Lights[2].L", 0.8f, 0.0f, 0.0f);
-	//mShader.SetUniform("Lights[3].L", 0.0f, 0.8f, 0.0f);
-	mShader.SetUniform("Lights[4].L", 0.8f, 0.8f, 0.8f);
-						
-	//mShader.SetUniform("Lights[0].La", 0.0f, 0.2f, 0.2f);
-	//mShader.SetUniform("Lights[1].La", 0.0f, 0.0f, 0.2f);
-	//mShader.SetUniform("Lights[2].La", 0.2f, 0.0f, 0.0f);
-	//mShader.SetUniform("Lights[3].La", 0.0f, 0.2f, 0.0f);
-	mShader.SetUniform("Lights[4].La", 0.2f, 0.2f, 0.2f);
-
-
-
-	mShader.SetUniform("Material.Shininess", 100.0f);
-	mShader.SetUniform("Material.Ka", 0.9f, 0.5f, 0.3f);
-	mShader.SetUniform("Material.Kd", 0.9f, 0.5f, 0.3f);
-	mShader.SetUniform("Material.Ks", 0.8f, 0.8f, 0.8f);
-
-
-	{
-		FRotationTranslationMatrix UnScaledModel(FRotator(0, 0, 0.0f), FVector(0.0f, 0.f, 0.0f));
-		FMatrix Model = UnScaledModel.ApplyScale(700);
-		FMatrix ModelView = Model * View;
-		FMatrix MVP = ModelView * Camera.GetProjectionMatrix();
-
-		mShader.SetUniform("ModelView", ModelView);
-		mShader.SetUniform("Model", Model);
-		mShader.SetUniform("View", View);
-		mShader.SetUniform("MVP", MVP);
-		mDrawable->render();
-	}
+	mShader.SetUniform("Light[0].Position", View.TransformVector(FVector(0, 0.15f, 1.0f)));
+	mShader.SetUniform("Light[0].L", FVector(.3f));
+	mShader.SetUniform("Light[1].Position", View.TransformPosition(lightPos));
+	mShader.SetUniform("Light[1].L", FVector(450000.0f));
+	mShader.SetUniform("Light[2].Position", View.TransformPosition(FVector(-700, 700, 300)));
+	mShader.SetUniform("Light[2].L", FVector(450000.0f));
 	
-	{
-		FRotationTranslationMatrix UnScaledModel(FRotator(0, 0, 0.0f), FVector(0.0f, 300.f, 50.0f));
-		FMatrix Model = UnScaledModel.ApplyScale(100);
-		FMatrix ModelView = Model * View;
-		FMatrix MVP = ModelView * Camera.GetProjectionMatrix();
 
-		mShader.SetUniform("ModelView", ModelView);
-		mShader.SetUniform("Model", Model);
-		mShader.SetUniform("View", View);
-		mShader.SetUniform("MVP", MVP);
-		mDrawable1->render();
+
+	//{
+	//	FRotationTranslationMatrix UnScaledModel(FRotator(0, 0, 0.0f), FVector(0.0f, 0.f, 0.0f));
+	//	FMatrix Model = UnScaledModel.ApplyScale(700);
+	//	FMatrix ModelView = Model * View;
+	//	FMatrix MVP = ModelView * Camera.GetProjectionMatrix();
+
+	//	mShader.SetUniform("ModelView", ModelView);
+	//	mShader.SetUniform("Model", Model);
+	//	mShader.SetUniform("View", View);
+	//	mShader.SetUniform("MVP", MVP);
+	//	mDrawable->render();
+	//}
+	//
+	//{
+	//	FRotationTranslationMatrix UnScaledModel(FRotator(0, 0, 0.0f), FVector(0.0f, 300.f, 50.0f));
+	//	FMatrix Model = UnScaledModel.ApplyScale(100);
+	//	FMatrix ModelView = Model * View;
+	//	FMatrix MVP = ModelView * Camera.GetProjectionMatrix();
+
+	//	mShader.SetUniform("ModelView", ModelView);
+	//	mShader.SetUniform("Model", Model);
+	//	mShader.SetUniform("View", View);
+	//	mShader.SetUniform("MVP", MVP);
+	//	mDrawable1->render();
+	//}
+
+	// Draw dielectric cows with varying roughness
+	int numCows = 9;
+	FVector cowBaseColor(0.1f, 0.33f, 0.17f);
+	for (int i = 0; i < numCows; i++) {
+		float cowX = i * (1000.0f / (numCows - 1)) - 500.0f;
+		float rough = (i + 1) * (1.0f / numCows);
+		RenderSpot(FVector(cowX, 0, 0), rough, 0, cowBaseColor);
 	}
 
-	{
-		FRotationTranslationMatrix UnScaledModel(FRotator(0, 0, 0.0f), FVector(0.0f, 0.0f, 70.0f));
-		FMatrix Model = UnScaledModel.ApplyScale(100);
-		FMatrix ModelView = Model * View;
-		FMatrix MVP = ModelView * Camera.GetProjectionMatrix();
-
-		mShader.SetUniform("ModelView", ModelView);
-		mShader.SetUniform("Model", Model);
-		mShader.SetUniform("View", View);
-		mShader.SetUniform("MVP", MVP);
-		mDrawable2->render();
-	}
+	// Draw metal cows
+	float metalRough = 0.43f;
+	// Gold
+	RenderSpot(FVector(-300.0f, 0.0f, 300.0f), metalRough, 1, FVector(1, 0.71f, 0.29f));
+	// Copper  									  
+	RenderSpot(FVector(-100.5f, 0.0f, 300.0f), metalRough, 1, FVector(0.95f, 0.64f, 0.54f));
+	// Aluminum									  
+	RenderSpot(FVector(-0.0f, 0.0f, 300.0f), metalRough, 1, FVector(0.91f, 0.92f, 0.92f));
+	// Titanium
+	RenderSpot(FVector(100.5f, 0.0f, 300.0f), metalRough, 1, FVector(0.542f, 0.497f, 0.449f));
+	// Silver  
+	RenderSpot(FVector(300.0f, 0.0f, 300.0f), metalRough, 1, FVector(0.95f, 0.93f, 0.88f));
 
 	//glBindVertexArray(VAO);
 	//glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -147,6 +138,27 @@ void NullEngine::Init()
 {
 	EngineBase::Init();
 	//EngineConfigs.flags.fullscreen = 1;
+}
+
+void NullEngine::RenderSpot(FVector Pos, float rough, bool metal, FVector Color)
+{
+	{
+		mShader.SetUniform("Material.Rough", rough);
+		mShader.SetUniform("Material.Metal", (int)metal);
+		mShader.SetUniform("Material.Color", Color);
+
+		FRotationTranslationMatrix UnScaledModel(FRotator(0, 90, 0.0f), Pos);
+		FMatrix Model = UnScaledModel.ApplyScale(100);
+		FMatrix View = Camera.GetViewMatrix();
+		FMatrix ModelView = Model * View;
+		FMatrix MVP = ModelView * Camera.GetProjectionMatrix();
+
+		mShader.SetUniform("ModelView", ModelView);
+		mShader.SetUniform("Model", Model);
+		mShader.SetUniform("View", View);
+		mShader.SetUniform("MVP", MVP);
+		mDrawable2->render();
+	}
 }
 
 NullEngine::~NullEngine()

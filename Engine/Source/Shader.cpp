@@ -158,9 +158,13 @@ void Shader::DeleteShaderProgram()
 
 int Shader::GetUniformLocation(const char *name) {
 	std::map<std::string, int>::iterator UniformElement = UniformLocations.find(name);
-	if (UniformLocations.end() == UniformLocations.find(name)) {
+	if (UniformLocations.end() == UniformElement) {
 		GLint loc = glGetUniformLocation(Handle, name);
 		UniformLocations[name] = loc;
+		if (loc == -1)
+		{
+			printf("Shader Uniform \"%s\" is not active.\n", name);
+		}
 		return loc;
 	}
 	
