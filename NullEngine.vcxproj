@@ -142,7 +142,7 @@
       <SDLCheck>true</SDLCheck>
       <ShowIncludes>false</ShowIncludes>
       <PreprocessorDefinitions>FBXSDK_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Source;$(SolutionDir)Engine\ThirdParty\fbx_sdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Source;$(SolutionDir)Engine\Source\ThirdParty;$(SolutionDir)Engine\Source\ThirdParty\FBX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3dll.lib;glu32.lib;opengl32.lib;libfbxsdk.lib</AdditionalDependencies>
@@ -178,7 +178,7 @@ copy "$(SolutionDir)lib\libfbxsdk.dll" $(OutDir)</Command>
       <SDLCheck>true</SDLCheck>
       <ShowIncludes>false</ShowIncludes>
       <PreprocessorDefinitions>FBXSDK_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Source;$(SolutionDir)Engine\ThirdParty\fbx_sdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Source;$(SolutionDir)Engine\Source\ThirdParty;$(SolutionDir)Engine\Source\ThirdParty\FBX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

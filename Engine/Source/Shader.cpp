@@ -1,5 +1,5 @@
 #include "Shader.h"
-#include "GL/gl3w.h"
+#include "ThirdParty/GL/gl3w.h"
 #include <iostream>
 #include <fstream>
 #include "Util/NullMemory.h"
