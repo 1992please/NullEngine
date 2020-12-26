@@ -1,6 +1,6 @@
 #include "EngineBase.h"
-#include "ThirdParty/GL/gl3w.h"
-#include "ThirdParty/GLFW/glfw3.h"
+#include "GL/gl3w.h"
+#include "GLFW/glfw3.h"
 
 void EngineBase::KeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
 {

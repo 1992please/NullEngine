@@ -1,5 +1,6 @@
 #pragma once
 #include "GlobalDefs.h"
+#include "NullMemory.h"
 #define  _USE_MATH_DEFINES
 #include <math.h>
 #include <intrin.h>
@@ -463,5 +464,5 @@ FORCEINLINE void VectorMatrixInverse(void* DstMatrix, const void* SrcMatrix)
 		M[2][0] * (M[0][1] * M[1][2] - M[0][2] * M[1][1])
 		);
 
-	memcpy(DstMatrix, &Result, 16 * sizeof(float));
+	FMemory::Memcpy(DstMatrix, &Result, 16 * sizeof(float));
 }

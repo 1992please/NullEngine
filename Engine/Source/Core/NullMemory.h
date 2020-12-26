@@ -27,4 +27,19 @@ struct FMemory
 	{
 		return memcpy(Dest, Src, Count);
 	}
+
+	static FORCEINLINE void* Malloc(size_t Count)
+	{
+		return malloc(Count);
+	}
+
+	static FORCEINLINE void* Realloc(void* Original, size_t Count)
+	{
+		return realloc(Original, Count);
+	}
+
+	static FORCEINLINE void Free(void* Original)
+	{
+		free(Original);
+	}
 };

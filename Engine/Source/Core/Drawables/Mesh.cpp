@@ -1,5 +1,5 @@
 #include "Mesh.h"
-#include "ThirdParty/GL/gl3w.h"
+#include "GL/gl3w.h"
 
 void Mesh::InitBuffers(
 	std::vector<uint32> * indices,

@@ -1,7 +1,7 @@
 #include "NullEngine.h"
 #include "Math/RotationTranslationMatrix.h"
 #include "Math/PrespectiveMatrix.h"
-#include "ThirdParty/GL/gl3w.h"
+#include "GL/gl3w.h"
 #include "Drawables/CubeMesh.h"
 #include "Drawables/TorusMesh.h"
 #include "Drawables/FbxMesh.h"

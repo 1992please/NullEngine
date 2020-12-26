@@ -1,5 +1,5 @@
 #pragma once
-#include "Util/NullMemory.h"
+#include "NullMemory.h"
 #include "Plane.h"
 #include "Vector4.h"
 

@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Math">
       <UniqueIdentifier>{59ba6f43-f52c-4c87-9c39-63ef9b4dbe09}</UniqueIdentifier>
     </Filter>
@@ -16,136 +12,148 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\Source\EngineBase.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Source\FreeCamera.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Source\gl3w.c">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Source\Input.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Source\NullEngine.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Source\Shader.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Source\Source.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Source\Math\Matrix.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Source\Math\NullMath.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Source\Math\Quat.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Source\Math\Rotator.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Source\Math\Vector.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Source\Drawables\CubeMesh.cpp">
+    <ClCompile Include="Engine\Source\Core\Drawables\CubeMesh.cpp">
       <Filter>Drawables</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Source\Drawables\Mesh.cpp">
+    <ClCompile Include="Engine\Source\Core\Drawables\FbxMesh.cpp">
       <Filter>Drawables</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Source\Drawables\TorusMesh.cpp">
+    <ClCompile Include="Engine\Source\Core\Drawables\Mesh.cpp">
       <Filter>Drawables</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Source\Math\RotationMatrix.cpp">
+    <ClCompile Include="Engine\Source\Core\Drawables\TestTriangleMesh.cpp">
+      <Filter>Drawables</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Core\Drawables\TorusMesh.cpp">
+      <Filter>Drawables</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Core\Math\Matrix.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Source\FbxUtil.cpp">
+    <ClCompile Include="Engine\Source\Core\Math\NullMath.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Core\Math\Quat.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Core\Math\RotationMatrix.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Core\Math\Rotator.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Core\Math\Vector.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Core\EngineBase.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Source\Drawables\FbxMesh.cpp">
-      <Filter>Drawables</Filter>
+    <ClCompile Include="Engine\Source\Core\FbxUtil.cpp">
+      <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Source\Drawables\TestTriangleMesh.cpp">
-      <Filter>Drawables</Filter>
+    <ClCompile Include="Engine\Source\Core\FreeCamera.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Core\Input.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Core\NullEngine.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Core\Shader.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Core\Source.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\ThirdParty\GL\gl3w.c">
+      <Filter>Misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\Source\EngineBase.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\FreeCamera.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\GlobalDefs.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\Input.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\NullEngine.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\Shader.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\Math\Matrix.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\Math\NullMath.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\Math\Plane.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\Math\PrespectiveMatrix.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\Math\Quat.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\Math\RotationTranslationMatrix.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\Math\Rotator.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\Math\Vector.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\Math\Vector2.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\Math\Vector4.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Source\Drawables\CubeMesh.h">
+    <ClInclude Include="Engine\Source\Core\Drawables\CubeMesh.h">
       <Filter>Drawables</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Source\Drawables\Drawable.h">
+    <ClInclude Include="Engine\Source\Core\Drawables\Drawable.h">
       <Filter>Drawables</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Source\Drawables\Mesh.h">
+    <ClInclude Include="Engine\Source\Core\Drawables\FbxMesh.h">
       <Filter>Drawables</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Source\Drawables\TorusMesh.h">
+    <ClInclude Include="Engine\Source\Core\Drawables\Mesh.h">
       <Filter>Drawables</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Source\Math\RotationMatrix.h">
+    <ClInclude Include="Engine\Source\Core\Drawables\TestTriangleMesh.h">
+      <Filter>Drawables</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Drawables\TorusMesh.h">
+      <Filter>Drawables</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Math\Matrix.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Source\FbxUtil.h">
+    <ClInclude Include="Engine\Source\Core\Math\NullMath.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Math\Plane.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Math\PrespectiveMatrix.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Math\Quat.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Math\RotationMatrix.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Math\RotationTranslationMatrix.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Math\Rotator.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Math\Vector.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Math\Vector2.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Math\Vector4.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\EngineBase.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Source\Drawables\FbxMesh.h">
-      <Filter>Drawables</Filter>
+    <ClInclude Include="Engine\Source\Core\FbxUtil.h">
+      <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Source\Drawables\TestTriangleMesh.h">
-      <Filter>Drawables</Filter>
+    <ClInclude Include="Engine\Source\Core\FreeCamera.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\GlobalDefs.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Input.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\NullEngine.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\NullMemory.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Shader.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\Containers\Array.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\NumericLimits.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Source\Core\CoreTypes.h">
+      <Filter>Misc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

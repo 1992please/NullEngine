@@ -1,8 +1,8 @@
 #include "Shader.h"
-#include "ThirdParty/GL/gl3w.h"
+#include "GL/gl3w.h"
 #include <iostream>
 #include <fstream>
-#include "Util/NullMemory.h"
+#include "NullMemory.h"
 #include "Math/Vector.h"
 #include "Math/Vector4.h"
 #include "Math/Vector2.h"
