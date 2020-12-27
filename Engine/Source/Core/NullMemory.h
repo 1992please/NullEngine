@@ -1,5 +1,6 @@
 #pragma once
-#include "GlobalDefs.h"
+#include <string.h>
+#include <stdlib.h>
 
 struct FMemory
 {

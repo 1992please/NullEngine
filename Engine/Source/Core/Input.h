@@ -1,14 +1,14 @@
 #pragma once
 #include "GlobalDefs.h"
 
-enum class EMovementAxis : uint8
+enum class EMovementAxis : int8
 {
 	MOVEUP,
 	MOVERIGHT,
 	MOVEFORWARD,
 	TURN,
 	LOOKUP,
-	NUM
+	NUM = 5
 };
 
 enum class ECommand : uint8
@@ -97,7 +97,7 @@ public:
 	static void GetCursorPosition(double* xpos, double* ypos);
 	double MouseX, MouseY;
 protected:
-	float mAixValues[EMovementAxis::NUM];
+	float mAixValues[5];
 	ECommand mCommand;
 
 	bool bFirstUpdate = true;

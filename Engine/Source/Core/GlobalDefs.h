@@ -1,5 +1,8 @@
 #pragma once
-#include "NumericLimits.h"
+#include "Core.h"
+// CoreTypes must precede NullMemory file to avoid compilation errors
 #include "CoreTypes.h"
-#include <string.h>
-#include <stdlib.h>
+#include "NullMemory.h"
+//
+#include "NumericLimits.h"
+#include "Containers/Array.h"

@@ -198,13 +198,13 @@ public:
 		return Emplace(MoveTempIfPossible(Item));
 	}
 
-	FORCEINLINE ElementType Pop(bool bAllowShrinking = true)
-	{
-		RangeCheck(0);
-		ElementType Result = MoveTempIfPossible(GetData()[ArrayNum - 1]);
-		RemoveAt(ArrayNum - 1, 1, bAllowShrinking);
-		return Result;
-	}
+	//FORCEINLINE ElementType Pop(bool bAllowShrinking = true)
+	//{
+	//	RangeCheck(0);
+	//	ElementType Result = MoveTempIfPossible(GetData()[ArrayNum - 1]);
+	//	RemoveAt(ArrayNum - 1, 1, bAllowShrinking);
+	//	return Result;
+	//}
 
 	FORCEINLINE void Push(ElementType&& Item)
 	{
