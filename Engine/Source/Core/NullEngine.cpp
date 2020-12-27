@@ -22,14 +22,14 @@ void NullEngine::StartUp()
 	glFrontFace(GL_CCW);
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
-	mShader.CompileShader("Engine/Shaders/PhysicallyBasedRendering.glsl");
+	mShader.CompileShader("Shaders/PhysicallyBasedRendering.glsl");
 
 	Camera.InitCameraProjection(30.0f, (float)EngineConfigs.windowWidth, (float)EngineConfigs.windowHeight, 0.3f, 6000.0f);
 	Camera.SetLocation(FVector(-500, 0, 100));
 	Input::SetMousePos(EngineConfigs.windowWidth / 2, EngineConfigs.windowHeight / 2);
-	mDrawable = new FbxMesh("Engine/InputFiles/basic_shapes/quad.fbx");
-	mDrawable1 = new FbxMesh("Engine/InputFiles/basic_shapes/cube.fbx");
-	mDrawable2 = new FbxMesh("Engine/InputFiles/spot_triangulated.fbx");
+	mDrawable = new FbxMesh("InputFiles/basic_shapes/quad.fbx");
+	mDrawable1 = new FbxMesh("InputFiles/basic_shapes/cube.fbx");
+	mDrawable2 = new FbxMesh("InputFiles/spot_triangulated.fbx");
 
 	//mDrawable = new CubeMesh(1.0f);
 	mShader.Use();
