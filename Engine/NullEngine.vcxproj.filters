@@ -19,7 +19,6 @@
     <ClInclude Include="Source\Core\Math\Vector.h" />
     <ClInclude Include="Source\Core\Math\Vector2.h" />
     <ClInclude Include="Source\Core\Math\Vector4.h" />
-    <ClInclude Include="Source\Core\CoreTypes.h" />
     <ClInclude Include="Source\Core\EngineBase.h" />
     <ClInclude Include="Source\Core\FbxUtil.h" />
     <ClInclude Include="Source\Core\FreeCamera.h" />
@@ -27,7 +26,6 @@
     <ClInclude Include="Source\Core\Input.h" />
     <ClInclude Include="Source\Core\NullEngine.h" />
     <ClInclude Include="Source\Core\NullMemory.h" />
-    <ClInclude Include="Source\Core\NumericLimits.h" />
     <ClInclude Include="Source\Core\Shader.h" />
     <ClInclude Include="Source\ThirdParty\FBX\fbxsdk\core\arch\fbxalloc.h" />
     <ClInclude Include="Source\ThirdParty\FBX\fbxsdk\core\arch\fbxarch.h" />
@@ -319,6 +317,14 @@
     <ClInclude Include="Source\ThirdParty\KHR\khrplatform.h" />
     <ClInclude Include="Source\Core\Core.h" />
     <ClInclude Include="Source\Null.h" />
+    <ClInclude Include="Source\Core\Templates\IsPointer.h" />
+    <ClInclude Include="Source\Core\Templates\RemoveReference.h" />
+    <ClInclude Include="Source\Core\Templates\IsTriviallyDestructible.h" />
+    <ClInclude Include="Source\Core\Math\NumericLimits.h" />
+    <ClInclude Include="Source\Core\Templates\NullTypeTraits.h" />
+    <ClInclude Include="Source\Core\Templates\IsArithmetic.h" />
+    <ClInclude Include="Source\Core\Templates\AndOrNot.h" />
+    <ClInclude Include="Source\Core\Templates\IsEnum.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Drawables\CubeMesh.cpp" />
@@ -340,6 +346,7 @@
     <ClCompile Include="Source\Core\Shader.cpp" />
     <ClCompile Include="Source\Core\Source.cpp" />
     <ClCompile Include="Source\ThirdParty\GL\gl3w.c" />
+    <ClCompile Include="Source\Core\Templates\NullTemplate.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO" />

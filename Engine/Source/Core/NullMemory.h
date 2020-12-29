@@ -1,6 +1,8 @@
 #pragma once
+#include "Core.h"
 #include <string.h>
 #include <stdlib.h>
+
 
 struct FMemory
 {
