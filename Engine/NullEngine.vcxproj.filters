@@ -333,6 +333,9 @@
     <ClInclude Include="Source\Core\Templates\MemoryOps.h" />
     <ClInclude Include="Source\Core\Templates\TypeTraits.h" />
     <ClInclude Include="Source\Core\Templates\IsTriviallyCopyConstructible.h" />
+    <ClInclude Include="Source\Core\Templates\IdentityFunctor.h" />
+    <ClInclude Include="Source\Core\Templates\ReversePredicate.h" />
+    <ClInclude Include="Source\Core\Templates\TypeCompatibleBytes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Drawables\CubeMesh.cpp" />

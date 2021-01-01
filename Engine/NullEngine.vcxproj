@@ -39,6 +39,7 @@
     <ClInclude Include="Source\Core\Math\Vector4.h" />
     <ClInclude Include="Source\Core\Templates\AndOrNot.h" />
     <ClInclude Include="Source\Core\Templates\AreTypesEqual.h" />
+    <ClInclude Include="Source\Core\Templates\IdentityFunctor.h" />
     <ClInclude Include="Source\Core\Templates\IsArithmetic.h" />
     <ClInclude Include="Source\Core\Templates\IsEnum.h" />
     <ClInclude Include="Source\Core\Templates\IsPointer.h" />
@@ -46,6 +47,8 @@
     <ClInclude Include="Source\Core\Templates\IsTriviallyDestructible.h" />
     <ClInclude Include="Source\Core\Templates\Less.h" />
     <ClInclude Include="Source\Core\Templates\MemoryOps.h" />
+    <ClInclude Include="Source\Core\Templates\ReversePredicate.h" />
+    <ClInclude Include="Source\Core\Templates\TypeCompatibleBytes.h" />
     <ClInclude Include="Source\Core\Templates\TypeTraits.h" />
     <ClInclude Include="Source\Core\Templates\RemoveReference.h" />
     <ClInclude Include="Source\Core\Templates\Sorting.h" />

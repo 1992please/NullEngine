@@ -9,6 +9,8 @@
 #include "EnableIf.h"
 #include "AreTypesEqual.h"
 #include "AndOrNot.h"
+#include "TypeCompatibleBytes.h"
+
 /**
  * MoveTemp will cast a reference to an rvalue reference.
  * This is UE's equivalent of std::move except that it will not compile when passed an rvalue or
@@ -70,7 +72,7 @@ struct TUseBitwiseSwap
 template <typename T>
 inline typename TEnableIf<TUseBitwiseSwap<T>::Value>::Type Swap(T& A, T& B)
 {
-	if (LIKELY(&A != &B))
+	if (&A != &B)
 	{
 		TTypeCompatibleBytes<T> Temp;
 		FMemory::Memcpy(&Temp, &A, sizeof(T));

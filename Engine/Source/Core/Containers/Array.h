@@ -6,8 +6,12 @@
 #include "Templates/NullTemplate.h"
 #include "Templates/Sorting.h"
 #include "Templates/MemoryOps.h"
+
+#include "Algo/HeapSort.h"
+
 #include "NullMemory.h"
 #include <initializer_list>
+
 
 template<typename InElementType>
 class TArray
@@ -426,7 +430,7 @@ public:
 	void HeapSort(const PREDICATE_CLASS& Predicate)
 	{
 		TDereferenceWrapper<ElementType, PREDICATE_CLASS> PredicateWrapper(Predicate);
-		//Algo::HeapSort(*this, PredicateWrapper);
+		Algo::HeapSort(Data, ArrayNum, PredicateWrapper);
 	}
 
 	/**
@@ -442,6 +446,16 @@ public:
 		HeapSort(TLess<ElementType>());
 	}
 
+
+
+	/**
+	* DO NOT USE DIRECTLY
+	* STL-like iterators to enable range-based for loop support.
+	*/
+	FORCEINLINE ElementType*           begin()       { return GetData(); }
+	FORCEINLINE const ElementType*     begin() const { return GetData(); }
+	FORCEINLINE ElementType*           end()         { return GetData() + Num(); }
+	FORCEINLINE const ElementType*     end() const   { return GetData() + Num(); }
 
 private:
 
@@ -528,7 +542,6 @@ private:
 			}
 		}
 	}
-
 
 	FORCENOINLINE void ResizeGrow(int32 OldNum)
 	{
