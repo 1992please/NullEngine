@@ -66,7 +66,8 @@ int main(int argc, char** argv)
 		}
 	};
 	{
-		TArray<WTF> Hello;
+		TArray<WTF> Hello = { {32, 32}, {23,34} };
+		Hello.SetNum(5);
 		Hello.Emplace(5, 6);
 		Hello.Emplace(5, 7);
 		Hello.Emplace(6, 10);
@@ -75,6 +76,8 @@ int main(int argc, char** argv)
 		Hello.Emplace(5, 30);
 		Hello.Emplace(5, 6);
 		Hello.Emplace(5, 6);
+
+		Hello += { {32, 32}, { 23,34 } };
 
 		WTF X(300, 50);
 		Hello.AddUnique(X);

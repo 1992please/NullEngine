@@ -5,7 +5,7 @@
 #include "IsEnum.h"
 #include "IsArithmetic.h"
 #include "IsPointer.h"
-#include "NullTypeTraits.h"
+#include "TypeTraits.h"
 #include "EnableIf.h"
 #include "AreTypesEqual.h"
 #include "AndOrNot.h"

@@ -1,6 +1,5 @@
 #pragma once
 #include <stdio.h>
-#include <new.h>
 
 typedef signed char        int8;
 typedef short              int16;

@@ -1,6 +1,7 @@
 #pragma once
 #include "Core.h"
 #include "Algo/Sort.h"
+#include "Less.h"
 
 /**
  * Helper class for dereferencing pointer types in Sort function
@@ -53,9 +54,9 @@ private:
 	int32 Size;
 };
 
-template<class T>
-void Sort(T* First, const int32 Num)
-{
-	TArrayRange<T> ArrayRange(First, Num);
-	Algo::Sort(ArrayRange, TDereferenceWrapper<T, TLess<T> >(TLess<T>()));
-}
+//template<class T>
+//void Sort(T* First, const int32 Num)
+//{
+//	TArrayRange<T> ArrayRange(First, Num);
+//	Algo::Sort(ArrayRange, TDereferenceWrapper<T, TLess<T> >(TLess<T>()));
+//}

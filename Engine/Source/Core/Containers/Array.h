@@ -2,14 +2,19 @@
 #include "Core.h"
 #include "Math/NumericLimits.h"
 #include "Templates/IsTriviallyDestructible.h"
-#include "Templates/NullTypeTraits.h"
+#include "Templates/TypeTraits.h"
 #include "Templates/NullTemplate.h"
-
+#include "Templates/Sorting.h"
+#include "Templates/MemoryOps.h"
 #include "NullMemory.h"
+#include <initializer_list>
 
 template<typename InElementType>
 class TArray
 {
+	template <typename OtherInElementType>
+	friend class TArray;
+
 public:
 	typedef InElementType ElementType;
 
@@ -35,6 +40,28 @@ public:
 		CopyToEmpty(Other.Data, Other.Num(), 0, ExtraSlack);
 	}
 
+	FORCEINLINE TArray(TArray<ElementType>&& Other)
+	{
+		Move(*this, Other);
+	}
+
+	/**
+	 * Initializer list constructor
+	 */
+	TArray(std::initializer_list<InElementType> InitList)
+	{
+		// This is not strictly legal, as std::initializer_list's iterators are not guaranteed to be pointers, but
+		// this appears to be the case on all of our implementations.  Also, if it's not true on a new implementation,
+		// it will fail to compile rather than behave badly.
+		CopyToEmpty(InitList.begin(), (int32)InitList.size(), 0, 0);
+	}
+
+	template <typename OtherElementType>
+	FORCEINLINE explicit TArray(const TArray<OtherElementType>& Other)
+	{
+		CopyToEmpty(Other.Data, Other.Num(), 0, 0);
+	}
+
 	TArray& operator=(const TArray& Other)
 	{
 		if (this != &Other)
@@ -45,9 +72,14 @@ public:
 		return *this;
 	}
 
-	FORCEINLINE TArray(TArray<ElementType>&& Other)
+	TArray& operator=(std::initializer_list<InElementType> InitList)
 	{
-		Move(*this, Other);
+		DestructItems(Data, ArrayNum);
+		// This is not strictly legal, as std::initializer_list's iterators are not guaranteed to be pointers, but
+		// this appears to be the case on all of our implementations.  Also, if it's not true on a new implementation,
+		// it will fail to compile rather than behave badly.
+		CopyToEmpty(InitList.begin(), (SizeType)InitList.size(), ArrayMax, 0);
+		return *this;
 	}
 
 	TArray& operator=(TArray&& Other)
@@ -228,7 +260,7 @@ public:
 		{
 			const int32 Diff = NewNum - ArrayNum;
 			const int32 Index = AddUninitialized(Diff);
-			DefaultConstructItems((uint8*)Data + Index * sizeof(ElementType), Diff);
+			DefaultConstructItems<ElementType>((uint8*)Data + Index * sizeof(ElementType), Diff);
 		}
 		else if (NewNum < Num())
 		{
@@ -266,7 +298,7 @@ public:
 
 	int32 Find(const ElementType& Item) const
 	{
-		const ElementType* __restrict Start = GetData();
+		const ElementType* __restrict Start = Data;
 		for (const ElementType* __restrict Data = Start, *__restrict DataEnd = Data + ArrayNum; Data != DataEnd; ++Data)
 		{
 			if (*Data == Item)
@@ -306,10 +338,115 @@ public:
 		return RemoveAll([&Item](ElementType& Element) { return Element == Item; });
 	}
 
+	template <typename OtherElementType>
+	void Append(const TArray<OtherElementType>& Source)
+	{
+		ASSERT((void*)this != (void*)&Source);
+
+		int32 SourceCount = Source.Num();
+
+		// Do nothing if the source is empty.
+		if (!SourceCount)
+		{
+			return;
+		}
+
+		// Allocate memory for the new elements.
+		Reserve(ArrayNum + SourceCount);
+		ConstructItems<ElementType>(Data + ArrayNum, Source.Data, SourceCount);
+
+		ArrayNum += SourceCount;
+	}
+
+	template <typename OtherElementType>
+	void Append(TArray<OtherElementType>&& Source)
+	{
+		ASSERT((void*)this != (void*)&Source);
+
+		int32 SourceCount = Source.Num();
+
+		// Do nothing if the source is empty.
+		if (!SourceCount)
+		{
+			return;
+		}
+
+		// Allocate memory for the new elements.
+		Reserve(ArrayNum + SourceCount);
+		RelocateConstructItems<ElementType>(Data + ArrayNum, Source.Data, SourceCount);
+		Source.ArrayNum = 0;
+
+		ArrayNum += SourceCount;
+	}
+
+	void Append(const ElementType* Ptr, int32 Count)
+	{
+		ASSERT(Ptr != nullptr || Count == 0);
+
+		int32 Pos = AddUninitialized(Count);
+		ConstructItems<ElementType>(Data + Pos, Ptr, Count);
+	}
+
+	FORCEINLINE void Append(std::initializer_list<ElementType> InitList)
+	{
+		int32 Count = (int32)InitList.size();
+
+		int32 Pos = AddUninitialized(Count);
+		ConstructItems<ElementType>(Data + Pos, InitList.begin(), Count);
+	}
+
+	TArray& operator+=(TArray&& Other)
+	{
+		Append(MoveTemp(Other));
+		return *this;
+	}
+
+	TArray& operator+=(const TArray& Other)
+	{
+		Append(Other);
+		return *this;
+	}
+
+	TArray& operator+=(std::initializer_list<ElementType> InitList)
+	{
+		Append(InitList);
+		return *this;
+	}
+
+	/**
+	 * Performs heap sort on the array.
+	 *
+	 * @param Predicate Predicate class instance.
+	 *
+	 * @note: If your array contains raw pointers, they will be automatically dereferenced during heapification.
+	 *        Therefore, your predicate will be passed references rather than pointers.
+	 *        The auto-dereferencing behavior does not occur with smart pointers.
+	 */
+	template <class PREDICATE_CLASS>
+	void HeapSort(const PREDICATE_CLASS& Predicate)
+	{
+		TDereferenceWrapper<ElementType, PREDICATE_CLASS> PredicateWrapper(Predicate);
+		//Algo::HeapSort(*this, PredicateWrapper);
+	}
+
+	/**
+	 * Performs heap sort on the array. Assumes < operator is defined for the
+	 * template type.
+	 *
+	 * @note: If your array contains raw pointers, they will be automatically dereferenced during heapification.
+	 *        Therefore, your array will be heapified by the values being pointed to, rather than the pointers' values.
+	 *        The auto-dereferencing behavior does not occur with smart pointers.
+	 */
+	void HeapSort()
+	{
+		HeapSort(TLess<ElementType>());
+	}
+
+
 private:
 
-
-	void CopyToEmpty(const ElementType* OtherData, int32 NewNum, int32 PrevMax, int32 ExtraSlack)
+	template <typename OtherElementType>
+	void CopyToEmpty(const OtherElementType* OtherData, int32 NewNum, int32 PrevMax, int32 ExtraSlack)
 	{
 		ASSERT(ExtraSlack >= 0);
 
@@ -317,7 +454,7 @@ private:
 		if (NewNum || ExtraSlack || PrevMax)
 		{
 			ResizeForCopy(NewNum + ExtraSlack, PrevMax);
-			FMemory::Memcpy(Data, OtherData, sizeof(ElementType) * NewNum);
+			ConstructItems<ElementType>(Data, OtherData, NewNum);
 		}
 		else
 		{
@@ -361,31 +498,6 @@ private:
 
 		ToArray.Data = FromArray.Data;
 		FromArray.Data = nullptr;
-	}
-
-	/**
-	* Destructs a range of items in memory.
-	*
-	* @param	Elements	A pointer to the first item to destruct.
-	* @param	Count		The number of elements to destruct.
-	*
-	* @note: This function is optimized for values of T, and so will not dynamically dispatch destructor calls if T's destructor is virtual.
-	*/
-
-	FORCEINLINE void DestructItems(ElementType* Element, int32 Count)
-	{
-		if constexpr (!TIsTriviallyDestructible<ElementType>::Value)
-		{
-			while (Count)
-			{
-				// We need a typedef here because VC won't compile the destructor call below if ElementType itself has a member called ElementType
-				//typedef ElementType DestructItemsElementTypeTypedef;
-
-				Element->ElementType::~ElementType();
-				++Element;
-				--Count;
-			}
-		}
 	}
 
 	void RemoveAtImpl(int32 Index, int32 Count, bool bAllowShrinking)
@@ -488,24 +600,6 @@ private:
 		}
 	}
 
-	FORCEINLINE void DefaultConstructItems(void* Address, int32 Count)
-	{
-		if constexpr (TIsZeroConstructType<ElementType>::Value)
-		{
-			FMemory::Memset(Address, 0, sizeof(ElementType) * Count);
-		}
-		else
-		{
-			ElementType* Element = (ElementType*)Address;
-			while (Count)
-			{
-				new (Element) ElementType;
-				++Element;
-				--Count;
-			}
-		}
-	}
-
 	template <typename ArgsType>
 	int32 AddUniqueImpl(ArgsType&& Args)
 	{
@@ -529,11 +623,11 @@ private:
 
 		int32 WriteIndex = 0;
 		int32 ReadIndex = 0;
-		bool NotMatch = !Predicate(GetData()[ReadIndex]); // use a ! to guarantee it can't be anything other than zero or one
+		bool NotMatch = !Predicate(Data[ReadIndex]); // use a ! to guarantee it can't be anything other than zero or one
 		do
 		{
 			int32 RunStartIndex = ReadIndex++;
-			while (ReadIndex < OriginalNum && NotMatch == !Predicate(GetData()[ReadIndex]))
+			while (ReadIndex < OriginalNum && NotMatch == !Predicate(Data[ReadIndex]))
 			{
 				ReadIndex++;
 			}
@@ -544,14 +638,14 @@ private:
 				// this was a non-matching run, we need to move it
 				if (WriteIndex != RunStartIndex)
 				{
-					FMemory::Memmove(&GetData()[WriteIndex], &GetData()[RunStartIndex], sizeof(ElementType)* RunLength);
+					FMemory::Memmove(&Data[WriteIndex], &Data[RunStartIndex], sizeof(ElementType)* RunLength);
 				}
 				WriteIndex += RunLength;
 			}
 			else
 			{
 				// this was a matching run, delete it
-				DestructItems(GetData() + RunStartIndex, RunLength);
+				DestructItems(Data + RunStartIndex, RunLength);
 			}
 			NotMatch = !NotMatch;
 		} while (ReadIndex < OriginalNum);
