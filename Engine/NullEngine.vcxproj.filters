@@ -325,6 +325,10 @@
     <ClInclude Include="Source\Core\Templates\IsArithmetic.h" />
     <ClInclude Include="Source\Core\Templates\AndOrNot.h" />
     <ClInclude Include="Source\Core\Templates\IsEnum.h" />
+    <ClInclude Include="Source\Core\Algo\Sort.h" />
+    <ClInclude Include="Source\Core\Templates\Sorting.h" />
+    <ClInclude Include="Source\Core\Templates\AreTypesEqual.h" />
+    <ClInclude Include="Source\Core\Templates\EnableIf.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Drawables\CubeMesh.cpp" />

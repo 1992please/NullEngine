@@ -66,6 +66,12 @@
 class FMath
 {
 public:
+	// Returns e^Value
+	static FORCEINLINE float Exp(float Value) { return expf(Value); }
+	// Returns 2^Value
+	static FORCEINLINE float Exp2(float Value) { return powf(2.f, Value); /*exp2f(Value);*/ }
+	static FORCEINLINE float Loge(float Value) { return logf(Value); }
+
 	static inline float RadianToDegrees(float RadianAngle){return RadianAngle * 180.0f / PI;}
 	static inline float DegreesToRadian(float DegreesAngle){return DegreesAngle * PI / 180.0f;}
 

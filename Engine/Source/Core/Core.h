@@ -24,6 +24,8 @@ typedef unsigned long long uint64;
 	#error We only support windows
 #endif
 
+enum { INDEX_NONE = -1 };
+
 enum EForceInit
 {
 	ForceInit,

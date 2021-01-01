@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Core\Algo\Sort.h" />
     <ClInclude Include="Source\Core\Containers\Array.h" />
     <ClInclude Include="Source\Core\Core.h" />
     <ClInclude Include="Source\Core\Drawables\CubeMesh.h" />
@@ -36,12 +37,15 @@
     <ClInclude Include="Source\Core\Math\Vector2.h" />
     <ClInclude Include="Source\Core\Math\Vector4.h" />
     <ClInclude Include="Source\Core\Templates\AndOrNot.h" />
+    <ClInclude Include="Source\Core\Templates\AreTypesEqual.h" />
     <ClInclude Include="Source\Core\Templates\IsArithmetic.h" />
     <ClInclude Include="Source\Core\Templates\IsEnum.h" />
     <ClInclude Include="Source\Core\Templates\IsPointer.h" />
     <ClInclude Include="Source\Core\Templates\IsTriviallyDestructible.h" />
     <ClInclude Include="Source\Core\Templates\NullTypeTraits.h" />
     <ClInclude Include="Source\Core\Templates\RemoveReference.h" />
+    <ClInclude Include="Source\Core\Templates\Sorting.h" />
+    <ClInclude Include="Source\Core\Templates\EnableIf.h" />
     <ClInclude Include="Source\Null.h" />
     <ClInclude Include="Source\Core\NullEngine.h" />
     <ClInclude Include="Source\Core\NullMemory.h" />
