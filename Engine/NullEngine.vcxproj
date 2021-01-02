@@ -12,7 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\Algo\HeapSort.h" />
-    <ClInclude Include="Source\Core\Algo\Sort.h" />
+    <ClInclude Include="Source\Core\Algo\IntroSort.h" />
     <ClInclude Include="Source\Core\Containers\Array.h" />
     <ClInclude Include="Source\Core\Core.h" />
     <ClInclude Include="Source\Core\Drawables\CubeMesh.h" />

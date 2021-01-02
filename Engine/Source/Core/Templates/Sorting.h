@@ -1,6 +1,5 @@
 #pragma once
 #include "Core.h"
-#include "Algo/Sort.h"
 #include "Less.h"
 
 /**
@@ -33,30 +32,3 @@ struct TDereferenceWrapper<T*, PREDICATE_CLASS>
 		return Predicate(*A, *B);
 	}
 };
-
-/**
- * Wraps a range into a container like interface to satisfy the GetData and GetNum global functions.
- */
-template <typename T>
-struct TArrayRange
-{
-	TArrayRange(T* InPtr, int32 InSize)
-		: Begin(InPtr)
-		, Size(InSize)
-	{
-	}
-
-	T* GetData() const { return Begin; }
-	int32 Num() const { return Size; }
-
-private:
-	T* Begin;
-	int32 Size;
-};
-
-//template<class T>
-//void Sort(T* First, const int32 Num)
-//{
-//	TArrayRange<T> ArrayRange(First, Num);
-//	Algo::Sort(ArrayRange, TDereferenceWrapper<T, TLess<T> >(TLess<T>()));
-//}

@@ -7,7 +7,9 @@
 #include "Templates/Sorting.h"
 #include "Templates/MemoryOps.h"
 
+#include "Algo/IntroSort.h"
 #include "Algo/HeapSort.h"
+
 
 #include "NullMemory.h"
 #include <initializer_list>
@@ -302,12 +304,12 @@ public:
 
 	int32 Find(const ElementType& Item) const
 	{
-		const ElementType* __restrict Start = Data;
-		for (const ElementType* __restrict Data = Start, *__restrict DataEnd = Data + ArrayNum; Data != DataEnd; ++Data)
+		const ElementType* RESTRICT Start = Data;
+		for (const ElementType* RESTRICT pData = Start, *RESTRICT DataEnd = pData + ArrayNum; pData != DataEnd; ++pData)
 		{
-			if (*Data == Item)
+			if (*pData == Item)
 			{
-				return static_cast<int32>(Data - Start);
+				return static_cast<int32>(pData - Start);
 			}
 		}
 		return INDEX_NONE;
@@ -418,6 +420,93 @@ public:
 	}
 
 	/**
+ * Finds an element which matches a predicate functor.
+ *
+ * @param Pred The functor to apply to each element.
+ * @returns Pointer to the first element for which the predicate returns true, or nullptr if none is found.
+ * @see FilterByPredicate, ContainsByPredicate
+ */
+	template <class Predicate>
+	FORCEINLINE const ElementType* FindByPredicate(Predicate Pred) const
+	{
+		return const_cast<TArray*>(this)->FindByPredicate(Pred);
+	}
+
+	/**
+	 * Finds an element which matches a predicate functor.
+	 *
+	 * @param Pred The functor to apply to each element. true, or nullptr if none is found.
+	 * @see FilterByPredicate, ContainsByPredicate
+	 */
+	template <class Predicate>
+	ElementType* FindByPredicate(Predicate Pred)
+	{
+		for (ElementType* RESTRICT pData = Data, *RESTRICT DataEnd = pData + ArrayNum; pData != DataEnd; ++pData)
+		{
+			if (Pred(*pData))
+			{
+				return pData;
+			}
+		}
+
+		return nullptr;
+	}
+
+	/**
+	 * Filters the elements in the array based on a predicate functor.
+	 *
+	 * @param Pred The functor to apply to each element.
+	 * @returns TArray with the same type as this object which contains
+	 *          the subset of elements for which the functor returns true.
+	 * @see FindByPredicate, ContainsByPredicate
+	 */
+	template <class Predicate>
+	TArray<ElementType> FilterByPredicate(Predicate Pred) const
+	{
+		TArray<ElementType> FilterResults;
+		for (const ElementType* RESTRICT pData = GetData(), *RESTRICT DataEnd = pData + ArrayNum; pData != DataEnd; ++pData)
+		{
+			if (Pred(*pData))
+			{
+				FilterResults.Add(*pData);
+			}
+		}
+		return FilterResults;
+	}
+
+	/**
+	 * Checks if this array contains the element.
+	 *
+	 * @returns	True if found. False otherwise.
+	 * @see ContainsByPredicate, FilterByPredicate, FindByPredicate
+	 */
+	template <typename ComparisonType>
+	bool Contains(const ComparisonType& Item) const
+	{
+		for (const ElementType* RESTRICT pData = GetData(), *RESTRICT DataEnd = pData + ArrayNum; pData != DataEnd; ++pData)
+		{
+			if (*pData == Item)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if this array contains element for which the predicate is true.
+	 *
+	 * @param Predicate to use
+	 * @returns	True if found. False otherwise.
+	 * @see Contains, Find
+	 */
+	template <class Predicate>
+	FORCEINLINE bool ContainsByPredicate(Predicate Pred) const
+	{
+		return FindByPredicate(Pred) != nullptr;
+	}
+
+	/**
 	 * Performs heap sort on the array.
 	 *
 	 * @param Predicate Predicate class instance.
@@ -433,17 +522,21 @@ public:
 		Algo::HeapSort(Data, ArrayNum, PredicateWrapper);
 	}
 
-	/**
-	 * Performs heap sort on the array. Assumes < operator is defined for the
-	 * template type.
-	 *
-	 * @note: If your array contains raw pointers, they will be automatically dereferenced during heapification.
-	 *        Therefore, your array will be heapified by the values being pointed to, rather than the pointers' values.
-	 *        The auto-dereferencing behavior does not occur with smart pointers.
-	 */
 	void HeapSort()
 	{
 		HeapSort(TLess<ElementType>());
+	}
+
+	void Sort()
+	{
+		Sort(TLess<ElementType>());
+	}
+
+	template <class PREDICATE_CLASS>
+	void Sort(const PREDICATE_CLASS& Predicate)
+	{
+		TDereferenceWrapper<ElementType, PREDICATE_CLASS> PredicateWrapper(Predicate);
+		Algo::IntroSort(Data, ArrayNum, Predicate);
 	}
 
 

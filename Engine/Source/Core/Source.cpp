@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 
 		void Print()
 		{
-			printf("(%d, %d)", lol, haha);
+			printf("(%d, %d)\n", lol, haha);
 		}
 
 		~WTF() {
@@ -99,7 +99,19 @@ int main(int argc, char** argv)
 		Hello.AddUnique(X);
 		int32 Found = Hello.Find(X);
 		Hello.Remove(WTF(5, 6));
-
+		Hello.FindByPredicate([](const WTF& InElement) {return InElement.haha == 50; });
+		Hello.Contains(WTF(5, 30));
+		if (Hello.ContainsByPredicate([](const WTF& InElement) {return InElement.haha == 456; }))
+		{
+			printf("shit");
+		}
+		else
+		{
+			printf("shit");
+		}
+		Hello.Sort([](const WTF& RHS, const WTF& LHS) {
+			return (RHS.lol + RHS.haha) < (LHS.lol + LHS.haha);
+		});
 		Hello.HeapSort();
 
 		for (WTF& Element : Hello)

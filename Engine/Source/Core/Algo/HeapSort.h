@@ -1,6 +1,6 @@
 #pragma once
+#include "Core.h"
 #include "Templates/Less.h"
-#include "Templates/IdentityFunctor.h"
 #include "Templates/ReversePredicate.h"
 #include "Templates/NullTemplate.h"
 
