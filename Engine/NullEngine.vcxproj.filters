@@ -336,6 +336,9 @@
     <ClInclude Include="Source\Core\Templates\ReversePredicate.h" />
     <ClInclude Include="Source\Core\Templates\TypeCompatibleBytes.h" />
     <ClInclude Include="Source\Core\Algo\IntroSort.h" />
+    <ClInclude Include="Source\Core\Containers\Set.h" />
+    <ClInclude Include="Source\Core\Containers\SparseArray.h" />
+    <ClInclude Include="Source\Core\Containers\BitArray.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Drawables\CubeMesh.cpp" />
@@ -355,9 +358,9 @@
     <ClCompile Include="Source\Core\Input.cpp" />
     <ClCompile Include="Source\Core\NullEngine.cpp" />
     <ClCompile Include="Source\Core\Shader.cpp" />
-    <ClCompile Include="Source\Core\Source.cpp" />
     <ClCompile Include="Source\ThirdParty\GL\gl3w.c" />
     <ClCompile Include="Source\Core\Templates\NullTemplate.h" />
+    <ClCompile Include="Source\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO" />
@@ -369,5 +372,8 @@
     <None Include="Shaders\PhysicallyBasedRendering.glsl" />
     <None Include="Shaders\TestShader.glsl" />
     <None Include="Shaders\ToonShading.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Extras\NullEngine.natvis" />
   </ItemGroup>
 </Project>

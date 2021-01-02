@@ -1,5 +1,5 @@
-#include "NullEngine.h"
-#include "Containers/Array.h"
+#include "Core/NullEngine.h"
+#include "Core/Containers/Array.h"
 
 // To heapify a subtree rooted with node i which is
 // an index in arr[]. n is size of heap
@@ -49,6 +49,7 @@ int main(int argc, char** argv)
 
 	struct WTF
 	{
+		void* Shit;
 		int lol;
 		int haha;
 		WTF() {};
@@ -77,6 +78,8 @@ int main(int argc, char** argv)
 			printf("WTF");
 		}
 	};
+
+	TArray<WTF> Shit;
 	{
 		TArray<WTF> Hello = { {32, 32}, {23,34} };
 		if (Hello[0] < Hello[1])

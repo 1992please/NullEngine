@@ -27,6 +27,7 @@ public:
 	FORCEINLINE TArray()
 		: ArrayNum(0)
 		, ArrayMax(0)
+		, Data(nullptr)
 	{}
 
 	FORCEINLINE TArray(const ElementType* Ptr, int32 Count)

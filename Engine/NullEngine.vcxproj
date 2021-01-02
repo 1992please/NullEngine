@@ -14,6 +14,9 @@
     <ClInclude Include="Source\Core\Algo\HeapSort.h" />
     <ClInclude Include="Source\Core\Algo\IntroSort.h" />
     <ClInclude Include="Source\Core\Containers\Array.h" />
+    <ClInclude Include="Source\Core\Containers\BitArray.h" />
+    <ClInclude Include="Source\Core\Containers\Set.h" />
+    <ClInclude Include="Source\Core\Containers\SparseArray.h" />
     <ClInclude Include="Source\Core\Core.h" />
     <ClInclude Include="Source\Core\Drawables\CubeMesh.h" />
     <ClInclude Include="Source\Core\Drawables\Drawable.h" />
@@ -365,7 +368,7 @@
     <ClCompile Include="Source\Core\Math\Vector.cpp" />
     <ClCompile Include="Source\Core\NullEngine.cpp" />
     <ClCompile Include="Source\Core\Shader.cpp" />
-    <ClCompile Include="Source\Core\Source.cpp" />
+    <ClCompile Include="Source\Source.cpp" />
     <ClCompile Include="Source\Core\Templates\NullTemplate.h" />
     <ClCompile Include="Source\ThirdParty\GL\gl3w.c" />
   </ItemGroup>
@@ -379,6 +382,9 @@
     <None Include="Shaders\TestShader.glsl" />
     <None Include="Shaders\ToonShading.glsl" />
     <None Include="TODO" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Extras\NullEngine.natvis" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -435,12 +441,12 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3dll.lib;glu32.lib;opengl32.lib;libfbxsdk.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>NotSet</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(SolutionDir)lib\glfw3.dll" $(OutDir)
-copy "$(SolutionDir)lib\libfbxsdk.dll" $(OutDir)</Command>
+      <Command>copy "$(ProjectDir)lib\glfw3.dll" $(OutDir)
+copy "$(ProjectDir)lib\libfbxsdk.dll" $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -459,12 +465,12 @@ copy "$(SolutionDir)lib\libfbxsdk.dll" $(OutDir)</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>glfw3dll.lib;glu32.lib;opengl32.lib;libfbxsdk.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>NotSet</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(SolutionDir)lib\glfw3.dll" $(OutDir)
-copy "$(SolutionDir)lib\libfbxsdk.dll" $(OutDir)</Command>
+      <Command>copy "$(ProjectDir)lib\glfw3.dll" $(OutDir)
+copy "$(ProjectDir)lib\libfbxsdk.dll" $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

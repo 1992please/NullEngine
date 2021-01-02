@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <!-- TArray visualizer -->
+  <Type Name="TArray&lt;*&gt;">
+    <DisplayString Condition="ArrayNum == 0">Empty</DisplayString>
+    <DisplayString Condition="ArrayNum &lt; 0">Invalid</DisplayString>
+    <DisplayString Condition="ArrayMax &lt; ArrayNum">Invalid</DisplayString>
+    <DisplayString Condition="ArrayMax &gt;= ArrayNum">Num={ArrayNum}</DisplayString>
+    <Expand>
+      <ArrayItems Condition="ArrayNum &lt;= ArrayMax">
+        <Size>ArrayNum</Size>
+        <ValuePointer>Data</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <!-- TArray<char> visualizers -->
+  <Type Name="TArray&lt;char&gt;">
+    <DisplayString Condition="ArrayNum == 0">Empty</DisplayString>
+    <DisplayString Condition="ArrayNum &lt; 0">Invalid</DisplayString>
+    <DisplayString Condition="ArrayMax &lt; ArrayNum">Invalid</DisplayString>
+    <DisplayString Condition="ArrayMax &gt;= ArrayNum">Num={ArrayNum} {(char*)AllocatorInstance.Data,[ArrayNum]s}</DisplayString>
+    <StringView Condition="ArrayMax &gt;= ArrayNum">Data,[ArrayNum]s</StringView>
+    <Expand>
+      <ArrayItems Condition="ArrayNum &lt;= ArrayMax">
+        <Size>ArrayNum</Size>
+        <ValuePointer>Data</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+</AutoVisualizer>
