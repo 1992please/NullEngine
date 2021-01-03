@@ -176,7 +176,7 @@ public:
 		const int32 OldNum = ArrayNum;
 		if ((ArrayNum += Count) > ArrayMax)
 		{
-			ResizeGrow(OldNum);
+			ResizeGrow();
 		}
 		return OldNum;
 	}
@@ -574,7 +574,7 @@ private:
 	{
 		if (NewMax > PrevMax)
 		{
-			ResizeAllocation(0, NewMax, sizeof(ElementType));
+			ResizeAllocation(NewMax, sizeof(ElementType));
 			ArrayMax = NewMax;
 		}
 		else
@@ -583,7 +583,7 @@ private:
 		}
 	}
 
-	FORCEINLINE void ResizeAllocation(int32 PreviousNumElements, int32 NumElements, size_t NumBytesPerElement)
+	FORCEINLINE void ResizeAllocation(int32 NumElements, size_t NumBytesPerElement)
 	{
 		// Avoid calling FMemory::Realloc( nullptr, 0 ) as ANSI C mandates returning a valid pointer which is not what we want.
 		if (Data || NumElements)
@@ -637,7 +637,7 @@ private:
 		}
 	}
 
-	FORCENOINLINE void ResizeGrow(int32 OldNum)
+	FORCENOINLINE void ResizeGrow()
 	{
 		//const SIZE_T FirstGrow = 1;
 		//const SIZE_T ConstantGrow = 0;
@@ -665,7 +665,7 @@ private:
 
 		ArrayMax = Grow;
 
-		ResizeAllocation(OldNum, ArrayMax, sizeof(ElementType));
+		ResizeAllocation(ArrayMax, sizeof(ElementType));
 	}
 
 	FORCENOINLINE void ResizeShrink()
@@ -693,7 +693,7 @@ private:
 		{
 			ArrayMax = NewArrayMax;
 			ASSERT(ArrayMax >= ArrayNum);
-			ResizeAllocation(ArrayNum, ArrayMax, sizeof(ElementType));
+			ResizeAllocation(ArrayMax, sizeof(ElementType));
 		}
 	}
 

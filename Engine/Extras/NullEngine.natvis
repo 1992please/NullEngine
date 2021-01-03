@@ -28,4 +28,18 @@
       </ArrayItems>
     </Expand>
   </Type>
+
+  <!-- TBitArray visualizer -->
+  <Type Name="TBitArray">
+    <DisplayString Condition="NumBits == 0">Empty</DisplayString>
+    <DisplayString Condition="NumBits &lt; 0">Invalid</DisplayString>
+    <DisplayString Condition="NumBits &gt; 0">NumBits={NumBits}, MaxBits={MaxBits}</DisplayString>
+    <Expand>
+      <IndexListItems Condition="NumBits &gt; 0">
+        <Size>NumBits</Size>
+        <ValueNode Condition="(Data != 0) &amp;&amp; (reinterpret_cast&lt;uint32*&gt;Data[$i/32]&gt;&gt;($i%32) &amp; 1) != 0">1</ValueNode>
+        <ValueNode Condition="(Data != 0) &amp;&amp; (reinterpret_cast&lt;uint32*&gt;Data[$i/32]&gt;&gt;($i%32) &amp; 1) == 0">0</ValueNode>
+      </IndexListItems>
+    </Expand>
+  </Type>
 </AutoVisualizer>

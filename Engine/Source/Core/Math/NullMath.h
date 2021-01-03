@@ -159,9 +159,6 @@ public:
 	}
 	static FORCEINLINE void SinCos(float* ScalarSin, float* ScalarCos, float  Value);
 	static float Fmod(float X, float Y);
-	/** Computes absolute value in a generic way */
-	template< class T >
-	static FORCEINLINE T Abs(const T A)	{return (A >= (T)0) ? A : -A;}
 	static FORCEINLINE float InvSqrt(float F);
 
 	// Note:  We use FASTASIN_HALF_PI instead of HALF_PI inside of FastASin(), since it was the value that accompanied the minimax coefficients below.
@@ -195,6 +192,53 @@ public:
 	}
 #undef FASTASIN_HALF_PI
 
+	/** Divides two integers and rounds up */
+	template <class T>
+	static FORCEINLINE T DivideAndRoundUp(T Dividend, T Divisor)
+	{
+		return (Dividend + Divisor - 1) / Divisor;
+	}
+
+	static FORCEINLINE uint32 FloorLog2(uint32 Value)
+	{
+		// Use BSR to return the log2 of the integer
+		unsigned long Log2;
+		if (_BitScanReverse(&Log2, Value) != 0)
+		{
+			return Log2;
+		}
+
+		return 0;
+	}
+
+
+	/** Computes absolute value in a generic way */
+	template< class T >
+	static CONSTEXPR FORCEINLINE T Abs(const T A)
+	{
+		return (A >= (T)0) ? A : -A;
+	}
+
+	/** Returns 1, 0, or -1 depending on relation of T to 0 */
+	template< class T >
+	static CONSTEXPR FORCEINLINE T Sign(const T A)
+	{
+		return (A > (T)0) ? (T)1 : ((A < (T)0) ? (T)-1 : (T)0);
+	}
+
+	/** Returns higher value in a generic way */
+	template< class T >
+	static CONSTEXPR FORCEINLINE T Max(const T A, const T B)
+	{
+		return (A >= B) ? A : B;
+	}
+
+	/** Returns lower value in a generic way */
+	template< class T >
+	static CONSTEXPR FORCEINLINE T Min(const T A, const T B)
+	{
+		return (A <= B) ? A : B;
+	}
 };
 
 FORCEINLINE float FMath::InvSqrt(float F)

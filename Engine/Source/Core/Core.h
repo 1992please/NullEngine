@@ -15,6 +15,8 @@ typedef unsigned long long uint64;
 #define FORCEINLINE     __forceinline
 #define FORCENOINLINE   __declspec(noinline)
 
+#define CONSTEXPR constexpr
+
 #ifdef NE_PLATFORM_WINDOWS
 	#ifdef NE_BUILD_DLL
 		#define NE_API _declspec(dllexport)
