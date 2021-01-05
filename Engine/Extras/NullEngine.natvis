@@ -29,17 +29,32 @@
     </Expand>
   </Type>
 
-  <!-- TBitArray visualizer -->
-  <Type Name="TBitArray">
+  
+  <!-- FBitArray visualizer -->
+  <Type Name="FBitArray">
     <DisplayString Condition="NumBits == 0">Empty</DisplayString>
     <DisplayString Condition="NumBits &lt; 0">Invalid</DisplayString>
     <DisplayString Condition="NumBits &gt; 0">NumBits={NumBits}, MaxBits={MaxBits}</DisplayString>
     <Expand>
       <IndexListItems Condition="NumBits &gt; 0">
         <Size>NumBits</Size>
-        <ValueNode Condition="(Data != 0) &amp;&amp; (reinterpret_cast&lt;uint32*&gt;Data[$i/32]&gt;&gt;($i%32) &amp; 1) != 0">1</ValueNode>
-        <ValueNode Condition="(Data != 0) &amp;&amp; (reinterpret_cast&lt;uint32*&gt;Data[$i/32]&gt;&gt;($i%32) &amp; 1) == 0">0</ValueNode>
+        <ValueNode Condition="(Data != 0) &amp;&amp; (Data[$i/32]&gt;&gt;($i%32) &amp; 1) != 0">1</ValueNode>
+        <ValueNode Condition="(Data != 0) &amp;&amp; (Data[$i/32]&gt;&gt;($i%32) &amp; 1) == 0">0</ValueNode>
       </IndexListItems>
     </Expand>
   </Type>
+
+  <!-- TSparseArray visualizer -->
+  <Type Name="TSparseArray&lt;*&gt;">
+    <DisplayString Condition="(Data.ArrayNum - NumFreeIndices) &lt;= 0">Empty</DisplayString>
+    <DisplayString Condition="Data.ArrayNum &lt;= Data.ArrayMax">Num={Data.ArrayNum - NumFreeIndices}</DisplayString>
+    <Expand>
+      <IndexListItems Condition="Data.ArrayNum &gt; 0 &amp;&amp; Data.ArrayNum &lt;= Data.ArrayMax">
+        <Size>Data.ArrayNum</Size>
+        <ValueNode Condition="(AllocationFlags.Data != 0) &amp;&amp; (AllocationFlags.Data[$i/32]&gt;&gt;($i%32) &amp; 1) != 0">*reinterpret_cast&lt;ElementType*&gt;(Data.Data + $i)</ValueNode>
+        <ValueNode Condition="(AllocationFlags.Data != 0) &amp;&amp; (AllocationFlags.Data[$i/32]&gt;&gt;($i%32) &amp; 1) == 0">"Invalid",sb</ValueNode>
+      </IndexListItems>
+    </Expand>
+  </Type>
+  
 </AutoVisualizer>

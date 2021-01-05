@@ -199,6 +199,8 @@ public:
 		return (Dividend + Divisor - 1) / Divisor;
 	}
 
+#pragma intrinsic(_BitScanReverse)
+
 	static FORCEINLINE uint32 FloorLog2(uint32 Value)
 	{
 		// Use BSR to return the log2 of the integer
@@ -211,6 +213,14 @@ public:
 		return 0;
 	}
 
+#pragma intrinsic(_BitScanReverse64)
+
+	static FORCEINLINE uint32 CountLeadingZeros(uint32 Value)
+	{
+		unsigned long Log2;
+		_BitScanReverse64(&Log2, (uint64(Value) << 1) | 1);
+		return 32 - Log2;
+	}
 
 	/** Computes absolute value in a generic way */
 	template< class T >

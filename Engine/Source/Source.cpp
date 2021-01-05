@@ -1,7 +1,39 @@
 #include "Core/NullEngine.h"
 #include "Core/Containers/BitArray.h"
 #include "Core/Containers/Array.h"
+#include "Core/Containers/SparseArray.h"
 
+struct WTF
+{
+	void* Shit;
+	int lol;
+	int haha;
+	WTF() {};
+	WTF(int InLol, int inHaha) : lol(InLol), haha(inHaha) {}
+	bool operator==(const WTF& inWTF) const
+	{
+		return inWTF.lol == lol && inWTF.haha == haha;
+	}
+
+	bool operator<(const WTF& inWTF) const
+	{
+		return lol < inWTF.lol;
+	}
+
+	bool operator>(const WTF& inWTF) const
+	{
+		return lol < inWTF.lol;
+	}
+
+	void Print()
+	{
+		printf("(%d, %d)\n", lol, haha);
+	}
+
+	~WTF() {
+		printf("WTF");
+	}
+};
 
 int main(int argc, char** argv)
 {
@@ -10,41 +42,33 @@ int main(int argc, char** argv)
 	FBitArray BitArray1(1, 30);
 	FBitArray BitArray2(BitArray1);
 	FBitArray BitArray3(MoveTemp(BitArray1));
+	BitArray.Add(0, 10);
+	BitArray.Add(1, 30);
+	BitArray.Add(0, 25);
+	BitArray.Add(1, 15);
+	BitArray.Add(0, 200);
+	BitArray.Add(1, 100);
+	BitArray1.Add(0);
+	BitArray1.Add(0);
+	BitArray1.Add(0);
+	BitArray1.Add(1);
+	BitArray1.Add(0);
+	BitArray1.Add(1);
+	BitArray1.Add(0);
+	BitArray1.Add(1);
+	BitArray1.Add(0);
+	BitArray1.Add(1);
+	bool Value = BitArray[150];
 
-	struct WTF
+	FConstSetBitIterator BitIterator(BitArray1, 5);
+	//FBitArray BitArray;
+	TSparseArray<WTF> SShit;
+	WTF XZ(300, 50);
+	SShit.Add(XZ);
+	for (WTF& Element : SShit)
 	{
-		void* Shit;
-		int lol;
-		int haha;
-		WTF() {};
-		WTF(int InLol, int inHaha) : lol(InLol), haha(inHaha) {}
-		bool operator==(const WTF& inWTF) const
-		{
-			return inWTF.lol == lol && inWTF.haha == haha;
-		}
-
-		bool operator<(const WTF& inWTF) const
-		{
-			return lol < inWTF.lol;
-		}
-
-		bool operator>(const WTF& inWTF) const
-		{
-			return lol < inWTF.lol;
-		}
-
-		void Print()
-		{
-			printf("(%d, %d)\n", lol, haha);
-		}
-
-		~WTF() {
-			printf("WTF");
-		}
-	};
-
-	//TBitArray BitArray;
-
+		printf("shit");
+	}
 	TArray<WTF> Shit;
 	{
 		TArray<WTF> Hello = { {32, 32}, {23,34} };

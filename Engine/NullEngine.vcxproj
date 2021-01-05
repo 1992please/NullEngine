@@ -42,6 +42,7 @@
     <ClInclude Include="Source\Core\Math\Vector4.h" />
     <ClInclude Include="Source\Core\Templates\AndOrNot.h" />
     <ClInclude Include="Source\Core\Templates\AreTypesEqual.h" />
+    <ClInclude Include="Source\Core\Templates\ChooseClass.h" />
     <ClInclude Include="Source\Core\Templates\IdentityFunctor.h" />
     <ClInclude Include="Source\Core\Templates\IsArithmetic.h" />
     <ClInclude Include="Source\Core\Templates\IsEnum.h" />

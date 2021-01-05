@@ -699,11 +699,10 @@ private:
 
 	FORCENOINLINE void ResizeTo(int32 NewMax)
 	{
-		ASSERT(NewMax > 0);
 		if (NewMax != ArrayMax)
 		{
 			ArrayMax = NewMax;
-			ResizeAllocation(ArrayNum, ArrayMax, sizeof(ElementType));
+			ResizeAllocation(ArrayMax, sizeof(ElementType));
 		}
 	}
 
