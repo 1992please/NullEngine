@@ -34,6 +34,14 @@ union TSparseArrayElementOrFreeListLink
 	};
 };
 
+/**
+ * A dynamically sized array where element indices aren't necessarily contiguous.  Memory is allocated for all
+ * elements in the array's index range, so it doesn't save memory; but it does allow O(1) element removal that
+ * doesn't invalidate the indices of subsequent elements.  It uses TArray to store the elements, and a TBitArray
+ * to store whether each element index is allocated (for fast iteration over allocated elements).
+ *
+ **/
+
 template<typename InElementType>
 class TSparseArray
 {
@@ -46,6 +54,84 @@ class TSparseArray
 	typedef TSparseArrayElementOrFreeListLink< TAlignedBytes<sizeof(ElementType), alignof(ElementType)> > FElementOrFreeListLink;
 
 public:
+
+	/** Default constructor. */
+	TSparseArray()
+		: FirstFreeIndex(-1)
+		, NumFreeIndices(0)
+	{}
+
+	/** Move constructor. */
+	TSparseArray(TSparseArray&& InCopy)
+	{
+		Move(*this, InCopy);
+	}
+
+	/** Copy constructor. */
+	TSparseArray(const TSparseArray& InCopy)
+		: FirstFreeIndex(-1)
+		, NumFreeIndices(0)
+	{
+		*this = InCopy;
+	}
+
+	/** Move assignment operator. */
+	TSparseArray& operator=(TSparseArray&& InCopy)
+	{
+		if (this != &InCopy)
+		{
+			Move(*this, InCopy);
+		}
+		return *this;
+	}
+
+	/** Copy assignment operator. */
+	TSparseArray& operator=(const TSparseArray& InCopy)
+	{
+		if (this != &InCopy)
+		{
+			int32 SrcMax = InCopy.GetMaxIndex();
+
+			// Reallocate the array.
+			Empty(SrcMax);
+			Data.AddUninitialized(SrcMax);
+
+			// Copy the other array's element allocation state.
+			FirstFreeIndex = InCopy.FirstFreeIndex;
+			NumFreeIndices = InCopy.NumFreeIndices;
+			AllocationFlags = InCopy.AllocationFlags;
+
+			// Determine whether we need per element construction or bulk copy is fine
+			if (!TIsTriviallyCopyConstructible<ElementType>::Value)
+			{
+				FElementOrFreeListLink* DestData = (FElementOrFreeListLink*)Data.GetData();
+				const FElementOrFreeListLink* SrcData = (FElementOrFreeListLink*)InCopy.Data.GetData();
+
+				// Use the inplace new to copy the element to an array element
+				for (int32 Index = 0; Index < SrcMax; ++Index)
+				{
+					FElementOrFreeListLink& DestElement = DestData[Index];
+					const FElementOrFreeListLink& SrcElement = SrcData[Index];
+					if (InCopy.IsAllocated(Index))
+					{
+						::new((uint8*)&DestElement.ElementData) ElementType(*(const ElementType*)&SrcElement.ElementData);
+					}
+					else
+					{
+						DestElement.PrevFreeIndex = SrcElement.PrevFreeIndex;
+						DestElement.NextFreeIndex = SrcElement.NextFreeIndex;
+					}
+				}
+			}
+			else
+			{
+				// Use the much faster path for types that allow it
+				FMemory::Memcpy(Data.GetData(), InCopy.Data.GetData(), sizeof(FElementOrFreeListLink) * SrcMax);
+			}
+		}
+		return *this;
+	}
+
 	/** Destructor. */
 	~TSparseArray()
 	{
@@ -115,6 +201,64 @@ public:
 		return Allocation.Index;
 	}
 
+	FSparseArrayAllocationInfo AddUninitializedAtLowestFreeIndex(int32& LowestFreeIndexSearchStart)
+	{
+		int32 Index;
+		if (NumFreeIndices)
+		{
+			Index = AllocationFlags.FindAndSetFirstZeroBit(LowestFreeIndexSearchStart);
+			LowestFreeIndexSearchStart = Index + 1;
+
+			auto& IndexData = GetData(Index);
+
+			// Update FirstFreeIndex
+			if (FirstFreeIndex == Index)
+			{
+				FirstFreeIndex = IndexData.NextFreeIndex;
+			}
+
+			// Link our next and prev free nodes together
+			if (IndexData.NextFreeIndex >= 0)
+			{
+				GetData(IndexData.NextFreeIndex).PrevFreeIndex = IndexData.PrevFreeIndex;
+			}
+
+			if (IndexData.PrevFreeIndex >= 0)
+			{
+				GetData(IndexData.PrevFreeIndex).NextFreeIndex = IndexData.NextFreeIndex;
+			}
+
+			--NumFreeIndices;
+		}
+		else
+		{
+			// Add a new element.
+			Index = Data.AddUninitialized(1);
+			AllocationFlags.Add(true);
+		}
+
+		FSparseArrayAllocationInfo Result;
+		Result.Index = Index;
+		Result.Pointer = &GetData(Result.Index).ElementData;
+		return Result;
+	}
+
+	template <typename... ArgsType>
+	FORCEINLINE int32 Emplace(ArgsType&&... Args)
+	{
+		FSparseArrayAllocationInfo Allocation = AddUninitialized();
+		new(Allocation) ElementType(Forward<ArgsType>(Args)...);
+		return Allocation.Index;
+	}
+
+	template <typename... ArgsType>
+	FORCEINLINE int32 EmplaceAtLowestFreeIndex(int32& LowestFreeIndexSearchStart, ArgsType&&... Args)
+	{
+		FSparseArrayAllocationInfo Allocation = AddUninitializedAtLowestFreeIndex(LowestFreeIndexSearchStart);
+		new(Allocation) ElementType(Forward<ArgsType>(Args)...);
+		return Allocation.Index;
+	}
+
 	/**
 	 * Removes all elements from the array, potentially leaving space allocated for an expected number of elements about to be added.
 	 * @param ExpectedNumElements - The expected number of elements about to be added.
@@ -167,6 +311,188 @@ public:
 	int32 GetMaxIndex() const
 	{
 		return Data.Num();
+	}
+	int32 Num() const { return Data.Num() - NumFreeIndices; }
+	bool IsValidIndex(int32 Index) const
+	{
+		return AllocationFlags.IsValidIndex(Index) && AllocationFlags[Index];
+	}
+	bool IsAllocated(int32 Index) const { return AllocationFlags[Index]; }
+
+	/** Removes Count elements from the array, starting from Index. */
+	void RemoveAt(int32 Index, int32 Count = 1)
+	{
+		if (!TIsTriviallyDestructible<ElementType>::Value)
+		{
+			for (int32 It = Index, ItCount = Count; ItCount; ++It, --ItCount)
+			{
+				((ElementType&)GetData(It).ElementData).~ElementType();
+			}
+		}
+
+		RemoveAtUninitialized(Index, Count);
+	}
+
+	/** Removes Count elements from the array, starting from Index, without destructing them. */
+	void RemoveAtUninitialized(int32 Index, int32 Count = 1)
+	{
+		for (; Count; --Count)
+		{
+			ASSERT(AllocationFlags[Index]);
+
+			// Mark the element as free and add it to the free element list.
+			if (NumFreeIndices)
+			{
+				GetData(FirstFreeIndex).PrevFreeIndex = Index;
+			}
+			FElementOrFreeListLink& IndexData = GetData(Index);
+			IndexData.PrevFreeIndex = -1;
+			IndexData.NextFreeIndex = NumFreeIndices > 0 ? FirstFreeIndex : INDEX_NONE;
+			FirstFreeIndex = Index;
+			++NumFreeIndices;
+			AllocationFlags[Index] = false;
+
+			++Index;
+		}
+	}
+
+	void Reset()
+	{
+		// Destruct the allocated elements.
+		if (!TIsTriviallyDestructible<ElementType>::Value)
+		{
+			for (TIterator It(*this); It; ++It)
+			{
+				ElementType& Element = *It;
+				Element.~ElementType();
+			}
+		}
+
+		// Free the allocated elements.
+		Data.Reset();
+		FirstFreeIndex = -1;
+		NumFreeIndices = 0;
+		AllocationFlags.Reset();
+	}
+
+	void Reserve(int32 ExpectedNumElements)
+	{
+		if (ExpectedNumElements > Data.Num())
+		{
+			const int32 ElementsToAdd = ExpectedNumElements - Data.Num();
+
+			// allocate memory in the array itself
+			int32 ElementIndex = Data.AddUninitialized(ElementsToAdd);
+
+			// now mark the new elements as free
+			for (int32 FreeIndex = ExpectedNumElements - 1; FreeIndex >= ElementIndex; --FreeIndex)
+			{
+				if (NumFreeIndices)
+				{
+					GetData(FirstFreeIndex).PrevFreeIndex = FreeIndex;
+				}
+				GetData(FreeIndex).PrevFreeIndex = -1;
+				GetData(FreeIndex).NextFreeIndex = NumFreeIndices > 0 ? FirstFreeIndex : INDEX_NONE;
+				FirstFreeIndex = FreeIndex;
+				++NumFreeIndices;
+			}
+
+			if (ElementsToAdd == ExpectedNumElements)
+			{
+				AllocationFlags.Init(false, ElementsToAdd);
+			}
+			else
+			{
+				AllocationFlags.Add(false, ElementsToAdd);
+			}
+		}
+	}
+
+
+	/** Compacts the allocated elements into a contiguous index range. */
+	/** Returns true if any elements were relocated, false otherwise. */
+	bool Compact()
+	{
+		int32 NumFree = NumFreeIndices;
+		if (NumFree == 0)
+		{
+			return false;
+		}
+
+		bool bResult = false;
+
+		FElementOrFreeListLink* ElementData = Data.GetData();
+
+		int32 EndIndex = Data.Num();
+		int32 TargetIndex = EndIndex - NumFree;
+		int32 FreeIndex = FirstFreeIndex;
+		while (FreeIndex != -1)
+		{
+			int32 NextFreeIndex = GetData(FreeIndex).NextFreeIndex;
+			if (FreeIndex < TargetIndex)
+			{
+				// We need an element here
+				do
+				{
+					--EndIndex;
+				} while (!AllocationFlags[EndIndex]);
+
+				RelocateConstructItems<FElementOrFreeListLink>(ElementData + FreeIndex, ElementData + EndIndex, 1);
+				AllocationFlags[FreeIndex] = true;
+
+				bResult = true;
+			}
+
+			FreeIndex = NextFreeIndex;
+		}
+
+		Data.RemoveAt(TargetIndex, NumFree);
+		AllocationFlags.RemoveAt(TargetIndex, NumFree);
+
+		NumFreeIndices = 0;
+		FirstFreeIndex = -1;
+
+		return bResult;
+	}
+
+	/** Sorts the elements using the provided comparison class. */
+	template<typename PREDICATE_CLASS>
+	void Sort(const PREDICATE_CLASS& Predicate)
+	{
+		if (Num() > 0)
+		{
+			// Compact the elements array so all the elements are contiguous.
+			Compact();
+
+			// Sort the elements according to the provided comparison class.
+			Algo::IntroSort(&GetData(0), Num(), FElementCompareClass< PREDICATE_CLASS >(Predicate));
+		}
+	}
+
+	/** Sorts the elements assuming < operator is defined for ElementType. */
+	void Sort()
+	{
+		Sort(TLess< ElementType >());
+	}
+private:
+	FORCEINLINE void Move(TSparseArray& ToArray, TSparseArray& FromArray)
+	{
+		// Destruct the allocated elements.
+		if (!TIsTriviallyDestructible<ElementType>::Value)
+		{
+			for (ElementType& Element : ToArray)
+			{
+				DestructItem(&Element);
+			}
+		}
+
+		ToArray.Data = (TArray<FElementOrFreeListLink>&&)FromArray.Data;
+		ToArray.AllocationFlags = (FBitArray&&)FromArray.AllocationFlags;
+
+		ToArray.FirstFreeIndex = FromArray.FirstFreeIndex;
+		ToArray.NumFreeIndices = FromArray.NumFreeIndices;
+		FromArray.FirstFreeIndex = -1;
+		FromArray.NumFreeIndices = 0;
 	}
 
 private:
@@ -268,8 +594,26 @@ public:
 
 private:
 
+	/** Extracts the element value from the array's element structure and passes it to the user provided comparison class. */
+	template <typename PREDICATE_CLASS>
+	class FElementCompareClass
+	{
+		const PREDICATE_CLASS& Predicate;
+
+	public:
+		FElementCompareClass(const PREDICATE_CLASS& InPredicate)
+			: Predicate(InPredicate)
+		{}
+
+		bool operator()(const FElementOrFreeListLink& A, const FElementOrFreeListLink& B) const
+		{
+			return Predicate(*(ElementType*)&A.ElementData, *(ElementType*)&B.ElementData);
+		}
+	};
+
 
 	TArray<FElementOrFreeListLink> Data;
+
 	FBitArray AllocationFlags;
 
 	/** The index of an unallocated element in the array that currently contains the head of the linked list of free elements. */

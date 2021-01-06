@@ -537,7 +537,7 @@ public:
 	void Sort(const PREDICATE_CLASS& Predicate)
 	{
 		TDereferenceWrapper<ElementType, PREDICATE_CLASS> PredicateWrapper(Predicate);
-		Algo::IntroSort(Data, ArrayNum, Predicate);
+		Algo::IntroSort(Data, ArrayNum, PredicateWrapper);
 	}
 
 

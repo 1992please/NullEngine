@@ -200,6 +200,7 @@ public:
 	}
 
 #pragma intrinsic(_BitScanReverse)
+#pragma intrinsic(_BitScanReverse64)
 
 	static FORCEINLINE uint32 FloorLog2(uint32 Value)
 	{
@@ -213,13 +214,23 @@ public:
 		return 0;
 	}
 
-#pragma intrinsic(_BitScanReverse64)
 
 	static FORCEINLINE uint32 CountLeadingZeros(uint32 Value)
 	{
 		unsigned long Log2;
 		_BitScanReverse64(&Log2, (uint64(Value) << 1) | 1);
 		return 32 - Log2;
+	}
+
+	static FORCEINLINE uint32 CountTrailingZeros(uint32 Value)
+	{
+		if (Value == 0)
+		{
+			return 32;
+		}
+		unsigned long BitIndex;	// 0-based, where the LSB is 0 and MSB is 31
+		_BitScanForward(&BitIndex, Value);	// Scans from LSB to MSB
+		return BitIndex;
 	}
 
 	/** Computes absolute value in a generic way */
@@ -248,6 +259,22 @@ public:
 	static CONSTEXPR FORCEINLINE T Min(const T A, const T B)
 	{
 		return (A <= B) ? A : B;
+	}
+
+	/** Divides two integers and rounds down */
+	template <class T>
+	static FORCEINLINE T DivideAndRoundDown(T Dividend, T Divisor)
+	{
+		return Dividend / Divisor;
+	}
+
+	/** Divides two integers and rounds to nearest */
+	template <class T>
+	static FORCEINLINE T DivideAndRoundNearest(T Dividend, T Divisor)
+	{
+		return (Dividend >= 0)
+			? (Dividend + Divisor / 2) / Divisor
+			: (Dividend - Divisor / 2 + 1) / Divisor;
 	}
 };
 

@@ -340,6 +340,8 @@
     <ClInclude Include="Source\Core\Containers\SparseArray.h" />
     <ClInclude Include="Source\Core\Containers\BitArray.h" />
     <ClInclude Include="Source\Core\Templates\ChooseClass.h" />
+    <ClInclude Include="Source\Core\Windows\WindowCompilerSetup.h" />
+    <ClInclude Include="Source\Core\Windows\WindowSystemIncludes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Drawables\CubeMesh.cpp" />

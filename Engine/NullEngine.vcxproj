@@ -57,6 +57,8 @@
     <ClInclude Include="Source\Core\Templates\RemoveReference.h" />
     <ClInclude Include="Source\Core\Templates\Sorting.h" />
     <ClInclude Include="Source\Core\Templates\EnableIf.h" />
+    <ClInclude Include="Source\Core\Windows\WindowCompilerSetup.h" />
+    <ClInclude Include="Source\Core\Windows\WindowSystemIncludes.h" />
     <ClInclude Include="Source\Null.h" />
     <ClInclude Include="Source\Core\NullEngine.h" />
     <ClInclude Include="Source\Core\NullMemory.h" />

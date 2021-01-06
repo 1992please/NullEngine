@@ -363,6 +363,175 @@ public:
 #endif
 	}
 
+
+	/**
+ * Finds the first true/false bit in the array, and returns the bit index.
+ * If there is none, INDEX_NONE is returned.
+ */
+	int32 Find(bool bValue) const
+	{
+		// Iterate over the array until we see a word with a matching bit
+		const uint32 Test = bValue ? 0u : (uint32)-1;
+
+		const uint32* RESTRICT DwordArray = GetData();
+		const int32 LocalNumBits = NumBits;
+		const int32 DwordCount = CalculateNumWords(LocalNumBits);
+		int32 DwordIndex = 0;
+		while (DwordIndex < DwordCount && DwordArray[DwordIndex] == Test)
+		{
+			++DwordIndex;
+		}
+
+		if (DwordIndex < DwordCount)
+		{
+			// If we're looking for a false, then we flip the bits - then we only need to find the first one bit
+			const uint32 Bits = bValue ? (DwordArray[DwordIndex]) : ~(DwordArray[DwordIndex]);
+			const int32 LowestBitIndex = FMath::CountTrailingZeros(Bits) + (DwordIndex << NumBitsPerDWORDLogTwo);
+			if (LowestBitIndex < LocalNumBits)
+			{
+				return LowestBitIndex;
+			}
+		}
+
+		return INDEX_NONE;
+	}
+
+	/**
+	* Finds the last true/false bit in the array, and returns the bit index.
+	* If there is none, INDEX_NONE is returned.
+	*/
+	int32 FindLast(bool bValue) const
+	{
+		const int32 LocalNumBits = NumBits;
+
+		// Get the correct mask for the last word
+		uint32 SlackIndex = ((LocalNumBits - 1) % NumBitsPerDWORD) + 1;
+		uint32 Mask = ~0u >> (NumBitsPerDWORD - SlackIndex);
+
+		// Iterate over the array until we see a word with a zero bit.
+		uint32 DwordIndex = CalculateNumWords(LocalNumBits);
+		const uint32* RESTRICT DwordArray = GetData();
+		const uint32 Test = bValue ? 0u : ~0u;
+		for (;;)
+		{
+			if (DwordIndex == 0)
+			{
+				return INDEX_NONE;
+			}
+			--DwordIndex;
+			if ((DwordArray[DwordIndex] & Mask) != (Test & Mask))
+			{
+				break;
+			}
+			Mask = ~0u;
+		}
+
+		// Flip the bits, then we only need to find the first one bit -- easy.
+		const uint32 Bits = (bValue ? DwordArray[DwordIndex] : ~DwordArray[DwordIndex]) & Mask;
+
+		uint32 BitIndex = (NumBitsPerDWORD - 1) - FMath::CountLeadingZeros(Bits);
+
+		int32 Result = BitIndex + (DwordIndex << NumBitsPerDWORDLogTwo);
+		return Result;
+	}
+
+	FORCEINLINE bool Contains(bool bValue) const
+	{
+		return Find(bValue) != INDEX_NONE;
+	}
+
+	/**
+	 * Finds the first zero bit in the array, sets it to true, and returns the bit index.
+	 * If there is none, INDEX_NONE is returned.
+	 */
+	int32 FindAndSetFirstZeroBit(int32 ConservativeStartIndex = 0)
+	{
+		// Iterate over the array until we see a word with a zero bit.
+		uint32* RESTRICT DwordArray = GetData();
+		const int32 LocalNumBits = NumBits;
+		const int32 DwordCount = CalculateNumWords(LocalNumBits);
+		int32 DwordIndex = FMath::DivideAndRoundDown(ConservativeStartIndex, (int32)NumBitsPerDWORD);
+		while (DwordIndex < DwordCount && DwordArray[DwordIndex] == (uint32)-1)
+		{
+			++DwordIndex;
+		}
+
+		if (DwordIndex < DwordCount)
+		{
+			// Flip the bits, then we only need to find the first one bit -- easy.
+			const uint32 Bits = ~(DwordArray[DwordIndex]);
+			const uint32 LowestBit = (Bits) & (-(int32)Bits);
+			const int32 LowestBitIndex = FMath::CountTrailingZeros(Bits) + (DwordIndex << NumBitsPerDWORDLogTwo);
+			if (LowestBitIndex < LocalNumBits)
+			{
+				DwordArray[DwordIndex] |= LowestBit;
+				CheckInvariants();
+				return LowestBitIndex;
+			}
+		}
+
+		return INDEX_NONE;
+	}
+
+	/**
+	 * Finds the last zero bit in the array, sets it to true, and returns the bit index.
+	 * If there is none, INDEX_NONE is returned.
+	 */
+	int32 FindAndSetLastZeroBit()
+	{
+		const int32 LocalNumBits = NumBits;
+
+		// Get the correct mask for the last word
+		uint32 SlackIndex = ((LocalNumBits - 1) % NumBitsPerDWORD) + 1;
+		uint32 Mask = ~0u >> (NumBitsPerDWORD - SlackIndex);
+
+		// Iterate over the array until we see a word with a zero bit.
+		uint32 DwordIndex = CalculateNumWords(LocalNumBits);
+		uint32* RESTRICT DwordArray = GetData();
+		for (;;)
+		{
+			if (DwordIndex == 0)
+			{
+				return INDEX_NONE;
+			}
+			--DwordIndex;
+			if ((DwordArray[DwordIndex] & Mask) != Mask)
+			{
+				break;
+			}
+			Mask = ~0u;
+		}
+
+		// Flip the bits, then we only need to find the first one bit -- easy.
+		const uint32 Bits = ~DwordArray[DwordIndex] & Mask;
+
+		uint32 BitIndex = (NumBitsPerDWORD - 1) - FMath::CountLeadingZeros(Bits);
+		DwordArray[DwordIndex] |= 1u << BitIndex;
+
+		CheckInvariants();
+
+		int32 Result = BitIndex + (DwordIndex << NumBitsPerDWORDLogTwo);
+		return Result;
+	}
+
+	void RemoveAt(int32 BaseIndex, int32 NumBitsToRemove = 1)
+	{
+		ASSERT(BaseIndex >= 0 && NumBitsToRemove >= 0 && BaseIndex + NumBitsToRemove <= NumBits);
+
+		if (BaseIndex + NumBitsToRemove != NumBits)
+		{
+			// MemmoveBitsWordOrder handles overlapping source and dest
+			uint32 NumToShift = NumBits - (BaseIndex + NumBitsToRemove);
+			//FBitArrayMemory::MemmoveBitsWordOrder(GetData(), BaseIndex, GetData(), BaseIndex + NumBitsToRemove, NumToShift);
+		}
+
+		NumBits -= NumBitsToRemove;
+
+		ClearPartialSlackBits();
+		CheckInvariants();
+	}
+
+
 private:
 	FORCEINLINE uint32 GetNumWords() const
 	{

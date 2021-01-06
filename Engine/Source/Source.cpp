@@ -65,6 +65,21 @@ int main(int argc, char** argv)
 	TSparseArray<WTF> SShit;
 	WTF XZ(300, 50);
 	SShit.Add(XZ);
+	SShit.RemoveAt(1, 5);
+	SShit.Emplace(56, 6);
+	SShit.Emplace(5, 7);
+	SShit.Emplace(6, 10);
+	SShit.Emplace(5, 10);
+	SShit.Emplace(8, 30);
+	SShit.Emplace(5, 30);
+	SShit.Emplace(21, 6);
+	SShit.Emplace(5, 6);
+
+	SShit.Reserve(50);
+	SShit.Reset();
+
+	//SShit.Sort();
+
 	for (WTF& Element : SShit)
 	{
 		printf("shit");
