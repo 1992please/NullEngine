@@ -2,6 +2,7 @@
 #include "Core/Containers/BitArray.h"
 #include "Core/Containers/Array.h"
 #include "Core/Containers/SparseArray.h"
+#include "Core/Containers/Set.h"
 
 struct WTF
 {
@@ -38,54 +39,58 @@ struct WTF
 int main(int argc, char** argv)
 {
 	system("color f0");
-	FBitArray BitArray;
-	FBitArray BitArray1(1, 30);
-	FBitArray BitArray2(BitArray1);
-	FBitArray BitArray3(MoveTemp(BitArray1));
-	BitArray.Add(0, 10);
-	BitArray.Add(1, 30);
-	BitArray.Add(0, 25);
-	BitArray.Add(1, 15);
-	BitArray.Add(0, 200);
-	BitArray.Add(1, 100);
-	BitArray1.Add(0);
-	BitArray1.Add(0);
-	BitArray1.Add(0);
-	BitArray1.Add(1);
-	BitArray1.Add(0);
-	BitArray1.Add(1);
-	BitArray1.Add(0);
-	BitArray1.Add(1);
-	BitArray1.Add(0);
-	BitArray1.Add(1);
-	bool Value = BitArray[150];
 
-	FConstSetBitIterator BitIterator(BitArray1, 5);
-	//FBitArray BitArray;
-	TSparseArray<WTF> SShit;
-	WTF XZ(300, 50);
-	SShit.Add(XZ);
-	SShit.RemoveAt(1, 5);
-	SShit.Emplace(56, 6);
-	SShit.Emplace(5, 7);
-	SShit.Emplace(6, 10);
-	SShit.Emplace(5, 10);
-	SShit.Emplace(8, 30);
-	SShit.Emplace(5, 30);
-	SShit.Emplace(21, 6);
-	SShit.Emplace(5, 6);
+	{	
+		FBitArray BitArray;
+		FBitArray BitArray1(1, 30);
+		FBitArray BitArray2(BitArray1);
+		FBitArray BitArray3(MoveTemp(BitArray1));
+		BitArray.Add(0, 10);
+		BitArray.Add(1, 30);
+		BitArray.Add(0, 25);
+		BitArray.Add(1, 15);
+		BitArray.Add(0, 200);
+		BitArray.Add(1, 100);
+		BitArray1.Add(0);
+		BitArray1.Add(0);
+		BitArray1.Add(0);
+		BitArray1.Add(1);
+		BitArray1.Add(0);
+		BitArray1.Add(1);
+		BitArray1.Add(0);
+		BitArray1.Add(1);
+		BitArray1.Add(0);
+		BitArray1.Add(1);
+		bool Value = BitArray[150];
 
-	SShit.Reserve(50);
-	SShit.Reset();
-
-	//SShit.Sort();
-
-	for (WTF& Element : SShit)
-	{
-		printf("shit");
+		FConstSetBitIterator BitIterator(BitArray1, 5);
 	}
-	TArray<WTF> Shit;
 	{
+		//FBitArray BitArray;
+		TSparseArray<WTF> SShit;
+		WTF XZ(300, 50);
+		SShit.Add(XZ);
+		SShit.RemoveAt(0, 1);
+		SShit.Emplace(56, 6);
+		SShit.Emplace(5, 7);
+		SShit.Emplace(6, 10);
+		SShit.Emplace(5, 10);
+		SShit.Emplace(8, 30);
+		SShit.Emplace(5, 30);
+		SShit.Emplace(21, 6);
+		SShit.Emplace(5, 6);
+
+		SShit.Reserve(50);
+		//SShit.Reset();
+
+		SShit.Sort();
+		for (WTF& Element : SShit)
+		{
+			printf("shit");
+		}
+	}
+	{
+		TArray<WTF> Shit;
 		TArray<WTF> Hello = { {32, 32}, {23,34} };
 		if (Hello[0] < Hello[1])
 		{
@@ -127,6 +132,10 @@ int main(int argc, char** argv)
 			Element.Print();
 		}
 	}
+	{
+		TSet<WTF> Hello;
+	}
+
 
 	NullEngine* pApp = new NullEngine();
 

@@ -1,12 +1,54 @@
 #pragma once
 #include "Core.h"
-#include "Math/NullMath.h"
+#include "Math/MathUtility.h"
+#include "Math/NumericLimits.h"
 #include "NullMemory.h"
 
 #define NumBitsPerDWORD ((uint32)32)
 #define NumBitsPerDWORDLogTwo ((int32)5)
 
 class FBitArray;
+
+class FBitArrayMemory
+{
+public:
+	/**
+	 * Copy NumBits bits from the source pointer and offset into the dest pointer and offset.
+	 * This function is not suitable for general use because it uses a bit order that is specific to the uint32 internal storage of BitArray
+	 *
+	 * Bits within each word are read or written in the current platform's mathematical bitorder (Data[0] & 0x1, Data[0] & 0x2, ... Data[0] & 0x100, ... Data[0] & 0x80000000, Data[1] & 0x1 ...
+	 * Correctly handles overlap between destination range and source range; the array of destination bits will be a copy of the source bits as they were before the copy started.
+	 * @param DestBits The base location to which the bits are written.
+	 * @param DestOffset The (word-order) bit within DestBits at which to start writing. Can be any value; offsets outside of [0,NumBitsPerDWORD) will be equivalent to modifying the DestBits pointer.
+	 * @param SourceBits The base location from which the bits are read.
+	 * @param SourceOffset The (word-order) bit within SourceBits at which to start reading. Can be any value; offsets outside of [0,NumBitsPerDWORD) will be equivalent to modifying the SourceBits pointer.
+	 * @param NumBits Number of bits to copy. Must be >= 0.
+	 */
+	static void MemmoveBitsWordOrder(uint32* DestBits, int32 DestOffset, const uint32* SourceBits, int32 SourceOffset, uint32 NumBits);
+	static inline void MemmoveBitsWordOrder(int32* DestBits, int32 DestOffset, const int32* SourceBits, int32 SourceOffset, uint32 NumBits)
+	{
+		MemmoveBitsWordOrder(reinterpret_cast<uint32*>(DestBits), DestOffset, reinterpret_cast<const uint32*>(SourceBits), SourceOffset, NumBits);
+	}
+
+	/** Given Data and Offset that specify a specific bit in a specific word, modify Data and Offset so that they specify the same bit but that 0 <= Offset < NumBitsPerDWORD. */
+	inline static void ModularizeWordOffset(uint32*& Data, int32& Offset)
+	{
+		ModularizeWordOffset(const_cast<uint32 const*&>(Data), Offset);
+	}
+
+	/** Given Data and Offset that specify a specific bit in a specific word, modify Data and Offset so that they specify the same bit but that 0 <= Offset < NumBitsPerDWORD. */
+	static void ModularizeWordOffset(uint32 const*& Data, int32& Offset);
+
+private:
+
+	/**
+	 * Copy NumBits bits from the source pointer at the given offset into the dest pointer at the given offset.
+	 * It has the same behavior as MemmoveBitsWordOrder under the constaint that DestOffset == SourceOffset.
+	 */
+	static void MemmoveBitsWordOrderAlignedInternal(uint32*const StartDest, const uint32*const StartSource, int32 StartOffset, uint32 NumBits);
+
+	friend class FBitArrayMemoryTest;
+};
 
 /** Used to reference a bit in an unspecified bit array. */
 class FRelativeBitReference
@@ -85,6 +127,7 @@ public:
 	FBitArray()
 		: NumBits(0)
 		, MaxBits(InitialNumOfWrods * NumBitsPerDWORD)
+		, Data(nullptr)
 	{
 		ResizeAllocation(InitialNumOfWrods, sizeof(uint32));
 		// ClearPartialSlackBits is already satisfied since final word does not exist when NumBits == 0
@@ -92,12 +135,14 @@ public:
 
 	FORCEINLINE explicit FBitArray(bool bValue, int32 InNumBits)
 		: MaxBits(InitialNumOfWrods * NumBitsPerDWORD)
+		, Data(nullptr)
 	{
 		ResizeAllocation(InitialNumOfWrods, sizeof(uint32));
 		Init(bValue, InNumBits);
 	}
 
 	FORCEINLINE FBitArray(FBitArray&& Other)
+		: Data(nullptr)
 	{
 		Move(*this, Other);
 	}
@@ -105,6 +150,7 @@ public:
 	FORCEINLINE FBitArray(const FBitArray& Copy)
 		: NumBits(0)
 		, MaxBits(0)
+		, Data(nullptr)
 	{
 		Assign(Copy);
 	}
@@ -522,7 +568,7 @@ public:
 		{
 			// MemmoveBitsWordOrder handles overlapping source and dest
 			uint32 NumToShift = NumBits - (BaseIndex + NumBitsToRemove);
-			//FBitArrayMemory::MemmoveBitsWordOrder(GetData(), BaseIndex, GetData(), BaseIndex + NumBitsToRemove, NumToShift);
+			FBitArrayMemory::MemmoveBitsWordOrder(GetData(), BaseIndex, GetData(), BaseIndex + NumBitsToRemove, NumToShift);
 		}
 
 		NumBits -= NumBitsToRemove;

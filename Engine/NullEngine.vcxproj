@@ -30,6 +30,7 @@
     <ClInclude Include="Source\Core\GlobalDefs.h" />
     <ClInclude Include="Source\Core\Input.h" />
     <ClInclude Include="Source\Core\Math\Matrix.h" />
+    <ClInclude Include="Source\Core\Math\MathUtility.h" />
     <ClInclude Include="Source\Core\Math\NullMath.h" />
     <ClInclude Include="Source\Core\Math\Plane.h" />
     <ClInclude Include="Source\Core\Math\PrespectiveMatrix.h" />
@@ -354,6 +355,7 @@
     <ClInclude Include="Source\ThirdParty\KHR\khrplatform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Core\Containers\BitArray.cpp" />
     <ClCompile Include="Source\Core\Drawables\CubeMesh.cpp" />
     <ClCompile Include="Source\Core\Drawables\FbxMesh.cpp" />
     <ClCompile Include="Source\Core\Drawables\Mesh.cpp" />
@@ -364,7 +366,7 @@
     <ClCompile Include="Source\Core\FreeCamera.cpp" />
     <ClCompile Include="Source\Core\Input.cpp" />
     <ClCompile Include="Source\Core\Math\Matrix.cpp" />
-    <ClCompile Include="Source\Core\Math\NullMath.cpp" />
+    <ClCompile Include="Source\Core\Math\MathUtility.cpp" />
     <ClCompile Include="Source\Core\Math\Quat.cpp" />
     <ClCompile Include="Source\Core\Math\RotationMatrix.cpp" />
     <ClCompile Include="Source\Core\Math\Rotator.cpp" />

@@ -30,7 +30,8 @@ public:
 		, Data(nullptr)
 	{}
 
-	FORCEINLINE TArray(const ElementType* Ptr, int32 Count)
+	FORCEINLINE TArray(const ElementType* Ptr, int32 Count) 
+		: Data(nullptr)
 	{
 		ASSERT(Ptr != nullptr || Count == 0);
 
@@ -38,16 +39,19 @@ public:
 	}
 
 	FORCEINLINE TArray(const TArray& Other)
+		: Data(nullptr)
 	{
 		CopyToEmpty(Other.Data, Other.Num(), 0, 0);
 	}
 
 	FORCEINLINE TArray(const TArray& Other, int32 ExtraSlack)
+		: Data(nullptr)
 	{
 		CopyToEmpty(Other.Data, Other.Num(), 0, ExtraSlack);
 	}
 
 	FORCEINLINE TArray(TArray<ElementType>&& Other)
+		: Data(nullptr)
 	{
 		Move(*this, Other);
 	}
@@ -56,6 +60,7 @@ public:
 	 * Initializer list constructor
 	 */
 	TArray(std::initializer_list<InElementType> InitList)
+		: Data(nullptr)
 	{
 		// This is not strictly legal, as std::initializer_list's iterators are not guaranteed to be pointers, but
 		// this appears to be the case on all of our implementations.  Also, if it's not true on a new implementation,
