@@ -577,7 +577,7 @@ public:
 		{
 		}
 
-		TConstIterator(const TSparseArray& InArray, const typename TBaseIterator<true>::BitArrayItType& InBitArrayIt)
+		TConstIterator(const TSparseArray& InArray, const FConstSetBitIterator& InBitArrayIt)
 			: TBaseIterator<true>(InArray, InBitArrayIt)
 		{
 		}

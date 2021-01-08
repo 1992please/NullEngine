@@ -1,8 +1,8 @@
-#include "Core/NullEngine.h"
-#include "Core/Containers/BitArray.h"
-#include "Core/Containers/Array.h"
-#include "Core/Containers/SparseArray.h"
-#include "Core/Containers/Set.h"
+#include "NullEngine.h"
+#include "Containers/BitArray.h"
+#include "Containers/Array.h"
+#include "Containers/SparseArray.h"
+#include "Containers/Set.h"
 
 struct WTF
 {
@@ -35,6 +35,11 @@ struct WTF
 		printf("WTF");
 	}
 };
+
+FORCEINLINE uint32 GetTypeHash(const WTF& A)
+{
+	return FCrc::MemCrc32(&A, sizeof(WTF));
+}
 
 int main(int argc, char** argv)
 {
@@ -133,7 +138,8 @@ int main(int argc, char** argv)
 		}
 	}
 	{
-		TSet<WTF> Hello;
+		TArray<WTF> A7A = { {32, 32}, {23,34} };
+		TSet<WTF> Hello(A7A);
 	}
 
 

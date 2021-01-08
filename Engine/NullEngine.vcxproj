@@ -41,12 +41,16 @@
     <ClInclude Include="Source\Core\Math\Vector.h" />
     <ClInclude Include="Source\Core\Math\Vector2.h" />
     <ClInclude Include="Source\Core\Math\Vector4.h" />
+    <ClInclude Include="Source\Core\Misc\Crc.h" />
+    <ClInclude Include="Source\Core\Templates\AlignmentTemplates.h" />
     <ClInclude Include="Source\Core\Templates\AndOrNot.h" />
     <ClInclude Include="Source\Core\Templates\AreTypesEqual.h" />
     <ClInclude Include="Source\Core\Templates\ChooseClass.h" />
     <ClInclude Include="Source\Core\Templates\IdentityFunctor.h" />
     <ClInclude Include="Source\Core\Templates\IsArithmetic.h" />
     <ClInclude Include="Source\Core\Templates\IsEnum.h" />
+    <ClInclude Include="Source\Core\Templates\IsIntegral.h" />
+    <ClInclude Include="Source\Core\Templates\IsPODType.h" />
     <ClInclude Include="Source\Core\Templates\IsPointer.h" />
     <ClInclude Include="Source\Core\Templates\IsTriviallyCopyConstructible.h" />
     <ClInclude Include="Source\Core\Templates\IsTriviallyDestructible.h" />
@@ -54,6 +58,7 @@
     <ClInclude Include="Source\Core\Templates\MemoryOps.h" />
     <ClInclude Include="Source\Core\Templates\ReversePredicate.h" />
     <ClInclude Include="Source\Core\Templates\TypeCompatibleBytes.h" />
+    <ClInclude Include="Source\Core\Templates\TypeHash.h" />
     <ClInclude Include="Source\Core\Templates\TypeTraits.h" />
     <ClInclude Include="Source\Core\Templates\RemoveReference.h" />
     <ClInclude Include="Source\Core\Templates\Sorting.h" />
@@ -371,6 +376,7 @@
     <ClCompile Include="Source\Core\Math\RotationMatrix.cpp" />
     <ClCompile Include="Source\Core\Math\Rotator.cpp" />
     <ClCompile Include="Source\Core\Math\Vector.cpp" />
+    <ClCompile Include="Source\Core\Misc\Crc.cpp" />
     <ClCompile Include="Source\Core\NullEngine.cpp" />
     <ClCompile Include="Source\Core\Shader.cpp" />
     <ClCompile Include="Source\Source.cpp" />

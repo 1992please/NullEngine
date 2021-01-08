@@ -343,6 +343,11 @@
     <ClInclude Include="Source\Core\Windows\WindowSystemIncludes.h" />
     <ClInclude Include="Source\Core\Math\MathUtility.h" />
     <ClInclude Include="Source\Core\Math\NullMath.h" />
+    <ClInclude Include="Source\Core\Templates\IsPODType.h" />
+    <ClInclude Include="Source\Core\Templates\TypeHash.h" />
+    <ClInclude Include="Source\Core\Misc\Crc.h" />
+    <ClInclude Include="Source\Core\Templates\AlignmentTemplates.h" />
+    <ClInclude Include="Source\Core\Templates\IsIntegral.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Drawables\CubeMesh.cpp" />
@@ -366,6 +371,7 @@
     <ClCompile Include="Source\Source.cpp" />
     <ClCompile Include="Source\Core\Containers\BitArray.cpp" />
     <ClCompile Include="Source\Core\Math\MathUtility.cpp" />
+    <ClCompile Include="Source\Core\Misc\Crc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO" />
