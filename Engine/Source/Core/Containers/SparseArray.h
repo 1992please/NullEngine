@@ -587,9 +587,9 @@ public:
 	* DO NOT USE DIRECTLY
 	* STL-like iterators to enable range-based for loop support.
 	*/
-	FORCEINLINE TIterator      begin() { return TIterator(*this); }
+	FORCEINLINE TIterator      begin()       { return TIterator(*this); }
 	FORCEINLINE TConstIterator begin() const { return TConstIterator(*this, FConstSetBitIterator(AllocationFlags)); }
-	FORCEINLINE TIterator      end() { return TIterator(*this, FConstSetBitIterator(AllocationFlags, AllocationFlags.Num())); }
+	FORCEINLINE TIterator      end()         { return TIterator(*this, FConstSetBitIterator(AllocationFlags, AllocationFlags.Num())); }
 	FORCEINLINE TConstIterator end()   const { return TConstIterator(*this, FConstSetBitIterator(AllocationFlags, AllocationFlags.Num())); }
 
 private:

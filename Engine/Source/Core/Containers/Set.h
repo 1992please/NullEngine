@@ -74,7 +74,8 @@ public:
 	{}
 
 	/** Initialization constructor. */
-	template <typename InitType> explicit FORCEINLINE TSetElement(InitType&& InValue) : Value(Forward<InitType>(InValue)) {}
+	template <typename InitType> explicit FORCEINLINE TSetElement(InitType&& InValue) 
+		: Value(Forward<InitType>(InValue)) {}
 
 	TSetElement(TSetElement&&) = default;
 	TSetElement(const TSetElement&) = default;
@@ -150,7 +151,21 @@ struct TKeyFuncs
 };
 
 
-
+/**
+ * A set with an optional KeyFuncs parameters for customizing how the elements are compared and searched.
+ * E.g. You can specify a mapping from elements to keys if you want to find elements by specifying a subset of
+ * the element type.  It uses a TSparseArray of the elements, and also links the elements into a hash with a
+ * number of buckets proportional to the number of elements.  Addition, removal, and finding are O(1).
+ *
+ * The ByHash() functions are somewhat dangerous but particularly useful in two scenarios:
+ * -- Heterogeneous lookup to avoid creating expensive keys like FString when looking up by const TCHAR*.
+ *	  You must ensure the hash is calculated in the same way as ElementType is hashed.
+ *    If possible put both ComparableKey and ElementType hash functions next to each other in the same header
+ *    to avoid bugs when the ElementType hash function is changed.
+ * -- Reducing contention around hash tables protected by a lock. It is often important to incur
+ *    the cache misses of reading key data and doing the hashing *before* acquiring the lock.
+ *
+ **/
 template<typename InElementType>
 class TSet
 {
@@ -283,44 +298,136 @@ public:
 		return EmplaceImpl(KeyHash, Element, ElementAllocation.Index, bIsAlreadyInSetPtr);
 	}
 
+	/**
+	 * Finds an element with a pre-calculated hash and a key that can be compared to KeyType
+	 * @see	Class documentation section on ByHash() functions
+	 * @return The element id that matches the key and hash or an invalid element id
+	 */
+	template<typename ComparableKey>
+	FSetElementId FindIdByHash(uint32 KeyHash, const ComparableKey& Key) const
+	{
+		if (Elements.Num())
+		{
+			ASSERT(KeyHash == KeyFuncs::GetKeyHash(Key));
+
+			for (FSetElementId ElementId = GetTypedHash(KeyHash);
+				ElementId.IsValidId();
+				ElementId = Elements[ElementId].HashNextId)
+			{
+				if (KeyFuncs::Matches(KeyFuncs::GetSetKey(Elements[ElementId].Value), Key))
+				{
+					return ElementId;
+				}
+			}
+		}
+		return FSetElementId();
+	}
+
+	/**
+	 * Finds an element with a pre-calculated hash and a key that can be compared to KeyType.
+	 * @see	Class documentation section on ByHash() functions
+	 * @return A pointer to the contained element or nullptr.
+	 */
+	template<typename ComparableKey>
+	ElementType* FindByHash(uint32 KeyHash, const ComparableKey& Key)
+	{
+		FSetElementId ElementId = FindIdByHash(KeyHash, Key);
+		if (ElementId.IsValidId())
+		{
+			return &Elements[ElementId].Value;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	template<typename ComparableKey>
+	const ElementType* FindByHash(uint32 KeyHash, const ComparableKey& Key) const
+	{
+		return const_cast<TSet*>(this)->FindByHash(KeyHash, Key);
+	}
+
+	/**
+	 * Removes all elements from the set matching the specified key.
+	 * @param Key - The key to match elements against.
+	 * @return The number of elements removed.
+	 */
+	int32 Remove(KeyInitType Key)
+	{
+		if (Elements.Num())
+		{
+			return RemoveImpl(KeyFuncs::GetKeyHash(Key), Key);
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Removes an element from the set.
+	 * @param Element - A pointer to the element in the set, as returned by Add or Find.
+	 */
+	void Remove(FSetElementId ElementId)
+	{
+		if (Elements.Num())
+		{
+			const auto& ElementBeingRemoved = Elements[ElementId];
+
+			// Remove the element from the hash.
+			for (FSetElementId* NextElementId = &GetTypedHash(ElementBeingRemoved.HashIndex);
+				NextElementId->IsValidId();
+				NextElementId = &Elements[*NextElementId].HashNextId)
+			{
+				if (*NextElementId == ElementId)
+				{
+					*NextElementId = ElementBeingRemoved.HashNextId;
+					break;
+				}
+			}
+		}
+
+		// Remove the element from the elements array.
+		Elements.RemoveAt(ElementId);
+	}
+
 private:
 	FSetElementId EmplaceImpl(uint32 KeyHash, SetElementType& Element, FSetElementId ElementId, bool* bIsAlreadyInSetPtr)
 	{
-		//bool bIsAlreadyInSet = false;
-		//// check for an existing element with the same key as the element being added.
+		bool bIsAlreadyInSet = false;
+		// check for an existing element with the same key as the element being added.
 
-		//// Don't bother searching for a duplicate if this is the first element we're adding
-		//if (Elements.Num() != 1)
-		//{
-		//	FSetElementId ExistingId = FindIdByHash(KeyHash, KeyFuncs::GetSetKey(Element.Value));
-		//	bIsAlreadyInSet = ExistingId.IsValidId();
-		//	if (bIsAlreadyInSet)
-		//	{
-		//		// If there's an existing element with the same key as the new element, replace the existing element with the new element.
-		//		MoveByRelocate(Elements[ExistingId].Value, Element.Value);
+		// Don't bother searching for a duplicate if this is the first element we're adding
+		if (Elements.Num() != 1)
+		{
+			FSetElementId ExistingId = FindIdByHash(KeyHash, KeyFuncs::GetSetKey(Element.Value));
+			bIsAlreadyInSet = ExistingId.IsValidId();
+			if (bIsAlreadyInSet)
+			{
+				// If there's an existing element with the same key as the new element, replace the existing element with the new element.
+				MoveByRelocate(Elements[ExistingId].Value, Element.Value);
 
-		//		// Then remove the new element.
-		//		Elements.RemoveAtUninitialized(ElementId);
+				// Then remove the new element.
+				Elements.RemoveAtUninitialized(ElementId);
 
-		//		// Then point the return value at the replaced element.
-		//		ElementId = ExistingId;
-		//	}
-		//}
+				// Then point the return value at the replaced element.
+				ElementId = ExistingId;
+			}
+		}
 
-		//if (!bIsAlreadyInSet)
-		//{
-		//	// Check if the hash needs to be resized.
-		//	if (!ConditionalRehash(Elements.Num()))
-		//	{
-		//		// If the rehash didn't add the new element to the hash, add it.
-		//		LinkElement(ElementId, Element, KeyHash);
-		//	}
-		//}
+		if (!bIsAlreadyInSet)
+		{
+			// Check if the hash needs to be resized.
+			if (!ConditionalRehash(Elements.Num()))
+			{
+				// If the rehash didn't add the new element to the hash, add it.
+				LinkElement(ElementId, Element, KeyHash);
+			}
+		}
 
-		//if (bIsAlreadyInSetPtr)
-		//{
-		//	*bIsAlreadyInSetPtr = bIsAlreadyInSet;
-		//}
+		if (bIsAlreadyInSetPtr)
+		{
+			*bIsAlreadyInSetPtr = bIsAlreadyInSet;
+		}
 
 		return ElementId;
 	}
@@ -334,6 +441,44 @@ private:
 			Hash = (FSetElementId*)FMemory::Realloc(Hash, NumElements*NumBytesPerElement);
 		}
 	}
+
+	/**
+	 * Checks if the hash has an appropriate number of buckets, and if it should be resized.
+	 * @param NumHashedElements - The number of elements to size the hash for.
+	 * @param DesiredHashSize - Desired size if we should rehash.
+	 * @param bAllowShrinking - true if the hash is allowed to shrink.
+	 * @return true if the set should berehashed.
+	 */
+	FORCEINLINE bool ShouldRehash(int32 NumHashedElements, int32 DesiredHashSize, bool bAllowShrinking = false) const
+	{
+		// If the hash hasn't been created yet, or is smaller than the desired hash size, rehash.
+		return (NumHashedElements > 0 &&
+			(!HashSize ||
+				HashSize < DesiredHashSize ||
+				(HashSize > DesiredHashSize && bAllowShrinking)));
+	}
+
+	/**
+	 * Checks if the hash has an appropriate number of buckets, and if not resizes it.
+	 * @param NumHashedElements - The number of elements to size the hash for.
+	 * @param bAllowShrinking - true if the hash is allowed to shrink.
+	 * @return true if the set was rehashed.
+	 */
+	bool ConditionalRehash(int32 NumHashedElements, bool bAllowShrinking = false) const
+	{
+		// Calculate the desired hash size for the specified number of elements.
+		const int32 DesiredHashSize = GetNumberOfHashBuckets(NumHashedElements);
+
+		if (ShouldRehash(NumHashedElements, DesiredHashSize, bAllowShrinking))
+		{
+			HashSize = DesiredHashSize;
+			Rehash();
+			return true;
+		}
+
+		return false;
+	}
+
 
 	/** Resizes the hash. */
 	void Rehash() const
@@ -391,6 +536,46 @@ private:
 	FORCEINLINE void HashElement(FSetElementId ElementId, const SetElementType& Element) const
 	{
 		LinkElement(ElementId, Element, KeyFuncs::GetKeyHash(KeyFuncs::GetSetKey(Element.Value)));
+	}
+
+	/**
+	 * Accesses an element in the set.
+	 * This is needed because the iterator classes aren't friends of FSetElementId and so can't access the element index.
+	 */
+	FORCEINLINE const SetElementType& GetInternalElement(FSetElementId Id) const
+	{
+		return Elements[Id];
+	}
+	FORCEINLINE SetElementType& GetInternalElement(FSetElementId Id)
+	{
+		return Elements[Id];
+	}
+
+	template<typename ComparableKey>
+	FORCEINLINE int32 RemoveImpl(uint32 KeyHash, const ComparableKey& Key)
+	{
+		int32 NumRemovedElements = 0;
+
+		FSetElementId* NextElementId = &GetTypedHash(KeyHash);
+		while (NextElementId->IsValidId())
+		{
+			auto& Element = Elements[*NextElementId];
+			if (KeyFuncs::Matches(KeyFuncs::GetSetKey(Element.Value), Key))
+			{
+				// This element matches the key, remove it from the set.  Note that Remove sets *NextElementId to point to the next
+				// element after the removed element in the hash bucket.
+				Remove(*NextElementId);
+				NumRemovedElements++;
+				// If the hash disallows duplicate keys, we're done removing after the first matched key.
+				break;
+			}
+			else
+			{
+				NextElementId = &Element.HashNextId;
+			}
+		}
+
+		return NumRemovedElements;
 	}
 
 private:
@@ -519,8 +704,94 @@ private:
 		FSetElementId Id;
 		FSetElementId NextId;
 	};
+public:
 
+	/** Used to iterate over the elements of a const TSet. */
+	class TConstIterator : public TBaseIterator<true>
+	{
+		friend class TSet;
 
+	public:
+		FORCEINLINE TConstIterator(const TSet& InSet)
+			: TBaseIterator<true>(InSet.Elements.begin())
+		{
+		}
+	};
+
+	/** Used to iterate over the elements of a TSet. */
+	class TIterator : public TBaseIterator<false>
+	{
+		friend class TSet;
+
+	public:
+		FORCEINLINE TIterator(TSet& InSet)
+			: TBaseIterator<false>(InSet.Elements.begin())
+			, Set(InSet)
+		{
+		}
+
+		/** Removes the current element from the set. */
+		FORCEINLINE void RemoveCurrent()
+		{
+			Set.Remove(TBaseIterator<false>::GetId());
+		}
+
+	private:
+		TSet& Set;
+	};
+
+	/** Used to iterate over the elements of a const TSet. */
+	class TConstKeyIterator : public TBaseKeyIterator<true>
+	{
+	public:
+		FORCEINLINE TConstKeyIterator(const TSet& InSet, KeyInitType InKey) :
+			TBaseKeyIterator<true>(InSet, InKey)
+		{}
+	};
+
+	/** Used to iterate over the elements of a TSet. */
+	class TKeyIterator : public TBaseKeyIterator<false>
+	{
+	public:
+		FORCEINLINE TKeyIterator(TSet& InSet, KeyInitType InKey)
+			: TBaseKeyIterator<false>(InSet, InKey)
+			, Set(InSet)
+		{}
+
+		/** Removes the current element from the set. */
+		FORCEINLINE void RemoveCurrent()
+		{
+			Set.Remove(Id);
+			Id = FSetElementId();
+		}
+	private:
+		TSet& Set;
+	};
+
+	/** Creates an iterator for the contents of this set */
+	FORCEINLINE TIterator CreateIterator()
+	{
+		return TIterator(*this);
+	}
+
+	/** Creates a const iterator for the contents of this set */
+	FORCEINLINE TConstIterator CreateConstIterator() const
+	{
+		return TConstIterator(*this);
+	}
+
+	/**
+	* DO NOT USE DIRECTLY
+	* STL-like iterators to enable range-based for loop support.
+	*/
+	using TRangedForConstIterator = TBaseIterator<true>;
+	using TRangedForIterator = TBaseIterator<false>;
+
+	FORCEINLINE TRangedForIterator      begin()         { return TRangedForIterator(Elements.begin()); }
+	FORCEINLINE TRangedForConstIterator begin() const   { return TRangedForConstIterator(Elements.begin()); }
+	FORCEINLINE TRangedForIterator      end()           { return TRangedForIterator(Elements.end()); }
+	FORCEINLINE TRangedForConstIterator end()   const   { return TRangedForConstIterator(Elements.end()); }
+private:
 	ElementArrayType Elements;
 	mutable FSetElementId* Hash;
 	mutable int32	 HashSize;

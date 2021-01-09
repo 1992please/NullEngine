@@ -57,4 +57,21 @@
     </Expand>
   </Type>
   
+  <!-- TSet visualizer -->
+  <Type Name="TSet&lt;*&gt;">
+    <DisplayString Condition="Elements.Data.ArrayNum - Elements.NumFreeIndices &lt;= 0">Empty</DisplayString>
+    <DisplayString Condition="Elements.Data.ArrayNum &lt;= Elements.Data.ArrayMax">Num={Elements.Data.ArrayNum - Elements.NumFreeIndices}</DisplayString>
+    <Expand>
+      <CustomListItems Condition="Elements.Data.ArrayNum - Elements.NumFreeIndices &gt; 0 &amp;&amp; Elements.Data.ArrayNum &lt;= Elements.Data.ArrayMax">
+        <Variable Name="Index" InitialValue="0" />
+        <Size>Elements.Data.ArrayNum - Elements.NumFreeIndices</Size>
+        <Loop>
+          <If Condition="(Elements.AllocationFlags.Data != 0) &amp;&amp; ((Elements.AllocationFlags.Data[Index/32]&gt;&gt;(Index%32)) &amp; 1) != 0">
+            <Item>((TSetElement &lt;$T1&gt; *)Elements.Data.Data)[Index].Value</Item>
+          </If>
+          <Exec>++Index</Exec>
+        </Loop>
+      </CustomListItems>
+    </Expand>
+  </Type>
 </AutoVisualizer>

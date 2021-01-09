@@ -10,6 +10,7 @@
 #include "AreTypesEqual.h"
 #include "AndOrNot.h"
 #include "TypeCompatibleBytes.h"
+#include "MemoryOps.h"
 
 /**
  * MoveTemp will cast a reference to an rvalue reference.
@@ -55,6 +56,20 @@ FORCEINLINE T&& Forward(typename TRemoveReference<T>::Type&& Obj)
 {
 	return (T&&)Obj;
 }
+
+
+/** This is used to provide type specific behavior for a move which will destroy B. */
+/** Should be in UnrealTemplate but isn't for Clang build reasons - will move later */
+template<typename T>
+FORCEINLINE void MoveByRelocate(T& A, T& B)
+{
+	// Destruct the previous value of A.
+	A.~T();
+
+	// Relocate B into the 'hole' left by the destruction of A, leaving a hole in B instead.
+	RelocateConstructItems<T>(&A, &B, 1);
+}
+
 
 /**
  * A traits class which specifies whether a Swap of a given type should swap the bits or use a traditional value-based swap.

@@ -44,7 +44,6 @@ FORCEINLINE uint32 GetTypeHash(const WTF& A)
 int main(int argc, char** argv)
 {
 	system("color f0");
-
 	{	
 		FBitArray BitArray;
 		FBitArray BitArray1(1, 30);
@@ -140,6 +139,16 @@ int main(int argc, char** argv)
 	{
 		TArray<WTF> A7A = { {32, 32}, {23,34} };
 		TSet<WTF> Hello(A7A);
+		TSparseArray<WTF> Shit;
+		WTF X(300, 50);
+		Hello.Add(X);
+		Hello.Add(WTF(300, 50));
+
+
+		for (WTF& Element : Hello)
+		{
+			Element.Print();
+		}
 	}
 
 
