@@ -47,6 +47,15 @@ public:
 	}
 
 private:
+	/** Reset a range of FSetElementIds to invalid */
+	FORCEINLINE static void ResetRange(FSetElementId* Range, int32 Count)
+	{
+		for (int32 I = 0; I < Count; ++I)
+		{
+			Range[I] = FSetElementId();
+		}
+	}
+
 	/** Initialization constructor. */
 	FORCEINLINE FSetElementId(int32 InIndex) :
 		Index(InIndex)
@@ -298,6 +307,30 @@ public:
 		return EmplaceImpl(KeyHash, Element, ElementAllocation.Index, bIsAlreadyInSetPtr);
 	}
 
+
+	/**
+	 * Finds an element with the given key in the set.
+	 * @param Key - The key to search for.
+	 * @return The id of the set element matching the given key, or the NULL id if none matches.
+	 */
+	FSetElementId FindId(KeyInitType Key) const
+	{
+		if (Elements.Num())
+		{
+			for (FSetElementId ElementId = GetTypedHash(KeyFuncs::GetKeyHash(Key));
+				ElementId.IsValidId();
+				ElementId = Elements[ElementId].HashNextId)
+			{
+				if (KeyFuncs::Matches(KeyFuncs::GetSetKey(Elements[ElementId].Value), Key))
+				{
+					// Return the first match, regardless of whether the set has multiple matches for the key or not.
+					return ElementId;
+				}
+			}
+		}
+		return FSetElementId();
+	}
+
 	/**
 	 * Finds an element with a pre-calculated hash and a key that can be compared to KeyType
 	 * @see	Class documentation section on ByHash() functions
@@ -321,6 +354,24 @@ public:
 			}
 		}
 		return FSetElementId();
+	}
+
+	/**
+	 * Finds an element with the given key in the set.
+	 * @param Key - The key to search for.
+	 * @return A pointer to an element with the given key.  If no element in the set has the given key, this will return NULL.
+	 */
+	FORCEINLINE ElementType* Find(KeyInitType Key)
+	{
+		FSetElementId ElementId = FindId(Key);
+		if (ElementId.IsValidId())
+		{
+			return &Elements[ElementId].Value;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	/**
@@ -390,6 +441,50 @@ public:
 		Elements.RemoveAt(ElementId);
 	}
 
+	/**
+	 * Removes all elements from the set, potentially leaving space allocated for an expected number of elements about to be added.
+	 * @param ExpectedNumElements - The number of elements about to be added to the set.
+	 */
+	void Empty(int32 ExpectedNumElements = 0)
+	{
+		// Empty the elements array, and reallocate it for the expected number of elements.
+		const int32 DesiredHashSize = GetNumberOfHashBuckets(ExpectedNumElements);
+		const bool ShouldDoRehash = ShouldRehash(ExpectedNumElements, DesiredHashSize, true);
+
+		if (!ShouldDoRehash)
+		{
+			// If the hash was already the desired size, clear the references to the elements that have now been removed.
+			UnhashElements();
+		}
+
+		Elements.Empty(ExpectedNumElements);
+
+		// Resize the hash to the desired size for the expected number of elements.
+		if (ShouldDoRehash)
+		{
+			HashSize = DesiredHashSize;
+			Rehash();
+		}
+	}
+
+	/** Efficiently empties out the set but preserves all allocations and capacities */
+	void Reset()
+	{
+		if (Num() == 0)
+		{
+			return;
+		}
+
+		// Reset the elements array.
+		UnhashElements();
+		Elements.Reset();
+	}
+
+	/** @return the number of elements. */
+	FORCEINLINE int32 Num() const
+	{
+		return Elements.Num();
+	}
 private:
 	FSetElementId EmplaceImpl(uint32 KeyHash, SetElementType& Element, FSetElementId ElementId, bool* bIsAlreadyInSetPtr)
 	{
@@ -576,6 +671,29 @@ private:
 		}
 
 		return NumRemovedElements;
+	}
+
+	/** Returns if it should be faster to clear the hash by going through elements instead of reseting the whole bucket lists*/
+	FORCEINLINE bool ShouldClearByElements()
+	{
+		return Num() < (HashSize / 4);
+	}
+
+	/** Reset elements buckets of FSetElementIds to invalid */
+	void UnhashElements()
+	{
+		if (ShouldClearByElements())
+		{
+			// Faster path: only reset hash buckets to FSetElementId for elements in the hash
+			for (const SetElementType& Element : Elements)
+			{
+				Hash[Element.HashIndex] = FSetElementId();
+			}
+		}
+		else
+		{
+			FSetElementId::ResetRange(Hash, HashSize);
+		}
 	}
 
 private:

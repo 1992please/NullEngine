@@ -143,8 +143,9 @@ int main(int argc, char** argv)
 		WTF X(300, 50);
 		Hello.Add(X);
 		Hello.Add(WTF(300, 50));
-
-
+		Hello.Reset();
+		Hello.Empty();
+		WTF* HHH = Hello.Find(X);
 		for (WTF& Element : Hello)
 		{
 			Element.Print();
