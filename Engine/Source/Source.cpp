@@ -3,6 +3,7 @@
 #include "Containers/Array.h"
 #include "Containers/SparseArray.h"
 #include "Containers/Set.h"
+#include "Containers/Map.h"
 
 struct WTF
 {
@@ -36,6 +37,11 @@ struct WTF
 	}
 };
 
+struct Test
+{
+	int value;
+};
+
 FORCEINLINE uint32 GetTypeHash(const WTF& A)
 {
 	return FCrc::MemCrc32(&A, sizeof(WTF));
@@ -44,6 +50,49 @@ FORCEINLINE uint32 GetTypeHash(const WTF& A)
 int main(int argc, char** argv)
 {
 	system("color f0");
+	{
+		TArray<WTF> Shit;
+		TArray<WTF> Hello = { {32, 32}, {23,34} };
+		if (Hello[0] < Hello[1])
+		{
+			Hello.SetNum(5);
+		}
+
+		Hello.Emplace(56, 6);
+		Hello.Emplace(5, 7);
+		Hello.Emplace(6, 10);
+		Hello.Emplace(5, 10);
+		Hello.Emplace(8, 30);
+		Hello.Emplace(5, 30);
+		Hello.Emplace(21, 6);
+		Hello.Emplace(5, 6);
+		//Hello.RemoveSwap(Hello[5]);
+		Hello += { {32, 32}, { 23,34 } };
+
+		WTF X(300, 50);
+		Hello.AddUnique(X);
+		int32 Found = Hello.Find(X);
+		Hello.Remove(WTF(5, 6));
+		Hello.FindByPredicate([](const WTF& InElement) {return InElement.haha == 50; });
+		Hello.Contains(WTF(5, 30));
+		if (Hello.ContainsByPredicate([](const WTF& InElement) {return InElement.haha == 456; }))
+		{
+			printf("shit");
+		}
+		else
+		{
+			printf("shit");
+		}
+		Hello.Sort([](const WTF& RHS, const WTF& LHS) {
+			return (RHS.lol + RHS.haha) < (LHS.lol + LHS.haha);
+		});
+		Hello.HeapSort();
+
+		for (WTF& Element : Hello)
+		{
+			Element.Print();
+		}
+	}
 	{	
 		FBitArray BitArray;
 		FBitArray BitArray1(1, 30);
@@ -94,49 +143,6 @@ int main(int argc, char** argv)
 		}
 	}
 	{
-		TArray<WTF> Shit;
-		TArray<WTF> Hello = { {32, 32}, {23,34} };
-		if (Hello[0] < Hello[1])
-		{
-			Hello.SetNum(5);
-		}
-
-		Hello.Emplace(56, 6);
-		Hello.Emplace(5, 7);
-		Hello.Emplace(6, 10);
-		Hello.Emplace(5, 10);
-		Hello.Emplace(8, 30);
-		Hello.Emplace(5, 30);
-		Hello.Emplace(21, 6);
-		Hello.Emplace(5, 6);
-
-		Hello += { {32, 32}, { 23,34 } };
-
-		WTF X(300, 50);
-		Hello.AddUnique(X);
-		int32 Found = Hello.Find(X);
-		Hello.Remove(WTF(5, 6));
-		Hello.FindByPredicate([](const WTF& InElement) {return InElement.haha == 50; });
-		Hello.Contains(WTF(5, 30));
-		if (Hello.ContainsByPredicate([](const WTF& InElement) {return InElement.haha == 456; }))
-		{
-			printf("shit");
-		}
-		else
-		{
-			printf("shit");
-		}
-		Hello.Sort([](const WTF& RHS, const WTF& LHS) {
-			return (RHS.lol + RHS.haha) < (LHS.lol + LHS.haha);
-		});
-		Hello.HeapSort();
-
-		for (WTF& Element : Hello)
-		{
-			Element.Print();
-		}
-	}
-	{
 		TArray<WTF> A7A = { {32, 32}, {23,34} };
 		TSet<WTF> Hello(A7A);
 		TSparseArray<WTF> Shit;
@@ -151,7 +157,16 @@ int main(int argc, char** argv)
 			Element.Print();
 		}
 	}
-
+	{
+		TMap<int, WTF> hello;
+		hello.Reserve(50);
+		hello.Num();
+		hello.Reset();
+		hello.Compact();
+		hello.GetAllocatedSize();
+		hello.Add(5, WTF(300, 50));
+		WTF& WTFValue = hello.Add(6);
+	}
 
 	NullEngine* pApp = new NullEngine();
 

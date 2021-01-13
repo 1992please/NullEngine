@@ -285,13 +285,13 @@ public:
 	/** Accessor for the element or free list data. */
 	FElementOrFreeListLink& GetData(int32 Index)
 	{
-		return ((FElementOrFreeListLink*)Data.GetData())[Index];
+		return Data.GetData()[Index];
 	}
 
 	/** Accessor for the element or free list data. */
 	const FElementOrFreeListLink& GetData(int32 Index) const
 	{
-		return ((FElementOrFreeListLink*)Data.GetData())[Index];
+		return Data.GetData()[Index];
 	}
 
 	// Accessors.
@@ -312,11 +312,25 @@ public:
 	{
 		return Data.Num();
 	}
+
 	int32 Num() const { return Data.Num() - NumFreeIndices; }
+
+	/**
+	 * Helper function to return the amount of memory allocated by this container
+	 * Only returns the size of allocations made directly by the container, not the elements themselves.
+	 * @return number of bytes allocated by this container
+	 */
+	uint32 GetAllocatedSize() const
+	{
+		return	(Data.Num() + Data.GetSlack()) * sizeof(FElementOrFreeListLink) +
+			AllocationFlags.GetAllocatedSize();
+	}
+
 	bool IsValidIndex(int32 Index) const
 	{
 		return AllocationFlags.IsValidIndex(Index) && AllocationFlags[Index];
 	}
+
 	bool IsAllocated(int32 Index) const { return AllocationFlags[Index]; }
 
 	/** Removes Count elements from the array, starting from Index. */
@@ -406,6 +420,57 @@ public:
 				AllocationFlags.Add(false, ElementsToAdd);
 			}
 		}
+	}
+
+	/** Shrinks the array's storage to avoid slack. */
+	void Shrink()
+	{
+		// Determine the highest allocated index in the data array.
+		int32 MaxAllocatedIndex = AllocationFlags.FindLast(true);
+
+		const int32 FirstIndexToRemove = MaxAllocatedIndex + 1;
+		if (FirstIndexToRemove < Data.Num())
+		{
+			if (NumFreeIndices > 0)
+			{
+				// Look for elements in the free list that are in the memory to be freed.
+				int32 FreeIndex = FirstFreeIndex;
+				while (FreeIndex != INDEX_NONE)
+				{
+					if (FreeIndex >= FirstIndexToRemove)
+					{
+						const int32 PrevFreeIndex = GetData(FreeIndex).PrevFreeIndex;
+						const int32 NextFreeIndex = GetData(FreeIndex).NextFreeIndex;
+						if (NextFreeIndex != -1)
+						{
+							GetData(NextFreeIndex).PrevFreeIndex = PrevFreeIndex;
+						}
+						if (PrevFreeIndex != -1)
+						{
+							GetData(PrevFreeIndex).NextFreeIndex = NextFreeIndex;
+						}
+						else
+						{
+							FirstFreeIndex = NextFreeIndex;
+						}
+						--NumFreeIndices;
+
+						FreeIndex = NextFreeIndex;
+					}
+					else
+					{
+						FreeIndex = GetData(FreeIndex).NextFreeIndex;
+					}
+				}
+			}
+
+			// Truncate unallocated elements at the end of the data array.
+			Data.RemoveAt(FirstIndexToRemove, Data.Num() - FirstIndexToRemove);
+			AllocationFlags.RemoveAt(FirstIndexToRemove, AllocationFlags.Num() - FirstIndexToRemove);
+		}
+
+		// Shrink the data array.
+		Data.Shrink();
 	}
 
 

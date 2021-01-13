@@ -15,6 +15,7 @@
     <ClInclude Include="Source\Core\Algo\IntroSort.h" />
     <ClInclude Include="Source\Core\Containers\Array.h" />
     <ClInclude Include="Source\Core\Containers\BitArray.h" />
+    <ClInclude Include="Source\Core\Containers\Map.h" />
     <ClInclude Include="Source\Core\Containers\Set.h" />
     <ClInclude Include="Source\Core\Containers\SparseArray.h" />
     <ClInclude Include="Source\Core\Core.h" />

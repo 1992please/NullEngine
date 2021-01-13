@@ -350,6 +350,56 @@ public:
 		return RemoveAll([&Item](ElementType& Element) { return Element == Item; });
 	}
 
+	/**
+	 * Removes item from the array.
+	 *
+	 * This version is much more efficient, because it uses RemoveAtSwap
+	 * internally which is O(Count) instead of RemoveAt which is O(ArrayNum),
+	 * but does not preserve the order.
+	 *
+	 * @returns Number of elements removed.
+	 * @see Add, Insert, Remove, RemoveAll, RemoveAllSwap
+	 */
+	int32 RemoveSwap(const ElementType& Item, bool bAllowShrinking = true)
+	{
+		CheckAddress(&Item);
+
+		const int32 OriginalNum = ArrayNum;
+		bool bRemoved = false;
+		for (int32 Index = 0; Index < ArrayNum; Index++)
+		{
+			if ((*this)[Index] == Item)
+			{
+				bRemoved = true;
+				RemoveAtSwap(Index--, 1, false);
+			}
+		}
+
+		if (bRemoved && bAllowShrinking)
+		{
+			ResizeShrink();
+		}
+
+		return OriginalNum - ArrayNum;
+	}
+
+	/**
+	 * Removes an element (or elements) at given location optionally shrinking
+	 * the array.
+	 *
+	 * This version is much more efficient than RemoveAt (O(Count) instead of
+	 * O(ArrayNum)), but does not preserve the order.
+	 *
+	 * @param Index Location in array of the element to remove.
+	 * @param Count (Optional) Number of elements to remove. Default is 1.
+	 * @param bAllowShrinking (Optional) Tells if this call can shrink array if
+	 *                        suitable after remove. Default is true.
+	 */
+	FORCEINLINE void RemoveAtSwap(int32 Index, int32 Count = 1, bool bAllowShrinking = true)
+	{
+		RemoveAtSwapImpl(Index, Count, bAllowShrinking);
+	}
+
 	template <typename OtherElementType>
 	void Append(const TArray<OtherElementType>& Source)
 	{
@@ -763,6 +813,36 @@ private:
 
 		ArrayNum = WriteIndex;
 		return OriginalNum - ArrayNum;
+	}
+
+	void RemoveAtSwapImpl(int32 Index, int32 Count = 1, bool bAllowShrinking = true)
+	{
+		if (Count)
+		{
+			CheckInvariants();
+			ASSERT((Count >= 0) & (Index >= 0) & (Index + Count <= ArrayNum));
+
+			DestructItems(GetData() + Index, Count);
+
+			// Replace the elements in the hole created by the removal with elements from the end of the array, so the range of indices used by the array is contiguous.
+			const int32 NumElementsInHole = Count;
+			const int32 NumElementsAfterHole = ArrayNum - (Index + Count);
+			const int32 NumElementsToMoveIntoHole = FMath::Min(NumElementsInHole, NumElementsAfterHole);
+			if (NumElementsToMoveIntoHole)
+			{
+				FMemory::Memcpy(
+					(uint8*)Data + (Index) * sizeof(ElementType),
+					(uint8*)Data + (ArrayNum - NumElementsToMoveIntoHole) * sizeof(ElementType),
+					NumElementsToMoveIntoHole * sizeof(ElementType)
+				);
+			}
+			ArrayNum -= Count;
+
+			if (bAllowShrinking)
+			{
+				ResizeShrink();
+			}
+		}
 	}
 
 protected:

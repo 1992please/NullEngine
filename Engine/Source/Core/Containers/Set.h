@@ -16,7 +16,7 @@ class FSetElementId
 {
 public:
 
-	template<typename>
+	template<typename, typename>
 	friend class TSet;
 
 	/** Default constructor. */
@@ -115,7 +115,7 @@ public:
  * A default implementation of the KeyFuncs used by TSet which uses the element as a key.
  */
 template<typename ElementType>
-struct TKeyFuncs
+struct DefaultKeyFuncs
 {
 	typedef typename TTypeTraits<ElementType>::ConstPointerType KeyInitType;
 	typedef typename TCallTraits<ElementType>::ParamType ElementInitType;
@@ -175,12 +175,11 @@ struct TKeyFuncs
  *    the cache misses of reading key data and doing the hashing *before* acquiring the lock.
  *
  **/
-template<typename InElementType>
+template<typename InElementType, typename KeyFuncs = DefaultKeyFuncs<InElementType>>
 class TSet
 {
 private:
 	typedef TSetElement<InElementType>          SetElementType;
-	typedef typename TKeyFuncs<InElementType>   KeyFuncs;
 	typedef typename KeyFuncs::KeyInitType      KeyInitType;
 	typedef TSparseArray<SetElementType>        ElementArrayType;
 public:
@@ -256,29 +255,6 @@ public:
 		InElements.Reset();
 	}
 
-	/** Preallocates enough memory to contain Number elements */
-	FORCEINLINE void Reserve(int32 Number)
-	{
-		// makes sense only when Number > Elements.Num() since TSparseArray::Reserve 
-		// does any work only if that's the case
-		if (Number > Elements.Num())
-		{
-			// Preallocates memory for array of elements
-			Elements.Reserve(Number);
-
-			// Calculate the corresponding hash size for the specified number of elements.
-			const int32 NewHashSize = GetNumberOfHashBuckets(Number);
-
-			// If the hash hasn't been created yet, or is smaller than the corresponding hash size, rehash
-			// to force a preallocation of the hash table
-			if (!HashSize || HashSize < NewHashSize)
-			{
-				HashSize = NewHashSize;
-				Rehash();
-			}
-		}
-	}
-
 
 	/**
 	 * Adds an element to the set.
@@ -305,6 +281,31 @@ public:
 
 		uint32 KeyHash = KeyFuncs::GetKeyHash(KeyFuncs::GetSetKey(Element.Value));
 		return EmplaceImpl(KeyHash, Element, ElementAllocation.Index, bIsAlreadyInSetPtr);
+	}
+
+	/**
+	 * Checks whether an element id is valid.
+	 * @param Id - The element id to check.
+	 * @return true if the element identifier refers to a valid element in this set.
+	 */
+	FORCEINLINE bool IsValidId(FSetElementId Id) const
+	{
+		return	Id.IsValidId() &&
+			Id >= 0 &&
+			Id < Elements.GetMaxIndex() &&
+			Elements.IsAllocated(Id);
+	}
+
+	/** Accesses the identified element's value. */
+	FORCEINLINE ElementType& operator[](FSetElementId Id)
+	{
+		return Elements[Id].Value;
+	}
+
+	/** Accesses the identified element's value. */
+	FORCEINLINE const ElementType& operator[](FSetElementId Id) const
+	{
+		return Elements[Id].Value;
 	}
 
 
@@ -480,10 +481,65 @@ public:
 		Elements.Reset();
 	}
 
+	/** Shrinks the set's element storage to avoid slack. */
+	FORCEINLINE void Shrink()
+	{
+		Elements.Shrink();
+		Relax();
+	}
+
+	/** Compacts the allocated elements into a contiguous range. */
+	FORCEINLINE void Compact()
+	{
+		if (Elements.Compact())
+		{
+			Rehash();
+		}
+	}
+
+	/** Preallocates enough memory to contain Number elements */
+	FORCEINLINE void Reserve(int32 Number)
+	{
+		// makes sense only when Number > Elements.Num() since TSparseArray::Reserve 
+		// does any work only if that's the case
+		if (Number > Elements.Num())
+		{
+			// Preallocates memory for array of elements
+			Elements.Reserve(Number);
+
+			// Calculate the corresponding hash size for the specified number of elements.
+			const int32 NewHashSize = GetNumberOfHashBuckets(Number);
+
+			// If the hash hasn't been created yet, or is smaller than the corresponding hash size, rehash
+			// to force a preallocation of the hash table
+			if (!HashSize || HashSize < NewHashSize)
+			{
+				HashSize = NewHashSize;
+				Rehash();
+			}
+		}
+	}
+
+	/** Relaxes the set's hash to a size strictly bounded by the number of elements in the set. */
+	FORCEINLINE void Relax()
+	{
+		ConditionalRehash(Elements.Num(), true);
+	}
+
 	/** @return the number of elements. */
 	FORCEINLINE int32 Num() const
 	{
 		return Elements.Num();
+	}
+
+	/**
+	 * Helper function to return the amount of memory allocated by this container
+	 * Only returns the size of allocations made directly by the container, not the elements themselves.
+	 * @return number of bytes allocated by this container
+	 */
+	FORCEINLINE uint32 GetAllocatedSize(void) const
+	{
+		return Elements.GetAllocatedSize() + (HashSize * sizeof(FSetElementId));
 	}
 private:
 	FSetElementId EmplaceImpl(uint32 KeyHash, SetElementType& Element, FSetElementId ElementId, bool* bIsAlreadyInSetPtr)

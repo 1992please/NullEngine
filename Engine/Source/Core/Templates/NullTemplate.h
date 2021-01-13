@@ -121,3 +121,29 @@ FORCEINLINE typename TEnableIf<TAreTypesEqual<T, uint32>::Value, T>::Type Revers
 	Bits = ((Bits & 0x55555555) << 1) | ((Bits & 0xaaaaaaaa) >> 1);
 	return Bits;
 }
+
+/**
+ * Equivalent to std::declval.
+ *
+ * Note that this function is unimplemented, and is only intended to be used in unevaluated contexts, like sizeof and trait expressions.
+ */
+template <typename T>
+T&& DeclVal();
+
+/**
+ * TRValueToLValueReference converts any rvalue reference type into the equivalent lvalue reference, otherwise returns the same type.
+ */
+template <typename T> struct TRValueToLValueReference { typedef T  Type; };
+template <typename T> struct TRValueToLValueReference<T&&> { typedef T& Type; };
+
+
+/**
+ * This exists to avoid a Visual Studio bug where using a cast to forward an rvalue reference array argument
+ * to a pointer parameter will cause bad code generation.  Wrapping the cast in a function causes the correct
+ * code to be generated.
+ */
+template <typename T, typename ArgType>
+FORCEINLINE T StaticCast(ArgType&& Arg)
+{
+	return static_cast<T>(Arg);
+}

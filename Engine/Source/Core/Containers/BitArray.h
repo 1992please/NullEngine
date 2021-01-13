@@ -380,7 +380,17 @@ public:
 	}
 
 	FORCEINLINE int32 Num() const { return NumBits; }
+
 	FORCEINLINE int32 Max() const { return MaxBits; }
+
+	/**
+	 * Helper function to return the amount of memory allocated by this container
+	 * @return number of bytes allocated by this container
+	 */
+	uint32 GetAllocatedSize(void) const
+	{
+		return CalculateNumWords(MaxBits) * sizeof(uint32);
+	}
 
 	FORCEINLINE FBitReference operator[](int32 Index)
 	{
