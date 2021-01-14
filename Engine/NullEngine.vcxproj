@@ -18,6 +18,7 @@
     <ClInclude Include="Source\Core\Containers\Map.h" />
     <ClInclude Include="Source\Core\Containers\Set.h" />
     <ClInclude Include="Source\Core\Containers\SparseArray.h" />
+    <ClInclude Include="Source\Core\Containers\String.h" />
     <ClInclude Include="Source\Core\Core.h" />
     <ClInclude Include="Source\Core\Drawables\CubeMesh.h" />
     <ClInclude Include="Source\Core\Drawables\Drawable.h" />

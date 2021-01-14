@@ -142,30 +142,41 @@ int main(int argc, char** argv)
 			printf("shit");
 		}
 	}
-	{
-		TArray<WTF> A7A = { {32, 32}, {23,34} };
-		TSet<WTF> Hello(A7A);
-		TSparseArray<WTF> Shit;
-		WTF X(300, 50);
-		Hello.Add(X);
-		Hello.Add(WTF(300, 50));
-		Hello.Reset();
-		Hello.Empty();
-		WTF* HHH = Hello.Find(X);
-		for (WTF& Element : Hello)
-		{
-			Element.Print();
-		}
-	}
+	//{
+	//	TArray<WTF> A7A = { {32, 32}, {23,34} };
+	//	TSet<WTF> Hello(A7A);
+	//	TSparseArray<WTF> Shit;
+	//	WTF X(300, 50);
+	//	Hello.Add(X);
+	//	Hello.Add(WTF(300, 50));
+	//	Hello.Reset();
+	//	Hello.Empty();
+	//	WTF* HHH = Hello.Find(X);
+	//	for (WTF& Element : Hello)
+	//	{
+	//		Element.Print();
+	//	}
+	//}
 	{
 		TMap<int, WTF> hello;
+		hello.Add(5, WTF(300000, 50));
+		hello.Add(2, WTF(300, 50));
+		hello.Add(3, WTF(3000, 50));
+		hello.Add(1, WTF(30, 50));
+		WTF& OutValue = hello[5];
 		hello.Reserve(50);
 		hello.Num();
 		hello.Reset();
 		hello.Compact();
 		hello.GetAllocatedSize();
-		hello.Add(5, WTF(300, 50));
+
+		hello.FindOrAdd(5);
 		WTF& WTFValue = hello.Add(6);
+
+		for (TPair<int, WTF>&it : hello)
+		{
+
+		}
 	}
 
 	NullEngine* pApp = new NullEngine();

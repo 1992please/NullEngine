@@ -349,6 +349,7 @@
     <ClInclude Include="Source\Core\Templates\AlignmentTemplates.h" />
     <ClInclude Include="Source\Core\Templates\IsIntegral.h" />
     <ClInclude Include="Source\Core\Containers\Map.h" />
+    <ClInclude Include="Source\Core\Containers\String.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Drawables\CubeMesh.cpp" />

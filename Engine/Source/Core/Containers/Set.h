@@ -283,6 +283,25 @@ public:
 		return EmplaceImpl(KeyHash, Element, ElementAllocation.Index, bIsAlreadyInSetPtr);
 	}
 
+
+	/**
+	 * Adds an element to the set.
+	 *
+	 * @see		Class documentation section on ByHash() functions
+	 * @param	Args						The argument(s) to be forwarded to the set element's constructor.
+	 * @param	bIsAlreadyInSetPtr	[out]	Optional pointer to bool that will be set depending on whether element is already in set
+	 * @return	A handle to the element stored in the set.
+	 */
+	template <typename ArgsType>
+	FSetElementId EmplaceByHash(uint32 KeyHash, ArgsType&& Args, bool* bIsAlreadyInSetPtr = nullptr)
+	{
+		// Create a new element.
+		FSparseArrayAllocationInfo ElementAllocation = Elements.AddUninitialized();
+		SetElementType& Element = *new (ElementAllocation) SetElementType(Forward<ArgsType>(Args));
+
+		return EmplaceImpl(KeyHash, Element, ElementAllocation.Index, bIsAlreadyInSetPtr);
+	}
+
 	/**
 	 * Checks whether an element id is valid.
 	 * @param Id - The element id to check.

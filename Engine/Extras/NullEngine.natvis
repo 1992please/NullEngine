@@ -74,4 +74,13 @@
       </CustomListItems>
     </Expand>
   </Type>
+
+  <!-- TMapBase visualizer -->
+  <Type Name="TMap&lt;*,*,*&gt;">
+    <DisplayString>{Pairs}</DisplayString>
+    <Expand>
+      <ExpandedItem>Pairs</ExpandedItem>
+    </Expand>
+  </Type>
+  
 </AutoVisualizer>
