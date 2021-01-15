@@ -107,6 +107,10 @@ public:
 	~TArray()
 	{
 		DestructItems(Data, ArrayNum);
+		if (Data)
+		{
+			FMemory::Free(Data);
+		}
 	}
 
 	FORCEINLINE ElementType* GetData()
@@ -237,6 +241,15 @@ public:
 	FORCEINLINE void RemoveAt(int32 Index, int32 Count, bool bAllowShrinking = true)
 	{
 		RemoveAtImpl(Index, Count, bAllowShrinking);
+	}
+
+	FORCEINLINE void Shrink()
+	{
+		CheckInvariants();
+		if (ArrayMax != ArrayNum)
+		{
+			ResizeTo(ArrayNum);
+		}
 	}
 
 	FORCEINLINE void Reset(int32 NewSize = 0)
@@ -595,7 +608,33 @@ public:
 		Algo::IntroSort(Data, ArrayNum, PredicateWrapper);
 	}
 
+	void Insert(const ElementType* Ptr, int32 Count, int32 Index)
+	{
+		ASSERT(Ptr != nullptr);
 
+		InsertUninitializedImpl(Index, Count);
+		ConstructItems<ElementType>(GetData() + Index, Ptr, Count);
+	}
+
+	void Insert(ElementType&& Item, int32 Index)
+	{
+		CheckAddress(&Item);
+
+		// construct a copy in place at Index (this new operator will insert at 
+		// Index, then construct that memory with Item)
+		InsertUninitializedImpl(Index, 1);
+		new(GetData() + Index) ElementType(MoveTempIfPossible(Item));
+	}
+
+	void Insert(const ElementType& Item, int32 Index)
+	{
+		CheckAddress(&Item);
+
+		// construct a copy in place at Index (this new operator will insert at 
+		// Index, then construct that memory with Item)
+		InsertUninitializedImpl(Index, 1);
+		new(GetData() + Index) ElementType(Item);
+	}
 
 	/**
 	* DO NOT USE DIRECTLY
@@ -731,7 +770,7 @@ private:
 			// If the container has too much slack, shrink it to exactly fit the number of elements.
 			const size_t BytesPerElement = sizeof(ElementType);
 			const int32 CurrentSlackElements = ArrayMax - ArrayNum;
-			const size_t CurrentSlackBytes = (ArrayMax - ArrayNum)*BytesPerElement;
+			const size_t CurrentSlackBytes = size_t(ArrayMax - ArrayNum) * BytesPerElement;
 			const bool bTooManySlackBytes = CurrentSlackBytes >= 16384;
 			const bool bTooManySlackElements = 3 * ArrayNum < 2 * ArrayMax;
 			if ((bTooManySlackBytes || bTooManySlackElements) && (CurrentSlackElements > 64 || !ArrayNum)) //  hard coded 64 :-(
@@ -844,6 +883,21 @@ private:
 			}
 		}
 	}
+
+	void InsertUninitializedImpl(int32 Index, int32 Count)
+	{
+		CheckInvariants();
+		ASSERT((Count >= 0) & (Index >= 0) & (Index <= ArrayNum));
+
+		const int32 OldNum = ArrayNum;
+		if ((ArrayNum += Count) > ArrayMax)
+		{
+			ResizeGrow();
+		}
+		ElementType* Data = GetData() + Index;
+		RelocateConstructItems<ElementType>(Data + Count, Data, OldNum - Index);
+	}
+
 
 protected:
 	int32				ArrayNum;

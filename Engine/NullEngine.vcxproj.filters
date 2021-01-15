@@ -349,6 +349,7 @@
     <ClInclude Include="Source\Core\Templates\AlignmentTemplates.h" />
     <ClInclude Include="Source\Core\Templates\IsIntegral.h" />
     <ClInclude Include="Source\Core\Containers\Map.h" />
+    <ClInclude Include="Source\Core\Misc\CString.h" />
     <ClInclude Include="Source\Core\Containers\String.h" />
   </ItemGroup>
   <ItemGroup>
@@ -374,6 +375,9 @@
     <ClCompile Include="Source\Core\Containers\BitArray.cpp" />
     <ClCompile Include="Source\Core\Math\MathUtility.cpp" />
     <ClCompile Include="Source\Core\Misc\Crc.cpp" />
+    <ClCompile Include="Source\Core\Misc\CString.cpp" />
+    <ClCompile Include="Source\Core\NullMemory.cpp" />
+    <ClCompile Include="Source\Core\Containers\String.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO" />

@@ -217,6 +217,10 @@ public:
 	FORCEINLINE ~TSet()
 	{
 		HashSize = 0;
+		if (Hash)
+		{
+			FMemory::Free(Hash);
+		}
 	}
 
 	/** Assignment operator. */

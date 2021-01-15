@@ -155,6 +155,14 @@ public:
 		Assign(Copy);
 	}
 
+	FORCEINLINE ~FBitArray()
+	{
+		if (Data)
+		{
+			FMemory::Free(Data);
+		}
+	}
+
 	FORCEINLINE FBitArray& operator=(FBitArray&& Other)
 	{
 		if (this != &Other)
@@ -366,15 +374,13 @@ public:
 	void Empty(int32 ExpectedNumBits = 0)
 	{
 		ExpectedNumBits = static_cast<int32>(CalculateNumWords(ExpectedNumBits)) * NumBitsPerDWORD;
-		const int32 InitialMaxBits = InitialNumOfWrods * NumBitsPerDWORD;
-
 		NumBits = 0;
 
 		// If we need more bits or can shrink our allocation, do so
 		// Otherwise, reuse current initial allocation
-		if (ExpectedNumBits > MaxBits || MaxBits > InitialMaxBits)
+		if (ExpectedNumBits != MaxBits)
 		{
-			MaxBits = FMath::Max(ExpectedNumBits, InitialMaxBits);
+			MaxBits = ExpectedNumBits;
 			Realloc();
 		}
 	}

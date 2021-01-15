@@ -44,6 +44,7 @@
     <ClInclude Include="Source\Core\Math\Vector2.h" />
     <ClInclude Include="Source\Core\Math\Vector4.h" />
     <ClInclude Include="Source\Core\Misc\Crc.h" />
+    <ClInclude Include="Source\Core\Misc\CString.h" />
     <ClInclude Include="Source\Core\Templates\AlignmentTemplates.h" />
     <ClInclude Include="Source\Core\Templates\AndOrNot.h" />
     <ClInclude Include="Source\Core\Templates\AreTypesEqual.h" />
@@ -363,6 +364,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Containers\BitArray.cpp" />
+    <ClCompile Include="Source\Core\Containers\String.cpp" />
     <ClCompile Include="Source\Core\Drawables\CubeMesh.cpp" />
     <ClCompile Include="Source\Core\Drawables\FbxMesh.cpp" />
     <ClCompile Include="Source\Core\Drawables\Mesh.cpp" />
@@ -379,7 +381,9 @@
     <ClCompile Include="Source\Core\Math\Rotator.cpp" />
     <ClCompile Include="Source\Core\Math\Vector.cpp" />
     <ClCompile Include="Source\Core\Misc\Crc.cpp" />
+    <ClCompile Include="Source\Core\Misc\CString.cpp" />
     <ClCompile Include="Source\Core\NullEngine.cpp" />
+    <ClCompile Include="Source\Core\NullMemory.cpp" />
     <ClCompile Include="Source\Core\Shader.cpp" />
     <ClCompile Include="Source\Source.cpp" />
     <ClCompile Include="Source\Core\Templates\NullTemplate.h" />
@@ -397,7 +401,9 @@
     <None Include="TODO" />
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="Extras\NullEngine.natvis" />
+    <Natvis Include="Extras\NullEngine.natvis">
+      <SubType>Designer</SubType>
+    </Natvis>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

@@ -19,7 +19,7 @@
     <DisplayString Condition="ArrayNum == 0">Empty</DisplayString>
     <DisplayString Condition="ArrayNum &lt; 0">Invalid</DisplayString>
     <DisplayString Condition="ArrayMax &lt; ArrayNum">Invalid</DisplayString>
-    <DisplayString Condition="ArrayMax &gt;= ArrayNum">Num={ArrayNum} {(char*)AllocatorInstance.Data,[ArrayNum]s}</DisplayString>
+    <DisplayString Condition="ArrayMax &gt;= ArrayNum">Num={ArrayNum} {Data,[ArrayNum]s}</DisplayString>
     <StringView Condition="ArrayMax &gt;= ArrayNum">Data,[ArrayNum]s</StringView>
     <Expand>
       <ArrayItems Condition="ArrayNum &lt;= ArrayMax">
@@ -82,5 +82,14 @@
       <ExpandedItem>Pairs</ExpandedItem>
     </Expand>
   </Type>
-  
+
+  <!-- FString visualizer -->
+  <Type Name="FString">
+    <DisplayString Condition="Data.ArrayNum == 0">Empty</DisplayString>
+    <DisplayString Condition="Data.ArrayNum &lt; 0">Invalid</DisplayString>
+    <DisplayString Condition="Data.ArrayMax &lt; Data.ArrayNum">Invalid</DisplayString>
+    <DisplayString Condition="Data.ArrayMax &gt;= Data.ArrayNum">{Data.Data,s}</DisplayString>
+    <StringView Condition="Data.ArrayMax &gt;= Data.ArrayNum">Data.Data,s</StringView>
+  </Type>
+
 </AutoVisualizer>

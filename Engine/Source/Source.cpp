@@ -4,6 +4,7 @@
 #include "Containers/SparseArray.h"
 #include "Containers/Set.h"
 #include "Containers/Map.h"
+#include "Containers/String.h"
 
 struct WTF
 {
@@ -68,6 +69,8 @@ int main(int argc, char** argv)
 		Hello.Emplace(5, 6);
 		//Hello.RemoveSwap(Hello[5]);
 		Hello += { {32, 32}, { 23,34 } };
+
+		Hello.~TArray<WTF>();
 
 		WTF X(300, 50);
 		Hello.AddUnique(X);
@@ -142,21 +145,21 @@ int main(int argc, char** argv)
 			printf("shit");
 		}
 	}
-	//{
-	//	TArray<WTF> A7A = { {32, 32}, {23,34} };
-	//	TSet<WTF> Hello(A7A);
-	//	TSparseArray<WTF> Shit;
-	//	WTF X(300, 50);
-	//	Hello.Add(X);
-	//	Hello.Add(WTF(300, 50));
-	//	Hello.Reset();
-	//	Hello.Empty();
-	//	WTF* HHH = Hello.Find(X);
-	//	for (WTF& Element : Hello)
-	//	{
-	//		Element.Print();
-	//	}
-	//}
+	{
+		TArray<WTF> A7A = { {32, 32}, {23,34} };
+		TSet<WTF> Hello(A7A);
+		TSparseArray<WTF> Shit;
+		WTF X(300, 50);
+		Hello.Add(X);
+		Hello.Add(WTF(300, 50));
+		Hello.Reset();
+		Hello.Empty();
+		WTF* HHH = Hello.Find(X);
+		for (WTF& Element : Hello)
+		{
+			Element.Print();
+		}
+	}
 	{
 		TMap<int, WTF> hello;
 		hello.Add(5, WTF(300000, 50));
@@ -178,7 +181,13 @@ int main(int argc, char** argv)
 
 		}
 	}
-
+	{
+		FString Shit;
+		Shit = "haha nad the big";
+		Shit += " fuck";
+		Shit += FString::Printf("my age is %d", 28);
+		printf("%s", *Shit);
+	}
 	NullEngine* pApp = new NullEngine();
 
 	pApp->Run();
