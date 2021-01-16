@@ -2,6 +2,7 @@
 #include "Core.h"
 #include "Array.h"
 #include "Misc/CString.h"
+#include "Misc/Crc.h"
 #include "NullMemory.h"
 #include "Math/NumericLimits.h"
 #include "Templates/NullTemplate.h"
@@ -407,6 +408,41 @@ public:
 	/** Removes spaces from the string.  I.E. "Spaces Are Cool" --> "SpacesAreCool". */
 	void RemoveSpacesInline();
 
+	FORCEINLINE friend bool operator==(const FString& Lhs, const FString& Rhs)
+	{
+		return Lhs.Equals(Rhs, ESearchCase::IgnoreCase);
+	}
+
+	FORCEINLINE friend bool operator!=(const FString& Lhs, const FString& Rhs)
+	{
+		return !(Lhs == Rhs);
+	}
+
+	FORCEINLINE bool Equals(const FString& Other, ESearchCase::Type SearchCase = ESearchCase::CaseSensitive) const
+	{
+		int32 Num = Data.Num();
+		int32 OtherNum = Other.Data.Num();
+
+		if (Num != OtherNum)
+		{
+			// Handle special case where FString() == FString("")
+			return Num + OtherNum == 1;
+		}
+		else if (Num > 1)
+		{
+			if (SearchCase == ESearchCase::CaseSensitive)
+			{
+				return FCString::Strcmp(Data.GetData(), Other.Data.GetData()) == 0;
+			}
+			else
+			{
+				return FCString::Stricmp(Data.GetData(), Other.Data.GetData()) == 0;
+			}
+		}
+
+		return true;
+	}
+
 	static FString Printf(const char* Fmt, ...);
 public:
 	/**
@@ -420,3 +456,11 @@ public:
 private:
 	TArray<char> Data;
 };
+
+/** Case insensitive string hash function. */
+FORCEINLINE uint32 GetTypeHash(const FString& S)
+{
+	// This must match the GetTypeHash behavior of FStringView
+	return FCrc::StrCrc32(*S);
+}
+
