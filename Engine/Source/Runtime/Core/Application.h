@@ -7,7 +7,7 @@ public:
 	Application();
 	virtual ~Application();
 
-	void Run();
+	virtual void Run();
 };
 
 // should be define in client

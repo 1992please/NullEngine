@@ -7,3 +7,4 @@ Binaries_Obj/
 *.user
 *.sln
 *.vcxproj
+*.vcxproj.filters

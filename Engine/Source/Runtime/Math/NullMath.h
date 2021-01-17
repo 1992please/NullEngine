@@ -1,0 +1,13 @@
+#pragma once
+#include "MathUtility.h"
+#include "Vector.h"
+#include "Vector2.h"
+#include "Vector4.h"
+#include "Rotator.h"
+#include "Quat.h"
+#include "Plane.h"
+#include "NumericLimits.h"
+#include "Matrix.h"
+#include "RotationTranslationMatrix.h"
+#include "RotationMatrix.h"
+#include "PrespectiveMatrix.h"

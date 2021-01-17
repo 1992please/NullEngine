@@ -1,4 +1,5 @@
 #pragma once
+#include "Windows/WindowSystemIncludes.h"
 
 typedef signed char        int8;
 typedef short              int16;
@@ -31,23 +32,3 @@ enum EForceInit
 };
 
 enum ENoInit { NoInit };
-
-//
-//#if _DEBUG
-//static void reportAssertionFailure(const char* expr, const char* file, int line)
-//{
-//	printf("%s\n %s\n %d\n", expr, file, line);
-//}
-//
-//// check the expression and fail if it is false
-//#define ASSERT(expr) \
-//	if (expr) { } \
-//	else \
-//	{ \
-//	reportAssertionFailure(#expr, \
-//	__FILE__, __LINE__); \
-//	__debugbreak(); \
-//	}
-//#else
-//#define ASSERT(expr) // evaluates to nothing
-//#endif
