@@ -1,5 +1,5 @@
 #pragma once
-#include "Core.h"
+#include "CoreTypes.h"
 
 class NE_API Application
 {

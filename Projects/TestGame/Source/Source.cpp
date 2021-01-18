@@ -5,7 +5,7 @@
 #include "Containers/Set.h"
 #include "Containers/Map.h"
 #include "Containers/String.h"
-
+#include "Events/ApplicationEvent.h"
 
 struct WTF
 {
@@ -193,6 +193,9 @@ public:
 			Shit += FString::Printf("my age is %d", 28);
 			NE_CORE_LOG("%s", *Shit);
 		}
+		NE_CORE_FATAL("A7AAAAAAAAAAAAAAA");
+		FWindowResizeEvent WSE(1250, 200);
+		NE_CORE_LOG("%s", *WSE.ToString());
 	}
 	virtual void Run()
 	{

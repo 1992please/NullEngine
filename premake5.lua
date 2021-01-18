@@ -30,7 +30,14 @@ outputdir = "%{cfg.buildcfg}_%{cfg.architecture}"
    workspace_files 
    {
       "Engine/Extras/NullEngine.natvis",
-      "TODO"
+      "Engine/Extras/TODO"
+   }
+
+   includedirs 
+   { 
+      "Engine/Source/ThirdParty/spdlog/include",
+      "Engine/Source/Runtime",
+      "Engine/Source/Runtime/Core"
    }
 
 project "NE"
@@ -45,12 +52,6 @@ project "NE"
    {
       "Engine/Source/Runtime/**.h", 
       "Engine/Source/Runtime/**.cpp"
-   }
-
-   includedirs 
-   {
-      "Engine/Source/ThirdParty/spdlog/include",
-      "Engine/Source/Runtime"
    }
 
    filter "system:windows"
@@ -88,12 +89,6 @@ project "TestGame"
       "Projects/%{prj.name}/Source/**.h", 
       "Projects/%{prj.name}/Source/**.cpp"
    }
-
-   includedirs 
-   { 
-      "Engine/Source/ThirdParty/spdlog/include",
-      "Engine/Source/Runtime"
-   }
    
    links
    {
@@ -123,6 +118,6 @@ project "TestGame"
 
    filter "configurations:Shipping"
       defines "NE_SHIPPING"
-      optimize "off"
+      optimize "on"
 
 

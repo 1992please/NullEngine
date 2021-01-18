@@ -4,7 +4,7 @@ extern Application* CreateApplication();
 
 int main(int argc, char** argv)
 {
-	NullLogger::Init();
+	FLogger::Init();
 	Application* App = CreateApplication();
 	App->Run();
 	delete App;
