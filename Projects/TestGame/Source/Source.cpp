@@ -55,9 +55,12 @@ public:
 	TestGame()
 	{
 		NE_CORE_ERROR("Hello Bitch");
+
 		NE_CORE_WARN("Hello Bitch = %s %d", "WTF", 5);
 		NE_CORE_LOG("Hello Bitch");
+		NE_CORE_LOG("Hello Bitch");
 
+		TArray<int> lol;
 		{
 			TArray<WTF> Shit;
 			TArray<WTF> Hello = { {32, 32}, {23,34} };
