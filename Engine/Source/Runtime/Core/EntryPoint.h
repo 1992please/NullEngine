@@ -1,11 +1,11 @@
 #pragma once
 
-extern Application* CreateApplication();
+extern FApplication* CreateApplication();
 
 int main(int argc, char** argv)
 {
 	FLogger::Init();
-	Application* App = CreateApplication();
+	FApplication* App = CreateApplication();
 	App->Run();
 	delete App;
 }

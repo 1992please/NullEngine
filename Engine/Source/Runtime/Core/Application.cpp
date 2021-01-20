@@ -2,16 +2,21 @@
 
 
 
-Application::Application()
+FApplication::FApplication()
 {
+	pWindow = FWindow::Create();
+	bRunning = true;
 }
 
 
-Application::~Application()
+FApplication::~FApplication()
 {
 }
 
-void Application::Run()
+void FApplication::Run()
 {
-	while (true);
+	while (bRunning)
+	{
+		pWindow->OnUpdate();
+	}
 }

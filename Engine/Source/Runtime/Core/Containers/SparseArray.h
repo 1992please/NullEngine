@@ -170,9 +170,9 @@ public:
 	/** Marks an index as allocated, and returns information about the allocation. */
 	FSparseArrayAllocationInfo AllocateIndex(int32 Index)
 	{
-		ASSERT(Index >= 0);
-		ASSERT(Index < GetMaxIndex());
-		ASSERT(!AllocationFlags[Index]);
+		NE_ASSERT(Index >= 0);
+		NE_ASSERT(Index < GetMaxIndex());
+		NE_ASSERT(!AllocationFlags[Index]);
 
 		// Flag the element as allocated.
 		AllocationFlags[Index] = true;
@@ -297,13 +297,13 @@ public:
 	// Accessors.
 	ElementType& operator[](int32 Index)
 	{
-		ASSERT(Index >= 0 && Index < Data.Num() && Index < AllocationFlags.Num());
+		NE_ASSERT(Index >= 0 && Index < Data.Num() && Index < AllocationFlags.Num());
 		//checkSlow(AllocationFlags[Index]); // Disabled to improve loading times -BZ
 		return *(ElementType*)&GetData(Index).ElementData;
 	}
 	const ElementType& operator[](int32 Index) const
 	{
-		ASSERT(Index >= 0 && Index < Data.Num() && Index < AllocationFlags.Num());
+		NE_ASSERT(Index >= 0 && Index < Data.Num() && Index < AllocationFlags.Num());
 		//checkSlow(AllocationFlags[Index]); // Disabled to improve loading times -BZ
 		return *(ElementType*)&GetData(Index).ElementData;
 	}
@@ -352,7 +352,7 @@ public:
 	{
 		for (; Count; --Count)
 		{
-			ASSERT(AllocationFlags[Index]);
+			NE_ASSERT(AllocationFlags[Index]);
 
 			// Mark the element as free and add it to the free element list.
 			if (NumFreeIndices)

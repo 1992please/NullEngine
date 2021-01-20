@@ -1,7 +1,6 @@
 #include "CString.h"
 #include <stdio.h>
 #include <string.h>
-#include <stdarg.h>
 
 
 static constexpr uint8 LowerAscii[128] = {

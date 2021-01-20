@@ -49,7 +49,7 @@ FORCEINLINE uint32 GetTypeHash(const WTF& A)
 	return FCrc::MemCrc32(&A, sizeof(WTF));
 }
 
-class TestGame : public Application
+class TestGame : public FApplication
 {
 public:
 	TestGame()
@@ -200,17 +200,14 @@ public:
 		FWindowResizeEvent WSE(1250, 200);
 		NE_CORE_LOG("%s", *WSE.ToString());
 	}
-	virtual void Run()
-	{
-		Application::Run();
-	}
+
 	~TestGame()
 	{
 
 	}
 };
 
-Application* CreateApplication()
+FApplication* CreateApplication()
 {
 
 	return new TestGame();

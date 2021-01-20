@@ -1,5 +1,5 @@
 #include "Matrix.h"
-#include "Core/Logger.h"
+#include "Core/Logging/Logger.h"
 
 const FMatrix FMatrix::Identity(FVector(1, 0, 0), FVector(0, 1, 0), FVector(0, 0, 1), FVector(0, 0, 0));
 
@@ -35,7 +35,7 @@ inline FVector FMatrix::GetScaledAxis(EAxis::Type InAxis) const
 			return FVector(M[2][0], M[2][1], M[2][2]);
 
 		default:
-			ASSERT(0)
+			NE_ASSERT(0)
 			return FVector::ZeroVector;
 	}
 }

@@ -10,7 +10,7 @@
 #include "Algo/IntroSort.h"
 #include "Algo/HeapSort.h"
 
-#include "Core/Logger.h"
+#include "Core/Logging/Logger.h"
 
 #include "Memory/NullMemory.h"
 #include <initializer_list>
@@ -34,7 +34,7 @@ public:
 	FORCEINLINE TArray(const ElementType* Ptr, int32 Count) 
 		: Data(nullptr)
 	{
-		ASSERT(Ptr != nullptr || Count == 0);
+		NE_ASSERT(Ptr != nullptr || Count == 0);
 
 		CopyToEmpty(Ptr, Count, 0, 0);
 	}
@@ -142,14 +142,14 @@ public:
 
 	FORCEINLINE void CheckInvariants() const
 	{
-		ASSERT((ArrayNum >= 0) & (ArrayMax >= ArrayNum)); // & for one branch
+		NE_ASSERT((ArrayNum >= 0) & (ArrayMax >= ArrayNum)); // & for one branch
 	}
 
 	FORCEINLINE void RangeCheck(int32 Index) const
 	{
 		CheckInvariants();
 
-		ASSERT((Index >= 0) & (Index < ArrayNum)); // & for one branch
+		NE_ASSERT((Index >= 0) & (Index < ArrayNum)); // & for one branch
 	}
 
 	FORCEINLINE bool IsValidIndex(int32 Index) const
@@ -182,7 +182,7 @@ public:
 	FORCEINLINE int32 AddUninitialized(int32 Count = 1)
 	{
 		CheckInvariants();
-		ASSERT(Count >= 0);
+		NE_ASSERT(Count >= 0);
 
 		const int32 OldNum = ArrayNum;
 		if ((ArrayNum += Count) > ArrayMax)
@@ -202,7 +202,7 @@ public:
 
 	FORCEINLINE void CheckAddress(const ElementType* Addr) const
 	{
-		ASSERT(Addr < Data || Addr >= (Data + ArrayMax));
+		NE_ASSERT(Addr < Data || Addr >= (Data + ArrayMax));
 	}
 
 	FORCEINLINE int32 Add(const ElementType& Item)
@@ -272,7 +272,7 @@ public:
 	{
 		DestructItems(Data, ArrayNum);
 
-		ASSERT(Slack >= 0);
+		NE_ASSERT(Slack >= 0);
 		ArrayNum = 0;
 
 		if (ArrayMax != Slack)
@@ -341,7 +341,7 @@ public:
 
 	FORCEINLINE void Reserve(int32 Number)
 	{
-		ASSERT(Number >= 0);
+		NE_ASSERT(Number >= 0);
 		if (Number > ArrayMax)
 		{
 			ResizeTo(Number);
@@ -418,7 +418,7 @@ public:
 	template <typename OtherElementType>
 	void Append(const TArray<OtherElementType>& Source)
 	{
-		ASSERT((void*)this != (void*)&Source);
+		NE_ASSERT((void*)this != (void*)&Source);
 
 		int32 SourceCount = Source.Num();
 
@@ -438,7 +438,7 @@ public:
 	template <typename OtherElementType>
 	void Append(TArray<OtherElementType>&& Source)
 	{
-		ASSERT((void*)this != (void*)&Source);
+		NE_ASSERT((void*)this != (void*)&Source);
 
 		int32 SourceCount = Source.Num();
 
@@ -458,7 +458,7 @@ public:
 
 	void Append(const ElementType* Ptr, int32 Count)
 	{
-		ASSERT(Ptr != nullptr || Count == 0);
+		NE_ASSERT(Ptr != nullptr || Count == 0);
 
 		int32 Pos = AddUninitialized(Count);
 		ConstructItems<ElementType>(Data + Pos, Ptr, Count);
@@ -612,7 +612,7 @@ public:
 
 	void Insert(const ElementType* Ptr, int32 Count, int32 Index)
 	{
-		ASSERT(Ptr != nullptr);
+		NE_ASSERT(Ptr != nullptr);
 
 		InsertUninitializedImpl(Index, Count);
 		ConstructItems<ElementType>(GetData() + Index, Ptr, Count);
@@ -652,7 +652,7 @@ private:
 	template <typename OtherElementType>
 	void CopyToEmpty(const OtherElementType* OtherData, int32 NewNum, int32 PrevMax, int32 ExtraSlack)
 	{
-		ASSERT(ExtraSlack >= 0);
+		NE_ASSERT(ExtraSlack >= 0);
 
 		ArrayNum = NewNum;
 		if (NewNum || ExtraSlack || PrevMax)
@@ -709,7 +709,7 @@ private:
 		if (Count)
 		{
 			CheckInvariants();
-			ASSERT((Count >= 0) & (Index >= 0) & (Index + Count <= ArrayNum));
+			NE_ASSERT((Count >= 0) & (Index >= 0) & (Index + Count <= ArrayNum));
 
 			DestructItems(Data + Index, Count);
 
@@ -740,7 +740,7 @@ private:
 		const int32 FirstGrow = 4;
 		const int32 ConstantGrow = 16;
 
-		ASSERT(ArrayNum > ArrayMax && ArrayNum > 0);
+		NE_ASSERT(ArrayNum > ArrayMax && ArrayNum > 0);
 
 		int32 Grow = FirstGrow; // this is the amount for the first alloc
 
@@ -768,7 +768,7 @@ private:
 	{
 		int32 NewArrayMax;
 		{
-			ASSERT(ArrayNum < ArrayMax);
+			NE_ASSERT(ArrayNum < ArrayMax);
 			// If the container has too much slack, shrink it to exactly fit the number of elements.
 			const size_t BytesPerElement = sizeof(ElementType);
 			const int32 CurrentSlackElements = ArrayMax - ArrayNum;
@@ -788,7 +788,7 @@ private:
 		if (NewArrayMax != ArrayMax)
 		{
 			ArrayMax = NewArrayMax;
-			ASSERT(ArrayMax >= ArrayNum);
+			NE_ASSERT(ArrayMax >= ArrayNum);
 			ResizeAllocation(ArrayMax, sizeof(ElementType));
 		}
 	}
@@ -834,7 +834,7 @@ private:
 				ReadIndex++;
 			}
 			int32 RunLength = ReadIndex - RunStartIndex;
-			ASSERT(RunLength > 0);
+			NE_ASSERT(RunLength > 0);
 			if (NotMatch)
 			{
 				// this was a non-matching run, we need to move it
@@ -861,7 +861,7 @@ private:
 		if (Count)
 		{
 			CheckInvariants();
-			ASSERT((Count >= 0) & (Index >= 0) & (Index + Count <= ArrayNum));
+			NE_ASSERT((Count >= 0) & (Index >= 0) & (Index + Count <= ArrayNum));
 
 			DestructItems(GetData() + Index, Count);
 
@@ -889,7 +889,7 @@ private:
 	void InsertUninitializedImpl(int32 Index, int32 Count)
 	{
 		CheckInvariants();
-		ASSERT((Count >= 0) & (Index >= 0) & (Index <= ArrayNum));
+		NE_ASSERT((Count >= 0) & (Index >= 0) & (Index <= ArrayNum));
 
 		const int32 OldNum = ArrayNum;
 		if ((ArrayNum += Count) > ArrayMax)

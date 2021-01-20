@@ -24,6 +24,11 @@ typedef unsigned long long uint64;
 	#define NE_API _declspec(dllimport)
 #endif
 
+#ifdef NE_DEBUG
+	#define NE_DEBUGBREAK()  __debugbreak()
+#else
+	#define NE_DEBUGBREAK
+#endif
 enum { INDEX_NONE = -1 };
 
 enum EForceInit

@@ -1,6 +1,9 @@
 #pragma once
 #include "CoreTypes.h"
 #include <ctype.h>
+#include <stdarg.h>
+
+#define MAX_SPRINTF 1024
 
 /** Determines case sensitivity options for string comparisons. */
 namespace ESearchCase
@@ -27,6 +30,14 @@ namespace ESearchDir
 		FromEnd,
 	};
 }
+
+#define GET_VARARGS_RESULT(msg, msgsize, len, lastarg, fmt, result) \
+	{ \
+		va_list ap; \
+		va_start(ap, lastarg); \
+		result = FCString::GetVarArgs(msg, msgsize, fmt, ap); \
+		va_end(ap); \
+	}
 
 /**
  *	Set of basic string utility functions operating on plain C strings. In addition to the
@@ -162,7 +173,14 @@ struct FCString
 		return (char)(uint8(Char) + ((uint32(Char) - 'A' < 26u) << 5));
 	}
 
-	static int32 GetVarArgs(char* Dest, size_t DestSize, const char*& Fmt, va_list ArgPtr);
+	static int32 Sprintf(char* Dest, const char* Fmt, ...)
+	{
+		int32	Result = -1;
+		GET_VARARGS_RESULT(Dest, MAX_SPRINTF, MAX_SPRINTF - 1, Fmt, Fmt, Result);
+		return Result;
+	}
+
+	static int32 NE_API GetVarArgs(char* Dest, size_t DestSize, const char*& Fmt, va_list ArgPtr);
 
 	static FORCEINLINE bool IsUpper(char Char) { return ::isupper((unsigned char)Char) != 0; }
 	static FORCEINLINE bool IsLower(char Char) { return ::islower((unsigned char)Char) != 0; }
@@ -176,11 +194,3 @@ struct FCString
 	static FORCEINLINE bool IsWhitespace(char Char) { return ::isspace((unsigned char)Char) != 0; }
 
 };
-
-#define GET_VARARGS_RESULT(msg, msgsize, len, lastarg, fmt, result) \
-	{ \
-		va_list ap; \
-		va_start(ap, lastarg); \
-		result = FCString::GetVarArgs(msg, msgsize, fmt, ap); \
-		va_end(ap); \
-	}

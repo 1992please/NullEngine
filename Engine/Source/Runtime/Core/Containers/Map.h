@@ -386,7 +386,7 @@ public:
 	FORCEINLINE const ValueType& FindChecked(KeyConstPointerType Key) const
 	{
 		const auto* Pair = Pairs.Find(Key);
-		check(Pair != nullptr);
+		NE_ASSERT(Pair != nullptr);
 		return Pair->Value;
 	}
 
@@ -399,7 +399,7 @@ public:
 	FORCEINLINE ValueType& FindChecked(KeyConstPointerType Key)
 	{
 		auto* Pair = Pairs.Find(Key);
-		ASSERT(Pair != nullptr);
+		NE_ASSERT(Pair != nullptr);
 		return Pair->Value;
 	}
 

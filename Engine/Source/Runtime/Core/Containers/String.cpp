@@ -1,5 +1,4 @@
 #include "String.h"
-#include <stdarg.h>
 
 bool FString::RemoveFromStart(const char* InPrefix, ESearchCase::Type SearchCase /*= ESearchCase::IgnoreCase*/)
 {

@@ -366,7 +366,7 @@ public:
 	{
 		if (Elements.Num())
 		{
-			ASSERT(KeyHash == KeyFuncs::GetKeyHash(Key));
+			NE_ASSERT(KeyHash == KeyFuncs::GetKeyHash(Key));
 
 			for (FSetElementId ElementId = GetTypedHash(KeyHash);
 				ElementId.IsValidId();
@@ -664,7 +664,7 @@ private:
 		if (HashSize)
 		{
 			// Allocate the new hash.
-			ASSERT(FMath::IsPowerOfTwo(HashSize));
+			NE_ASSERT(FMath::IsPowerOfTwo(HashSize));
 			ResizeHashAllocation(HashSize, sizeof(FSetElementId));
 			for (int32 HashIndex = 0; HashIndex < HashSize; ++HashIndex)
 			{
@@ -863,7 +863,7 @@ private:
 			while (Id.IsValidId())
 			{
 				NextId = Set.GetInternalElement(Id).HashNextId;
-				ASSERT(Id != NextId);
+				NE_ASSERT(Id != NextId);
 
 				if (KeyFuncs::Matches(KeyFuncs::GetSetKey(Set[Id]), Key))
 				{

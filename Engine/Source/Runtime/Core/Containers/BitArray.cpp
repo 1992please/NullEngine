@@ -3,7 +3,7 @@
 void FBitArrayMemory::MemmoveBitsWordOrder(uint32* StartDest, int32 DestOffset, const uint32* StartSource, int32 SourceOffset, uint32 NumBits)
 {
 	// Normalize Inputs
-	ASSERT(NumBits >= 0);
+	NE_ASSERT(NumBits >= 0);
 	if (NumBits <= 0)
 	{
 		return;

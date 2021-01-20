@@ -1,7 +1,7 @@
 #include "Crc.h"
 #include "Templates/NullTemplate.h"
 #include "Templates/AlignmentTemplates.h"
-#include "Core/Logger.h"
+#include "Core/Logging/Logger.h"
 
 /** CRC 32 polynomial */
 enum { Crc32Poly = 0x04c11db7 };
@@ -167,7 +167,7 @@ void FCrc::CheckCrc()
 			CRC = (CRC & 1) ? (CRC >> 1) ^ RCrc32Poly : (CRC >> 1);
 		}
 
-		ASSERT(CRCTablesSB8[0][i] == CRC);
+		NE_ASSERT(CRCTablesSB8[0][i] == CRC);
 	}
 
 	for (uint32 i = 0; i != 256; ++i)
@@ -176,7 +176,7 @@ void FCrc::CheckCrc()
 		for (uint32 j = 1; j != 8; ++j)
 		{
 			CRC = CRCTablesSB8[0][CRC & 0xFF] ^ (CRC >> 8);
-			ASSERT(CRCTablesSB8[j][i] == CRC);
+			NE_ASSERT(CRCTablesSB8[j][i] == CRC);
 		}
 	}
 }

@@ -125,7 +125,7 @@ public:
 	// To allow more efficient memory handling, automatically adds one for the string termination.
 	FORCEINLINE void Reserve(int32 CharacterCount)
 	{
-		ASSERT(CharacterCount >= 0 && CharacterCount < MAX_int32);
+		NE_ASSERT(CharacterCount >= 0 && CharacterCount < MAX_int32);
 		if (CharacterCount > 0)
 		{
 			Data.Reserve(CharacterCount + 1);
@@ -150,7 +150,7 @@ public:
 	// count string length not including the null pointer
 	FORCEINLINE FString& Append(const char* Str, int32 Count)
 	{
-		ASSERT(Str);
+		NE_ASSERT(Str);
 
 		if (Count)
 		{
@@ -172,7 +172,7 @@ public:
 
 	FORCEINLINE FString& Append(const char* Str)
 	{
-		ASSERT(Str);
+		NE_ASSERT(Str);
 
 		int32 Count = FCString::Strlen(Str);
 		Append(Str, Count);
