@@ -18,13 +18,13 @@ typedef unsigned long long uint64;
 
 #define CONSTEXPR constexpr
 
-#ifdef NE_BUILD_DLL
+#if NE_BUILD_DLL
 	#define NE_API _declspec(dllexport)
 #else
 	#define NE_API _declspec(dllimport)
 #endif
 
-#ifdef NE_DEBUG
+#if NE_DEBUG
 	#define NE_DEBUGBREAK()  __debugbreak()
 #else
 	#define NE_DEBUGBREAK
@@ -38,3 +38,4 @@ enum EForceInit
 };
 
 enum ENoInit { NoInit };
+

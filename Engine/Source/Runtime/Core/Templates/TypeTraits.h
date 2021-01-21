@@ -225,3 +225,25 @@ struct TTypeTraitsBase
  * Traits for types.
  */
 template<typename T> struct TTypeTraits : public TTypeTraitsBase<T> {};
+
+
+/*-----------------------------------------------------------------------------
+	Helper templates for dealing with 'const' in template code
+-----------------------------------------------------------------------------*/
+
+/**
+ * TRemoveConst<> is modeled after boost's implementation.  It allows you to take a templatized type
+ * such as 'const Foo*' and use const_cast to convert that type to 'Foo*' without knowing about Foo.
+ *
+ *		MutablePtr = const_cast< RemoveConst< ConstPtrType >::Type >( ConstPtr );
+ */
+template< class T >
+struct TRemoveConst
+{
+	typedef T Type;
+};
+template< class T >
+struct TRemoveConst<const T>
+{
+	typedef T Type;
+};

@@ -5,6 +5,7 @@
 FApplication::FApplication()
 {
 	pWindow = FWindow::Create();
+	//pWindow->SetEventCallback(&FApplication::OnEvent);
 	bRunning = true;
 }
 
@@ -19,4 +20,9 @@ void FApplication::Run()
 	{
 		pWindow->OnUpdate();
 	}
+}
+
+void FApplication::OnEvent(FEvent& InEvent)
+{
+
 }

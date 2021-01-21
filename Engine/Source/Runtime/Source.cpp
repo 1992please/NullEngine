@@ -2,4 +2,5 @@
 #include "Events/KeyEvent.h"
 #include "Events/ApplicationEvent.h"
 #include "Events/MouseEvent.h"
-
+#include "Delegates/DelegateInstancesImpl.h"
+#include "Delegates/IDelegateInstance.h"

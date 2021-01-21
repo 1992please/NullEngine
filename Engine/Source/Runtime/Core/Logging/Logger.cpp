@@ -12,6 +12,7 @@ static std::shared_ptr<spdlog::logger> GameLogger;
 
 void FLogger::Init()
 {
+#if !NE_SHIPPING
 	spdlog::set_pattern("%^[%T] %n: %v%$");
 
 	EngineLogger = spdlog::stdout_color_mt("Engine");
@@ -19,6 +20,7 @@ void FLogger::Init()
 
 	EngineLogger->set_level(spdlog::level::trace);
 	GameLogger->set_level(spdlog::level::trace);
+#endif
 }
 
 // This starting size catches 99.97% of printf calls - there are about 700k printf calls per level

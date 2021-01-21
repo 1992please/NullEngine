@@ -22,17 +22,27 @@ public:
 	static void Init();
 	static void Log_Exec(LogCategory InLogCategory, LogType InLogType, const char* Fmt, ...);
 };
+#if !NE_SHIPPING
+	#define NE_CORE_LOG(...)       FLogger::Log_Exec(FLogger::Engine, FLogger::Trace, __VA_ARGS__);
+	#define NE_CORE_WARN(...)      FLogger::Log_Exec(FLogger::Engine, FLogger::Warn, __VA_ARGS__);
+	#define NE_CORE_ERROR(...)     FLogger::Log_Exec(FLogger::Engine, FLogger::Error, __VA_ARGS__);
+	#define NE_CORE_FATAL(...)     FLogger::Log_Exec(FLogger::Engine, FLogger::Fatal, __VA_ARGS__);
 
-#define NE_CORE_LOG(...)       FLogger::Log_Exec(FLogger::Engine, FLogger::Trace, __VA_ARGS__)
-#define NE_CORE_WARN(...)      FLogger::Log_Exec(FLogger::Engine, FLogger::Warn, __VA_ARGS__)
-#define NE_CORE_ERROR(...)     FLogger::Log_Exec(FLogger::Engine, FLogger::Error, __VA_ARGS__)
-#define NE_CORE_FATAL(...)     FLogger::Log_Exec(FLogger::Engine, FLogger::Fatal, __VA_ARGS__)
+	#define NE_GAME_LOG(...)       FLogger::Log_Exec(FLogger::Game, FLogger::Trace, __VA_ARGS__);
+	#define NE_GAME_WARN(...)      FLogger::Log_Exec(FLogger::Game, FLogger::Warn, __VA_ARGS__);
+	#define NE_GAME_ERROR(...)     FLogger::Log_Exec(FLogger::Game, FLogger::Error, __VA_ARGS__);
+#else
+	#define NE_CORE_LOG(...)
+	#define NE_CORE_WARN(...) 
+	#define NE_CORE_ERROR(...)
+	#define NE_CORE_FATAL(...)
+	
+	#define NE_GAME_LOG(...)  
+	#define NE_GAME_WARN(...) 
+	#define NE_GAME_ERROR(...)
+#endif
 
-#define NE_GAME_LOG(...)       FLogger::Log_Exec(FLogger::Game, FLogger::Trace, __VA_ARGS__)
-#define NE_GAME_WARN(...)      FLogger::Log_Exec(FLogger::Game, FLogger::Warn, __VA_ARGS__)
-#define NE_GAME_ERROR(...)     FLogger::Log_Exec(FLogger::Game, FLogger::Error, __VA_ARGS__)
-
-#ifdef NE_DEBUG
+#if NE_DEBUG
 // check the expression and fail if it is false
 #define NE_ASSERT(expr) \
 	if (expr) { } \
