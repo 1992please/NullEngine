@@ -1,24 +1,23 @@
 #pragma once
 #include "CoreTypes.h"
-#include "IDelegateInstance.h"
 #include "Templates/TypeTraits.h"
 #include "Logging/Logger.h"
 
 /**
  * Implements a delegate binding for C++ member functions.
  */
-template <bool bConst, class UserClass, typename FuncType, typename... VarTypes>
+template <bool bConst, class UserClass, typename FuncType>
 class TBaseRawMethodDelegateInstance;
 
-template <bool bConst, class UserClass, typename WrappedRetValType, typename... ParamTypes, typename... VarTypes>
-class TBaseRawMethodDelegateInstance<bConst, UserClass, WrappedRetValType(ParamTypes...), VarTypes...> : public IDelegateInstance<WrappedRetValType(ParamTypes...)>
+template <bool bConst, class UserClass, typename WrappedRetValType, typename... ParamTypes>
+class TBaseRawMethodDelegateInstance<bConst, UserClass, WrappedRetValType(ParamTypes...)> : public IBaseDelegateInstance<WrappedRetValType(ParamTypes...)>
 {
 private:
-	typedef IDelegateInstance<WrappedRetValType(ParamTypes...)> Super;
+	typedef IBaseDelegateInstance<WrappedRetValType(ParamTypes...)> Super;
 	typedef typename Super::RetValType RetValType;
-	typedef TBaseRawMethodDelegateInstance<bConst, UserClass, WrappedRetValType(ParamTypes...), VarTypes...> UnwrappedThisType;
+	typedef TBaseRawMethodDelegateInstance<bConst, UserClass, WrappedRetValType(ParamTypes...)> UnwrappedThisType;
 public:
-	typedef typename TMemFunPtrType<bConst, UserClass, RetValType(ParamTypes..., VarTypes...)>::Type FMethodPtr;
+	typedef typename TMemFunPtrType<bConst, UserClass, RetValType(ParamTypes...)>::Type FMethodPtr;
 
 	/**
 	 * Creates and initializes a new instance.
@@ -48,6 +47,22 @@ public:
 		return (*MutableUserObject->*MethodPtr)(Params...);
 	}
 
+	bool HasSameObject(const void* InUserObject) const final
+	{
+		return (UserObject.Get() == InUserObject);
+	}
+
+	FORCEINLINE static void Create(FDelegateBase& Base, UserClass* InUserObject, FMethodPtr InFunc)
+	{
+		new (Base) UnwrappedThisType(InUserObject, InFunc);
+	}
+
+
+	void CreateCopy(FDelegateBase& Base) final
+	{
+		new (Base) UnwrappedThisType(*(UnwrappedThisType*)this);
+	}
+
 protected:
 
 	// Pointer to the user's class which contains a method we would like to call.
@@ -61,18 +76,18 @@ protected:
 /**
  * Implements a delegate binding for regular C++ functions.
  */
-template <typename FuncType, typename... VarTypes>
+template <typename FuncType>
 class TBaseStaticDelegateInstance;
 
-template <typename WrappedRetValType, typename... ParamTypes, typename... VarTypes>
-class TBaseStaticDelegateInstance<WrappedRetValType(ParamTypes...), VarTypes...> : public IDelegateInstance<WrappedRetValType(ParamTypes...)>
+template <typename WrappedRetValType, typename... ParamTypes>
+class TBaseStaticDelegateInstance<WrappedRetValType(ParamTypes...)> : public IBaseDelegateInstance<WrappedRetValType(ParamTypes...)>
 {
 private:
-	typedef IDelegateInstance<WrappedRetValType(ParamTypes...)> Super;
-	typedef typename Super::RetValType RetValType;
-	typedef TBaseStaticDelegateInstance<WrappedRetValType(ParamTypes...), VarTypes...> UnwrappedThisType;
+	typedef IBaseDelegateInstance<WrappedRetValType(ParamTypes...)> Super;
+	typedef typename Super::RetType RetValType;
+	typedef TBaseStaticDelegateInstance<WrappedRetValType(ParamTypes...)> UnwrappedThisType;
 public:
-	typedef RetValType(*FFuncPtr)(ParamTypes..., VarTypes...);
+	typedef RetValType(*FFuncPtr)(ParamTypes...);
 
 	TBaseStaticDelegateInstance(FFuncPtr InStaticFuncPtr)
 		: StaticFuncPtr(InStaticFuncPtr)
@@ -86,6 +101,24 @@ public:
 
 		return (*StaticFuncPtr)(Params...);
 	}
+
+	bool HasSameObject(const void* InUserObject) const final
+	{
+		return false;
+	}
+
+public:
+
+	FORCEINLINE static void Create(FDelegateBase& Base, FFuncPtr InFunc)
+	{
+		new (Base) UnwrappedThisType(InFunc);
+	}
+
+	void CreateCopy(FDelegateBase& Base) final
+	{
+		new (Base) UnwrappedThisType(*(UnwrappedThisType*)this);
+	}
+
 private:
 
 	// C++ function pointer.
@@ -96,16 +129,16 @@ private:
 /**
  * Implements a delegate binding for C++ functors, e.g. lambdas.
  */
-template <typename FuncType, typename FunctorType, typename... VarTypes>
+template <typename FuncType, typename FunctorType>
 class TBaseFunctorDelegateInstance;
 
-template <typename WrappedRetValType, typename... ParamTypes, typename FunctorType, typename... VarTypes>
-class TBaseFunctorDelegateInstance<WrappedRetValType(ParamTypes...), FunctorType, VarTypes...> : public IDelegateInstance<WrappedRetValType(ParamTypes...)>
+template <typename WrappedRetValType, typename... ParamTypes, typename FunctorType>
+class TBaseFunctorDelegateInstance<WrappedRetValType(ParamTypes...), FunctorType> : public IBaseDelegateInstance<WrappedRetValType(ParamTypes...)>
 {
 private:
-	typedef IDelegateInstance<WrappedRetValType(ParamTypes...)> Super;
+	typedef IBaseDelegateInstance<WrappedRetValType(ParamTypes...)> Super;
 	typedef typename Super::RetValType RetValType;
-	typedef TBaseFunctorDelegateInstance<WrappedRetValType(ParamTypes...), FunctorType, VarTypes...> UnwrappedThisType;
+	typedef TBaseFunctorDelegateInstance<WrappedRetValType(ParamTypes...), FunctorType> UnwrappedThisType;
 public:
 	TBaseFunctorDelegateInstance(const FunctorType& InFunctor)
 		: Functor(InFunctor)
@@ -120,6 +153,26 @@ public:
 	RetValType Execute(ParamTypes... Params) const final
 	{	
 		return Functor(Params...);
+	}
+
+	bool HasSameObject(const void* InUserObject) const final
+	{
+		return false;
+	}
+
+	FORCEINLINE static void Create(FDelegateBase& Base, const FunctorType& InFunctor)
+	{
+		new (Base) UnwrappedThisType(InFunctor);
+	}
+
+	FORCEINLINE static void Create(FDelegateBase& Base, FunctorType&& InFunctor)
+	{
+		new (Base) UnwrappedThisType(MoveTemp(InFunctor));
+	}
+
+	void CreateCopy(FDelegateBase& Base) final
+	{
+		new (Base) UnwrappedThisType(*(UnwrappedThisType*)this);
 	}
 private:
 	// C++ functor

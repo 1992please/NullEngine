@@ -1,30 +1,28 @@
 #pragma once
 #include "CoreTypes.h"
-#include "Templates/TypeCompatibleBytes.h"
 
-template <typename FuncType>
-struct IDelegateInstance;
+// forward declaration of TDelegate;
+class FDelegateBase;
 
-template <typename InRetType, typename... ArgTypes>
-struct IDelegateInstance<InRetType(ArgTypes...)>
+struct IDelegateInstance
 {
-public:
-	typedef InRetType RetType;
-	/**
- * Virtual destructor.
- */
 	virtual ~IDelegateInstance() = default;
 
-
-	/**
-	 * Execute the delegate.  If the function pointer is not valid, an error will occur.
-	 */
-	virtual RetType Execute(ArgTypes...) const = 0;
+	virtual bool HasSameObject(const void* InUserObject) const = 0;
 };
 
+template <typename FuncType>
+struct IBaseDelegateInstance;
 
+template <typename InRetType, typename... ArgTypes>
+struct IBaseDelegateInstance<InRetType(ArgTypes...)> : IDelegateInstance
+{
+	typedef InRetType RetType;
 
-typedef TAlignedBytes<16, 16> FAlignedInlineDelegateType;
+	virtual RetType Execute(ArgTypes...) const = 0;
+
+	virtual void CreateCopy(FDelegateBase& Base) = 0;
+};
 
 template <bool Const, typename Class, typename FuncType>
 struct TMemFunPtrType;
