@@ -1,6 +1,5 @@
 #pragma once
 #include "Core/Window.h"
-#include "GLFW/glfw3.h"
 
 class FWindowsWindow : public FWindow
 {
@@ -18,5 +17,5 @@ private:
 	virtual void Init(const FWindowDetails& InDetails);
 	virtual void Shutdown();
 private:
-	GLFWwindow* glfwWindow;
+	struct GLFWwindow* glfwWindow;
 };

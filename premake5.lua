@@ -8,6 +8,7 @@ workspace "NullEngine"
 outputdir = "%{cfg.buildcfg}_%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLFW"] = "Engine/Source/ThirdParty/glfw/include"
+IncludeDir["GL3W"] = "Engine/Source/ThirdParty/gl3w/include"
 
   workspace_files 
   {
@@ -16,6 +17,7 @@ IncludeDir["GLFW"] = "Engine/Source/ThirdParty/glfw/include"
   }
 
 include "Engine/Source/ThirdParty/glfw"
+include "Engine/Source/ThirdParty/gl3w"
 
 project "NE"
   kind "SharedLib"
@@ -37,12 +39,14 @@ project "NE"
   { 
     "Engine/Source/Runtime",
     "Engine/Source/ThirdParty/spdlog/include",
-    "%{IncludeDir.GLFW}"
+    "%{IncludeDir.GLFW}",
+    "%{IncludeDir.GL3W}"
   }
 
   links
   {
     "GLFW",
+    "GL3W",
     "opengl32.lib"
   }
 

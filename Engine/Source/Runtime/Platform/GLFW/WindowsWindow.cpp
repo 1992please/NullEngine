@@ -5,6 +5,8 @@
 #include "Core/Events/MouseEvent.h"
 #include "Core/Events/KeyEvent.h"
 
+#include "GL/gl3w.h"
+#include "GLFW/glfw3.h"
 
 static uint8_t s_GLFWWindowCount = 0;
 
@@ -61,10 +63,22 @@ void FWindowsWindow::Init(const FWindowDetails& InDetails)
 		NE_ASSERT_F(success, "Could not initialize GLFW!");
 		glfwSetErrorCallback(GLFWErrorCallback);
 	}
+
 	glfwWindow = glfwCreateWindow((int)Width, (int)Height, *(Title), nullptr, nullptr);
 	glfwMakeContextCurrent(glfwWindow);
 	glfwSetWindowUserPointer(glfwWindow, this);
 	SetVSync(true);
+
+	{
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+		int gl3wInitError = gl3wInit();
+		int gl3wOpenGlSupported = gl3wIsSupported(4, 6);
+		NE_ASSERT_F(!gl3wInitError, "failed to initialize OpenGL\n");
+		NE_ASSERT_F(gl3wOpenGlSupported, "OpenGL 4.6 not supported\n");
+	}
 
 	// set glfw callbacks
 	glfwSetWindowSizeCallback(glfwWindow, [](GLFWwindow* InWindow, int InWidth, int InHeight)
