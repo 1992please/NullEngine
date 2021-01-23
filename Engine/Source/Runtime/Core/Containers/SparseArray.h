@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CoreTypes.h"
+#include "Core/CoreTypes.h"
 #include "BitArray.h"
 #include "Array.h"
 
-#include "Templates/TypeCompatibleBytes.h"
-#include "Templates/IsTriviallyDestructible.h"
-#include "Templates/ChooseClass.h"
+#include "Core/Templates/TypeCompatibleBytes.h"
+#include "Core/Templates/IsTriviallyDestructible.h"
+#include "Core/Templates/ChooseClass.h"
 
 
 

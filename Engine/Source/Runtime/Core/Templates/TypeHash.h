@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CoreTypes.h"
+#include "Core/CoreTypes.h"
 #include "IsEnum.h"
-#include "Misc/Crc.h"
+#include "Core/Misc/Crc.h"
 
 
 

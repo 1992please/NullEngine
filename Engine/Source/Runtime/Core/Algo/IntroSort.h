@@ -1,7 +1,7 @@
 #pragma once
-#include "CoreTypes.h"
-#include "Templates/Less.h"
-#include "Templates/NullTemplate.h"
+#include "Core/CoreTypes.h"
+#include "Core/Templates/Less.h"
+#include "Core/Templates/NullTemplate.h"
 
 namespace AlgoImpl
 {

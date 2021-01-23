@@ -1,8 +1,8 @@
 #pragma once
-#include "CoreTypes.h"
+#include "Core/CoreTypes.h"
 #include "Set.h"
-#include "Templates/NullTemplate.h"
-#include "Templates/TypeTraits.h"
+#include "Core/Templates/NullTemplate.h"
+#include "Core/Templates/TypeTraits.h"
 
 template <typename KeyType, typename ValueType>
 struct TPair

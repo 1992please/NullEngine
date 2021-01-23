@@ -1,7 +1,9 @@
 #pragma once
-#include "CoreTypes.h"
-#include "Events/Event.h"
-#include "Containers/String.h"
+#include "Core/CoreTypes.h"
+#include "Core/Events/Event.h"
+#include "Core/Containers/String.h"
+
+DECLARE_DELEGATE(OnWindowEventCallback, IEvent&)
 
 struct FWindowDetails
 {
@@ -21,20 +23,23 @@ struct FWindowDetails
 class FWindow
 {
 public:
-	typedef void(*EventCallbackFn)(FEvent&);
+
 	virtual ~FWindow() = default;
 
 	virtual void OnUpdate() = 0;
 
-	virtual uint32 GetWidth() const = 0;
-	virtual uint32 GetHeight() const = 0;
-
 	// Window attributes
-	virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 	virtual void SetVSync(bool enabled) = 0;
-	virtual bool IsVSync() const = 0;
+	bool IsVSync() const { return bVSync; };
 
 	virtual void* GetNativeWindow() const = 0;
 
 	static FWindow* Create(const FWindowDetails& InDetails = FWindowDetails());
+
+	OnWindowEventCallback WindowEventCallback;
+
+	FString Title;
+	unsigned int Width, Height;
+	bool bVSync;
+
 };

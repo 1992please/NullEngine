@@ -1,8 +1,8 @@
 #pragma once
-#include "CoreTypes.h"
-#include "Math/MathUtility.h"
-#include "Math/NumericLimits.h"
-#include "Memory/NullMemory.h"
+#include "Core/CoreTypes.h"
+#include "Core/Math/MathUtility.h"
+#include "Core/Math/NumericLimits.h"
+#include "Core/Memory/NullMemory.h"
 #include "Core/Logging/Logger.h"
 
 #define NumBitsPerDWORD ((uint32)32)

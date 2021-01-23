@@ -1,6 +1,6 @@
 #pragma once
-#include "CoreTypes.h"
-#include "Memory/NullMemory.h"
+#include "Core/CoreTypes.h"
+#include "Core/Memory/NullMemory.h"
 #include "EnableIf.h"
 #include "TypeTraits.h"
 #include "IsTriviallyDestructible.h"

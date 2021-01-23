@@ -1,18 +1,18 @@
 #pragma once
-#include "CoreTypes.h"
-#include "Math/NumericLimits.h"
-#include "Templates/IsTriviallyDestructible.h"
-#include "Templates/TypeTraits.h"
-#include "Templates/NullTemplate.h"
-#include "Templates/Sorting.h"
-#include "Templates/MemoryOps.h"
+#include "Core/CoreTypes.h"
+#include "Core/Math/NumericLimits.h"
+#include "Core/Templates/IsTriviallyDestructible.h"
+#include "Core/Templates/TypeTraits.h"
+#include "Core/Templates/NullTemplate.h"
+#include "Core/Templates/Sorting.h"
+#include "Core/Templates/MemoryOps.h"
 
-#include "Algo/IntroSort.h"
-#include "Algo/HeapSort.h"
+#include "Core/Algo/IntroSort.h"
+#include "Core/Algo/HeapSort.h"
 
 #include "Core/Logging/Logger.h"
 
-#include "Memory/NullMemory.h"
+#include "Core/Memory/NullMemory.h"
 #include <initializer_list>
 
 
@@ -357,12 +357,76 @@ public:
 		}
 	}
 
+	int32 RemoveSingle(const ElementType& Item)
+	{
+		int32 Index = Find(Item);
+		if (Index == INDEX_NONE)
+		{
+			return 0;
+		}
+
+		ElementType* RemovePtr = GetData() + Index;
+
+		// Destruct items that match the specified Item.
+		DestructItems(RemovePtr, 1);
+		const int32 NextIndex = Index + 1;
+		//RelocateConstructItems<ElementType>(RemovePtr, RemovePtr + 1, ArrayNum - (Index + 1));
+		FMemory::Memmove(RemovePtr, RemovePtr + 1, sizeof(ElementType)* ArrayNum - (Index + 1));
+		// Update the array count
+		--ArrayNum;
+
+		// Removed one item
+		return 1;
+	}
+
 	int32 Remove(const ElementType& Item)
 	{
 		CheckAddress(&Item);
 
 		// Element is non-const to preserve compatibility with existing code with a non-const operator==() member function
 		return RemoveAll([&Item](ElementType& Element) { return Element == Item; });
+	}
+
+	template <class PREDICATE_CLASS>
+	int32 RemoveAll(const PREDICATE_CLASS& Predicate)
+	{
+		const int32 OriginalNum = ArrayNum;
+		if (!OriginalNum)
+		{
+			return 0; // nothing to do, loop assumes one item so need to deal with this edge case here
+		}
+
+		int32 WriteIndex = 0;
+		int32 ReadIndex = 0;
+		bool NotMatch = !Predicate(Data[ReadIndex]); // use a ! to guarantee it can't be anything other than zero or one
+		do
+		{
+			int32 RunStartIndex = ReadIndex++;
+			while (ReadIndex < OriginalNum && NotMatch == !Predicate(Data[ReadIndex]))
+			{
+				ReadIndex++;
+			}
+			int32 RunLength = ReadIndex - RunStartIndex;
+			NE_ASSERT(RunLength > 0);
+			if (NotMatch)
+			{
+				// this was a non-matching run, we need to move it
+				if (WriteIndex != RunStartIndex)
+				{
+					FMemory::Memmove(&Data[WriteIndex], &Data[RunStartIndex], sizeof(ElementType)* RunLength);
+				}
+				WriteIndex += RunLength;
+			}
+			else
+			{
+				// this was a matching run, delete it
+				DestructItems(Data + RunStartIndex, RunLength);
+			}
+			NotMatch = !NotMatch;
+		} while (ReadIndex < OriginalNum);
+
+		ArrayNum = WriteIndex;
+		return OriginalNum - ArrayNum;
 	}
 
 	/**
@@ -812,48 +876,6 @@ private:
 		}
 
 		return Add(Forward<ArgsType>(Args));
-	}
-
-	template <class PREDICATE_CLASS>
-	int32 RemoveAll(const PREDICATE_CLASS& Predicate)
-	{
-		const int32 OriginalNum = ArrayNum;
-		if (!OriginalNum)
-		{
-			return 0; // nothing to do, loop assumes one item so need to deal with this edge case here
-		}
-
-		int32 WriteIndex = 0;
-		int32 ReadIndex = 0;
-		bool NotMatch = !Predicate(Data[ReadIndex]); // use a ! to guarantee it can't be anything other than zero or one
-		do
-		{
-			int32 RunStartIndex = ReadIndex++;
-			while (ReadIndex < OriginalNum && NotMatch == !Predicate(Data[ReadIndex]))
-			{
-				ReadIndex++;
-			}
-			int32 RunLength = ReadIndex - RunStartIndex;
-			NE_ASSERT(RunLength > 0);
-			if (NotMatch)
-			{
-				// this was a non-matching run, we need to move it
-				if (WriteIndex != RunStartIndex)
-				{
-					FMemory::Memmove(&Data[WriteIndex], &Data[RunStartIndex], sizeof(ElementType)* RunLength);
-				}
-				WriteIndex += RunLength;
-			}
-			else
-			{
-				// this was a matching run, delete it
-				DestructItems(Data + RunStartIndex, RunLength);
-			}
-			NotMatch = !NotMatch;
-		} while (ReadIndex < OriginalNum);
-
-		ArrayNum = WriteIndex;
-		return OriginalNum - ArrayNum;
 	}
 
 	void RemoveAtSwapImpl(int32 Index, int32 Count = 1, bool bAllowShrinking = true)

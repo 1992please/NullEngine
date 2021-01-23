@@ -1,8 +1,8 @@
 #pragma once
-#include "CoreTypes.h"
+#include "Core/CoreTypes.h"
 #include "DelegateBase.h"
-#include "Containers/Array.h"
-#include "Math/MathUtility.h"
+#include "Core/Containers/Array.h"
+#include "Core/Math/MathUtility.h"
 
 template <typename DelegateSignature>
 class TMulticastDelegate

@@ -1,5 +1,5 @@
 #pragma once
-#include "CoreTypes.h"
+#include "Core/CoreTypes.h"
 /**
  * CRC hash generation for different types of input data
  **/

@@ -1,8 +1,8 @@
 #pragma once
-#include "CoreTypes.h"
+#include "Core/CoreTypes.h"
 #include "Event.h"
 
-class NE_API FKeyEvent : public FEvent
+class NE_API FKeyEvent : public IEvent
 {
 public:
 	inline int GetKeyCode() const { return m_KeyCode; }

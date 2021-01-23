@@ -1,8 +1,8 @@
 #pragma once
-#include "CoreTypes.h"
+#include "Core/CoreTypes.h"
 #include "Event.h"
 
-class NE_API FMouseMovedEvent : public FEvent
+class NE_API FMouseMovedEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(MouseMoved)
@@ -15,7 +15,7 @@ public:
 
 	FString ToString() const override
 	{
-		return FString::Printf("MouseMovedEvent: %d, %d", MouseX, MouseY);
+		return FString::Printf("MouseMovedEvent: %f, %f", MouseX, MouseY);
 	}
 
 	virtual int GetCategoryFlags() const override { return EventCategoryMouse | EventCategoryInput; }
@@ -23,27 +23,29 @@ private:
 	float MouseX, MouseY;
 };
 
-class NE_API FMouseScrolledEvent : public FEvent
+class NE_API FMouseScrolledEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(MouseScrolled)
 
 	FMouseScrolledEvent(float InXOffset, float InYOffset)
-		: XOffset(InXOffset){}
+		: XOffset(InXOffset), YOffset(InYOffset){}
 
 	FORCEINLINE float GetXOffset() const { return XOffset; }
+	FORCEINLINE float GetYOffset() const { return YOffset; }
 
 	FString ToString() const override
 	{
-		return FString::Printf("MouseScrolledEvent: %d", XOffset);
+		return FString::Printf("MouseScrolledEvent: %f, %f", XOffset, YOffset);
 	}
 
 	virtual int GetCategoryFlags() const override { return EventCategoryMouse | EventCategoryInput; }
 private:
 	float XOffset;
+	float YOffset;
 };
 
-class NE_API FMouseButtonEvent : public FEvent
+class NE_API FMouseButtonEvent : public IEvent
 {
 public:
 	FORCEINLINE int GetMouseButton() const { return Button; }

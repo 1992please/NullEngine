@@ -1,6 +1,6 @@
 #include "Crc.h"
-#include "Templates/NullTemplate.h"
-#include "Templates/AlignmentTemplates.h"
+#include "Core/Templates/NullTemplate.h"
+#include "Core/Templates/AlignmentTemplates.h"
 #include "Core/Logging/Logger.h"
 
 /** CRC 32 polynomial */

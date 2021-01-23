@@ -20,6 +20,8 @@ include "Engine/Source/ThirdParty/glfw"
 project "NE"
   kind "SharedLib"
   language "C++"
+  cppdialect "C++17"
+  staticruntime "on"
   location "Engine"
   targetname "NullEngine"
   targetdir ("%{wks.location}/Binaries/" ..outputdir.. "/%{prj.name}")
@@ -34,7 +36,6 @@ project "NE"
   includedirs 
   { 
     "Engine/Source/Runtime",
-    "Engine/Source/Runtime/Core",
     "Engine/Source/ThirdParty/spdlog/include",
     "%{IncludeDir.GLFW}"
   }
@@ -46,8 +47,6 @@ project "NE"
   }
 
   filter "system:windows"
-    cppdialect "C++17"
-    staticruntime "on"
     systemversion "latest"
     defines 
     { 
@@ -65,7 +64,7 @@ project "NE"
 
   filter "configurations:Shipping"
     defines "NE_SHIPPING"
-    optimize "off"
+    optimize "on"
 
 project "TestGame"
   kind "ConsoleApp"
@@ -84,7 +83,6 @@ project "TestGame"
   { 
     "Engine/Source/ThirdParty/spdlog/include",
     "Engine/Source/Runtime",
-    "Engine/Source/Runtime/Core"
   }
 
   links

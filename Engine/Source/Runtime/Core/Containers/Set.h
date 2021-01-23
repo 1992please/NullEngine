@@ -1,10 +1,10 @@
 #pragma once
 #include "SparseArray.h"
-#include "Templates/NullTemplate.h"
-#include "Templates/MemoryOps.h"
-#include "Templates/ChooseClass.h"
-#include "Templates/TypeTraits.h"
-#include "Templates/TypeHash.h"
+#include "Core/Templates/NullTemplate.h"
+#include "Core/Templates/MemoryOps.h"
+#include "Core/Templates/ChooseClass.h"
+#include "Core/Templates/TypeTraits.h"
+#include "Core/Templates/TypeHash.h"
 #include <initializer_list>
 
 #define NUMBER_OF_ELEMENTS_PER_HASH_BUCKET	2

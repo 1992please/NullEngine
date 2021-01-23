@@ -1,7 +1,7 @@
 #pragma once
-#include "CoreTypes.h"
-#include "Templates/TypeTraits.h"
-#include "Logging/Logger.h"
+#include "Core/CoreTypes.h"
+#include "Core/Templates/TypeTraits.h"
+#include "Core/Logging/Logger.h"
 
 /**
  * Implements a delegate binding for C++ member functions.
@@ -14,7 +14,7 @@ class TBaseRawMethodDelegateInstance<bConst, UserClass, WrappedRetValType(ParamT
 {
 private:
 	typedef IBaseDelegateInstance<WrappedRetValType(ParamTypes...)> Super;
-	typedef typename Super::RetValType RetValType;
+	typedef typename Super::RetType RetValType;
 	typedef TBaseRawMethodDelegateInstance<bConst, UserClass, WrappedRetValType(ParamTypes...)> UnwrappedThisType;
 public:
 	typedef typename TMemFunPtrType<bConst, UserClass, RetValType(ParamTypes...)>::Type FMethodPtr;
@@ -30,7 +30,7 @@ public:
 		, MethodPtr(InMethodPtr)
 	{
 		// Non-expirable delegates must always have a non-null object pointer on creation (otherwise they could never execute.)
-		check(InUserObject != nullptr && MethodPtr != nullptr);
+		NE_ASSERT(InUserObject != nullptr && MethodPtr != nullptr);
 	}
 
 	RetValType Execute(ParamTypes... Params) const final
@@ -44,12 +44,12 @@ public:
 
 		NE_ASSERT(MethodPtr != nullptr);
 
-		return (*MutableUserObject->*MethodPtr)(Params...);
+		return (MutableUserObject->*MethodPtr)(Params...);
 	}
 
 	bool HasSameObject(const void* InUserObject) const final
 	{
-		return (UserObject.Get() == InUserObject);
+		return UserObject == InUserObject;
 	}
 
 	FORCEINLINE static void Create(FDelegateBase& Base, UserClass* InUserObject, FMethodPtr InFunc)

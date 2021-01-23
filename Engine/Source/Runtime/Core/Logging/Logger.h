@@ -1,5 +1,5 @@
 #pragma once
-#include "CoreTypes.h"
+#include "Core/CoreTypes.h"
 
 class NE_API FLogger
 {
@@ -28,18 +28,18 @@ public:
 	#define NE_CORE_ERROR(...)     FLogger::Log_Exec(FLogger::Engine, FLogger::Error, __VA_ARGS__);
 	#define NE_CORE_FATAL(...)     FLogger::Log_Exec(FLogger::Engine, FLogger::Fatal, __VA_ARGS__);
 
-	#define NE_GAME_LOG(...)       FLogger::Log_Exec(FLogger::Game, FLogger::Trace, __VA_ARGS__);
-	#define NE_GAME_WARN(...)      FLogger::Log_Exec(FLogger::Game, FLogger::Warn, __VA_ARGS__);
-	#define NE_GAME_ERROR(...)     FLogger::Log_Exec(FLogger::Game, FLogger::Error, __VA_ARGS__);
+	#define NE_LOG(...)       FLogger::Log_Exec(FLogger::Game, FLogger::Trace, __VA_ARGS__);
+	#define NE_WARN(...)      FLogger::Log_Exec(FLogger::Game, FLogger::Warn, __VA_ARGS__);
+	#define NE_ERROR(...)     FLogger::Log_Exec(FLogger::Game, FLogger::Error, __VA_ARGS__);
 #else
 	#define NE_CORE_LOG(...)
 	#define NE_CORE_WARN(...) 
 	#define NE_CORE_ERROR(...)
 	#define NE_CORE_FATAL(...)
 	
-	#define NE_GAME_LOG(...)  
-	#define NE_GAME_WARN(...) 
-	#define NE_GAME_ERROR(...)
+	#define NE_LOG(...)  
+	#define NE_LOG(...) 
+	#define NE_LOG(...)
 #endif
 
 #if NE_DEBUG

@@ -1,10 +1,10 @@
 #pragma once
-#include "CoreTypes.h"
-#include "Templates/TypeCompatibleBytes.h"
-#include "Templates/NullTemplate.h"
-#include "Templates/IsConst.h"
-#include "Memory/NullMemory.h"
-#include "Math/MathUtility.h"
+#include "Core/CoreTypes.h"
+#include "Core/Templates/TypeCompatibleBytes.h"
+#include "Core/Templates/NullTemplate.h"
+#include "Core/Templates/IsConst.h"
+#include "Core/Memory/NullMemory.h"
+#include "Core/Math/MathUtility.h"
 
 typedef TAlignedBytes<16, 16> FAlignedInlineDelegateType;
 

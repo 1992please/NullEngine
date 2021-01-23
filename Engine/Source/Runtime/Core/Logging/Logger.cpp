@@ -1,9 +1,9 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "Logger.h"
-#include "Misc/CString.h"
-#include "Memory/NullMemory.h"
-#include "Templates/NullTemplate.h"
+#include "Core/Misc/CString.h"
+#include "Core/Memory/NullMemory.h"
+#include "Core/Templates/NullTemplate.h"
 
 static char	MsgLogfStaticBuffer[4096];
 

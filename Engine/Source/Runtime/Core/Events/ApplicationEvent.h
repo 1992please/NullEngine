@@ -1,8 +1,8 @@
 #pragma once
-#include "CoreTypes.h"
+#include "Core/CoreTypes.h"
 #include "Event.h"
 
-class NE_API FWindowResizeEvent : public FEvent
+class NE_API FWindowResizeEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(WindowResize)
@@ -23,7 +23,7 @@ private:
 	unsigned int Width, Height;
 };
 
-class NE_API FWindowCloseEvent : public FEvent
+class NE_API FWindowCloseEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(WindowClose)
@@ -34,7 +34,7 @@ public:
 	FORCEINLINE virtual int GetCategoryFlags() const override { return EventCategoryApplication; }
 };
 
-class NE_API FAppTickEvent : public FEvent
+class NE_API FAppTickEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(AppTick)
@@ -45,7 +45,7 @@ public:
 	FORCEINLINE virtual int GetCategoryFlags() const override { return EventCategoryApplication; }
 };
 
-class NE_API FAppUpdateEvent : public FEvent
+class NE_API FAppUpdateEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(AppUpdate)
@@ -55,7 +55,7 @@ public:
 	FORCEINLINE virtual int GetCategoryFlags() const override { return EventCategoryApplication; }
 };
 
-class NE_API FAppRenderEvent : public FEvent
+class NE_API FAppRenderEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(AppRender)

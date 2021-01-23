@@ -1,7 +1,8 @@
 #pragma once
 
-#include "CoreTypes.h"
-#include "Containers/String.h"
+#include "Core/CoreTypes.h"
+#include "Core/Containers/String.h"
+#include "Core/Delegates/Delegate.h"
 
 enum class EventType
 {
@@ -22,7 +23,7 @@ enum EventCategory
 	EventCategoryMouseButton	= 1 << 4
 };
 
-class NE_API FEvent
+class NE_API IEvent
 {
 	friend class EventDispatcher;
 public:
@@ -35,31 +36,30 @@ public:
 	{
 		return GetCategoryFlags() & Category;
 	}
-protected:
 	bool bHandled = false;
 };
 
-class FEventDispatcher
-{
-public:
-	FEventDispatcher(FEvent& InEvent)
-		: Event(InEvent)
-	{
-	}
-
-	template<typename T>
-	bool Dispatch(bool(*Func)(T&))
-	{
-		if (Event.GetEventType() == T::GetStaticType())
-		{
-			Event.bHandled = Func(*(T*)&Event);
-			return true;
-		}
-		return false;
-	}
-private:
-	FEvent& Event;
-};
+//class FEventDispatcher
+//{
+//public:
+//	FEventDispatcher(FEvent& InEvent)
+//		: Event(InEvent)
+//	{
+//	}
+//
+//	template<typename T>
+//	bool Dispatch(bool(*Func)(T&))
+//	{
+//		if (Event.GetEventType() == T::GetStaticType())
+//		{
+//			Event.bHandled = Func(*(T*)&Event);
+//			return true;
+//		}
+//		return false;
+//	}
+//private:
+//	FEvent& Event;
+//};
 
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\
 								virtual EventType GetEventType() const override { return GetStaticType(); }\

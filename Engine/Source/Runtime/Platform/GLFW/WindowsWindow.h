@@ -10,13 +10,8 @@ public:
 
 	void OnUpdate() override;
 
-	unsigned int GetWidth() const override { return Data.Width; }
-	unsigned int GetHeight() const override { return Data.Height; }
-
 	// Window attributes
-	void SetEventCallback(const EventCallbackFn& callback) override { Data.EventCallback = callback; }
 	void SetVSync(bool enabled) override;
-	bool IsVSync() const override;
 
 	virtual void* GetNativeWindow() const { return glfwWindow; }
 private:
@@ -24,15 +19,4 @@ private:
 	virtual void Shutdown();
 private:
 	GLFWwindow* glfwWindow;
-
-	struct WindowData
-	{
-		FString Title;
-		unsigned int Width, Height;
-		bool VSync;
-
-		EventCallbackFn EventCallback;
-	};
-
-	WindowData Data;
 };

@@ -1,6 +1,6 @@
 #pragma once
-#include "CoreTypes.h"
-#include "Memory/NullMemory.h"
+#include "Core/CoreTypes.h"
+#include "Core/Memory/NullMemory.h"
 #include "RemoveReference.h"
 #include "IsEnum.h"
 #include "IsArithmetic.h"

@@ -1,12 +1,12 @@
 #pragma once
-#include "CoreTypes.h"
+#include "Core/CoreTypes.h"
 #include "Array.h"
-#include "Misc/CString.h"
-#include "Misc/Crc.h"
-#include "Memory/NullMemory.h"
-#include "Math/NumericLimits.h"
-#include "Templates/NullTemplate.h"
-#include "Math/MathUtility.h"
+#include "Core/Misc/CString.h"
+#include "Core/Misc/Crc.h"
+#include "Core/Memory/NullMemory.h"
+#include "Core/Math/NumericLimits.h"
+#include "Core/Templates/NullTemplate.h"
+#include "Core/Math/MathUtility.h"
 
 
 class FString
