@@ -20,6 +20,7 @@ void FGraphicLayersStack::PushLayer(FGraphicLayer* InLayer)
 {
 	GraphicLayers.Insert(InLayer, LayerInsertIndex);
 	LayerInsertIndex++;
+	InLayer->OnAttach();
 }
 
 void FGraphicLayersStack::PopLayer(FGraphicLayer* InLayer)
@@ -34,6 +35,7 @@ void FGraphicLayersStack::PopLayer(FGraphicLayer* InLayer)
 void FGraphicLayersStack::PushOverlay(FGraphicLayer* InOverlay)
 {
 	GraphicLayers.Push(InOverlay);
+	InOverlay->OnAttach();
 }
 
 void FGraphicLayersStack::PopOverlay(FGraphicLayer* InOverlay)

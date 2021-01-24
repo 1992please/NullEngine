@@ -45,3 +45,17 @@ public:
 
 	EVENT_CLASS_TYPE(KeyReleased)
 };
+
+class NE_API FKeyTypedEvent : public FKeyEvent
+{
+public:
+	FKeyTypedEvent(int InKeyCode)
+		: FKeyEvent(InKeyCode) {}
+
+	FString ToString() const override
+	{
+		return FString::Printf("KeyTypedEvent: %d", m_KeyCode);
+	}
+
+	EVENT_CLASS_TYPE(KeyTyped)
+};

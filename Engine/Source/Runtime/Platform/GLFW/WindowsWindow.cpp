@@ -59,23 +59,25 @@ void FWindowsWindow::Init(const FWindowDetails& InDetails)
 
 	if (s_GLFWWindowCount == 0)
 	{
+		glfwSetErrorCallback(GLFWErrorCallback);
 		int success = glfwInit();
 		NE_ASSERT_F(success, "Could not initialize GLFW!");
-		glfwSetErrorCallback(GLFWErrorCallback);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // required on mac
 	}
 
 	glfwWindow = glfwCreateWindow((int)Width, (int)Height, *(Title), nullptr, nullptr);
+	s_GLFWWindowCount++;
+
 	glfwMakeContextCurrent(glfwWindow);
 	glfwSetWindowUserPointer(glfwWindow, this);
 	SetVSync(true);
 
 	{
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		int gl3wInitError = gl3wInit();
-		int gl3wOpenGlSupported = gl3wIsSupported(4, 6);
+		bool gl3wInitError = gl3wInit() != 0;
+		bool gl3wOpenGlSupported = gl3wIsSupported(4, 6) != 0;
 		NE_ASSERT_F(!gl3wInitError, "failed to initialize OpenGL\n");
 		NE_ASSERT_F(gl3wOpenGlSupported, "OpenGL 4.6 not supported\n");
 	}
@@ -123,6 +125,13 @@ void FWindowsWindow::Init(const FWindowDetails& InDetails)
 			}
 			break;
 		}
+	});
+
+	glfwSetCharCallback(glfwWindow, [](GLFWwindow* InWindow, unsigned int key)
+	{
+		FWindowsWindow* OurWindow = (FWindowsWindow*)glfwGetWindowUserPointer(InWindow);
+		FKeyTypedEvent E(key);
+		OurWindow->WindowEventCallback.Execute(E);
 	});
 
 	glfwSetMouseButtonCallback(glfwWindow, [](GLFWwindow* InWindow, int button, int action, int mods)

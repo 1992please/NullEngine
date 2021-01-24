@@ -1,10 +1,18 @@
 #include "Application.h"
+#include "Rendering/ImGui/ImGuiLayer.h"
+
+FApplication* FApplication::Instance = nullptr;
 
 FApplication::FApplication()
 {
+	NE_ASSERT_F(!Instance, "Application already exists!");
+	Instance = this;
+
 	pWindow = FWindow::Create();
 	pWindow->WindowEventCallback.BindRaw(this, &FApplication::OnEvent);
 	bRunning = true;
+
+	GraphicLayerStack.PushLayer(new FImGuiLayer);
 }
 
 
