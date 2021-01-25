@@ -1,10 +1,13 @@
 #pragma once
 
-#include "Core/Application.h"
+#include "Core/Application/Application.h"
+#include "Core/Application/ApplicationInput.h"
+
 #include "Core/Logging/Logger.h"
 
-#include "Rendering/GraphicLayers//GraphicLayer.h"
+
+
 
 // --Entry Point---------------------
-#include "Core/EntryPoint.h"
+#include "Core/Application/EntryPoint.h"
 // ----------------------------------

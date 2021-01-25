@@ -2,6 +2,7 @@
 #include "Core/CoreTypes.h"
 #include "MathUtility.h"
 #include "Rotator.h"
+#include "Core/Containers/String.h"
 
 namespace EAxis
 {
@@ -21,14 +22,14 @@ public:
 	float Y;
 	float Z;
 
-	static const FVector ZeroVector;
-	static const FVector OneVector;
-	static const FVector UpVector;
-	static const FVector DownVector;
-	static const FVector ForwardVector;
-	static const FVector BackwardVector;
-	static const FVector RightVector;
-	static const FVector LeftVector;
+	static NE_API const FVector ZeroVector;
+	static NE_API const FVector OneVector;
+	static NE_API const FVector UpVector;
+	static NE_API const FVector DownVector;
+	static NE_API const FVector ForwardVector;
+	static NE_API const FVector BackwardVector;
+	static NE_API const FVector RightVector;
+	static NE_API const FVector LeftVector;
 
 	FORCEINLINE FVector();
 	FVector(struct FVector4 V);
@@ -69,6 +70,7 @@ public:
 	FORCEINLINE FVector GetUnsafeNormal() const;
 	FORCEINLINE FVector GetSafeNormal(float Tolerance = SMALL_NUMBER) const;
 	FORCEINLINE FVector ProjectOnTo(const FVector& A) const;
+	FORCEINLINE FString ToString() const;
 };
 
 
@@ -272,4 +274,9 @@ FORCEINLINE FVector FVector::GetSafeNormal(float Tolerance) const
 FORCEINLINE FVector FVector::ProjectOnTo(const FVector& A) const
 {
 	return (A * ((*this | A) / (A | A)));
+}
+
+FORCEINLINE FString FVector::ToString() const
+{
+	return FString::Printf("X=%3.3f Y=%3.3f Z=%3.3f", X, Y, Z);
 }

@@ -20,26 +20,29 @@ struct FWindowDetails
 };
 
 // Interface representing a desktop system based Window
-class FWindow
+class IApplicationWindow
 {
 public:
 
-	virtual ~FWindow() = default;
+	virtual ~IApplicationWindow() = default;
 
 	virtual void OnUpdate() = 0;
 
 	// Window attributes
 	virtual void SetVSync(bool enabled) = 0;
-	bool IsVSync() const { return bVSync; };
-
+	FORCEINLINE uint32 GetWidth() const { return Width; }
+	FORCEINLINE uint32 GetHeight() const { return Height; }
+	FORCEINLINE bool IsVSync() const { return bVSync; }
+	FORCEINLINE const FString& GetTitle() const { return Title; }
 	virtual void* GetNativeWindow() const = 0;
 
-	static FWindow* Create(const FWindowDetails& InDetails = FWindowDetails());
+	static IApplicationWindow* Create(const FWindowDetails& InDetails = FWindowDetails());
 
 	OnWindowEventCallback WindowEventCallback;
 
+protected:
 	FString Title;
-	unsigned int Width, Height;
+	uint32 Width;
+	uint32 Height;
 	bool bVSync;
-
 };

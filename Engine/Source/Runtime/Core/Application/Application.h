@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/CoreTypes.h"
-#include "Core/Window.h"
+
 #include "Core/Events/Event.h"
 #include "Core/Events/ApplicationEvent.h"
 #include "Rendering/GraphicLayers/GraphicLayersStack.h"
@@ -15,13 +15,14 @@ public:
 
 	void OnEvent(IEvent& InEvent);
 	void OnWindowCloseEvent(FWindowCloseEvent&);
-	FORCEINLINE FWindow* GetWindow() const { return pWindow; }
+	FORCEINLINE class IApplicationWindow* GetWindow() const { return pWindow; }
 	FORCEINLINE static FApplication* GetApplication() { return Instance; }
 private:
-	FWindow* pWindow;
+	class IApplicationWindow* pWindow;
 	bool bRunning;
 	FGraphicLayersStack GraphicLayerStack;
 	static FApplication* Instance;
+	class FImGuiLayer* ImGuiLayer;
 };
 
 // should be define in client

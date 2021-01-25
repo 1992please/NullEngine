@@ -1,7 +1,7 @@
 #pragma once
-#include "Core/Window.h"
+#include "Core/Application/ApplicationWindow.h"
 
-class FWindowsWindow : public FWindow
+class FWindowsWindow : public IApplicationWindow
 {
 public:
 	FWindowsWindow(const FWindowDetails& InDetails);

@@ -14,6 +14,11 @@ public:
 	FORCEINLINE FVector2(float InX, float InY);
 	explicit FORCEINLINE FVector2(EForceInit);
 	explicit FORCEINLINE FVector2(ENoInit) { }
+
+	FORCEINLINE FString ToString() const
+	{
+		return FString::Printf("X=%3.3f Y=%3.3f", X, Y);
+	}
 };
 
 FORCEINLINE FVector2::FVector2(float InX, float InY)

@@ -17,7 +17,7 @@ static void GLFWErrorCallback(int error, const char* description)
 }
 
 
-FWindow* FWindow::Create(const FWindowDetails& InDetails)
+IApplicationWindow* IApplicationWindow::Create(const FWindowDetails& InDetails)
 {
 	return new FWindowsWindow(InDetails);
 }

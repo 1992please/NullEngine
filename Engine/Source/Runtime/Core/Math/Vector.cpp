@@ -11,3 +11,5 @@ const FVector FVector::RightVector(0.0f, 1.0f, 0.0f);
 const FVector FVector::LeftVector(0.0f, -1.0f, 0.0f);
 
 FVector::FVector(struct FVector4 V) : FVector(V.X, V.Y, V.Z) {}
+
+
