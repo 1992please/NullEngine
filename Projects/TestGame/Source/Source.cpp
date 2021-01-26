@@ -10,6 +10,7 @@
 struct WTF
 {
 	void* Shit;
+
 	int lol;
 	int haha;
 	WTF() {};

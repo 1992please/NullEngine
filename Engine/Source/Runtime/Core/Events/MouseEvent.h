@@ -2,7 +2,7 @@
 #include "Core/CoreTypes.h"
 #include "Event.h"
 
-class NE_API FMouseMovedEvent : public IEvent
+class FMouseMovedEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(MouseMoved)
@@ -23,7 +23,7 @@ private:
 	float MouseX, MouseY;
 };
 
-class NE_API FMouseScrolledEvent : public IEvent
+class FMouseScrolledEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(MouseScrolled)
@@ -45,7 +45,7 @@ private:
 	float YOffset;
 };
 
-class NE_API FMouseButtonEvent : public IEvent
+class FMouseButtonEvent : public IEvent
 {
 public:
 	FORCEINLINE int GetMouseButton() const { return Button; }
@@ -57,7 +57,7 @@ protected:
 	int Button;
 };
 
-class NE_API FMouseButtonPressedEvent : public FMouseButtonEvent
+class FMouseButtonPressedEvent : public FMouseButtonEvent
 {
 public:
 	EVENT_CLASS_TYPE(MouseButtonPressed)
@@ -71,7 +71,7 @@ public:
 	}
 };
 
-class NE_API FMouseButtonReleasedEvent : public FMouseButtonEvent
+class FMouseButtonReleasedEvent : public FMouseButtonEvent
 {
 public:
 	EVENT_CLASS_TYPE(MouseButtonReleased)

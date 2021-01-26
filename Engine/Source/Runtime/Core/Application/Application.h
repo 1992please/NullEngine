@@ -1,11 +1,10 @@
 #pragma once
 #include "Core/CoreTypes.h"
-
 #include "Core/Events/Event.h"
 #include "Core/Events/ApplicationEvent.h"
 #include "Rendering/GraphicLayers/GraphicLayersStack.h"
 
-class NE_API FApplication
+class FApplication
 {
 public:
 	FApplication();

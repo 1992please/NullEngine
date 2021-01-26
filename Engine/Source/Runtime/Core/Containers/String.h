@@ -443,7 +443,7 @@ public:
 		return true;
 	}
 
-	static FString NE_API Printf(const char* Fmt, ...);
+	static FString Printf(const char* Fmt, ...);
 public:
 	/**
 	 * DO NOT USE DIRECTLY

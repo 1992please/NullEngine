@@ -3,7 +3,7 @@
 #include "Core/Containers/String.h"
 #include "Core/Events/Event.h"
 
-class NE_API FGraphicLayer
+class FGraphicLayer
 {
 public:
 	FGraphicLayer(const FString& Name = "Graphics Layer");

@@ -3,7 +3,7 @@
 #include "GraphicLayer.h"
 #include "Core/Containers/Array.h"
 
-class NE_API FGraphicLayersStack
+class FGraphicLayersStack
 {
 public:
 	FGraphicLayersStack();

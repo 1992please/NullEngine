@@ -3,7 +3,7 @@
 #include "Core/Application/KeyCodes.h"
 #include "Core/Math/Vector2.h"
 
-class NE_API IApplicationInput
+class IApplicationInput
 {
 public:
 	FORCEINLINE static bool IsKeyPressed(int InKeycode) { return Instance->IsKeyPressedImpl(InKeycode); }

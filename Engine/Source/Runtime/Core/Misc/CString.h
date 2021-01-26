@@ -145,7 +145,7 @@ struct FCString
 	/**
 	 * strlen wrapper
 	 */
-	static int32 NE_API Strlen(const char* String);
+	static int32 Strlen(const char* String);
 
 
 	static int32 Strcmp(const char* String1, const char* String2);
@@ -180,7 +180,7 @@ struct FCString
 		return Result;
 	}
 
-	static int32 NE_API GetVarArgs(char* Dest, size_t DestSize, const char*& Fmt, va_list ArgPtr);
+	static int32 GetVarArgs(char* Dest, size_t DestSize, const char*& Fmt, va_list ArgPtr);
 
 	static FORCEINLINE bool IsUpper(char Char) { return ::isupper((unsigned char)Char) != 0; }
 	static FORCEINLINE bool IsLower(char Char) { return ::islower((unsigned char)Char) != 0; }

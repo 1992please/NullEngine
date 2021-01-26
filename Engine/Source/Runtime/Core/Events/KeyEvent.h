@@ -2,7 +2,7 @@
 #include "Core/CoreTypes.h"
 #include "Event.h"
 
-class NE_API FKeyEvent : public IEvent
+class FKeyEvent : public IEvent
 {
 public:
 	inline int GetKeyCode() const { return m_KeyCode; }
@@ -14,7 +14,7 @@ protected:
 	int m_KeyCode;
 };
 
-class NE_API FKeyPressedEvent : public FKeyEvent
+class FKeyPressedEvent : public FKeyEvent
 {
 public:
 	FKeyPressedEvent(int InKeyCode, int InRepeatCount)
@@ -32,7 +32,7 @@ private:
 	int RepeatCount;
 };
 
-class NE_API FKeyReleasedEvent : public FKeyEvent
+class FKeyReleasedEvent : public FKeyEvent
 {
 public:
 	FKeyReleasedEvent(int InKeyCode)
@@ -46,7 +46,7 @@ public:
 	EVENT_CLASS_TYPE(KeyReleased)
 };
 
-class NE_API FKeyTypedEvent : public FKeyEvent
+class FKeyTypedEvent : public FKeyEvent
 {
 public:
 	FKeyTypedEvent(int InKeyCode)

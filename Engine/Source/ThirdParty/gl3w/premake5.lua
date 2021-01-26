@@ -1,10 +1,11 @@
 project "gl3w"
 	kind "StaticLib"
 	language "c"
-	staticruntime "On"
+	staticruntime "on"
+	
 	location "%{wks.location}/Intermediate/ProjectFiles"
-	targetdir ("%{wks.location}/Binaries/" ..outputdir.. "/%{prj.name}")
-	objdir    ("%{wks.location}/Intermediate/Build/" ..outputdir.. "/%{prj.name}")
+	targetdir 	("%{wks.location}/Binaries/" ..outputdir.. "/%{prj.name}")
+	objdir		("%{wks.location}/Intermediate/Build/" ..outputdir.. "/%{prj.name}")
 
 	files
 	{
@@ -19,8 +20,8 @@ project "gl3w"
 		"include/"
 	}
 
-    filter "system:windows"
-        systemversion "latest"
+	filter "system:windows"
+		systemversion "latest"
 
 	filter "configurations:Debug"
 		runtime "Debug"

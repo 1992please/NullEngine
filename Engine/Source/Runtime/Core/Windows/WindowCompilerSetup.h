@@ -30,4 +30,3 @@
 // Disabled warnings
 //
 #pragma warning(disable: 4291)// A placement new is used for which there is no placement delete.									https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-1-c4291
-#pragma warning(disable: 4251) // 'type' needs to have dll-interface to be used by clients of 'type'								https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-1-c4251

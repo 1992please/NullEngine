@@ -2,7 +2,7 @@
 #include "Core/CoreTypes.h"
 
 
-struct NE_API FMemory
+struct FMemory
 {
 	static void* Memmove(void* Dest, const void* Src, size_t Count);
 

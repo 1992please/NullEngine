@@ -2,7 +2,7 @@
 #include "Core/CoreTypes.h"
 #include "Event.h"
 
-class NE_API FWindowResizeEvent : public IEvent
+class FWindowResizeEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(WindowResize)
@@ -23,7 +23,7 @@ private:
 	unsigned int Width, Height;
 };
 
-class NE_API FWindowCloseEvent : public IEvent
+class FWindowCloseEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(WindowClose)
@@ -34,7 +34,7 @@ public:
 	FORCEINLINE virtual int GetCategoryFlags() const override { return EventCategoryApplication; }
 };
 
-class NE_API FAppTickEvent : public IEvent
+class FAppTickEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(AppTick)
@@ -45,7 +45,7 @@ public:
 	FORCEINLINE virtual int GetCategoryFlags() const override { return EventCategoryApplication; }
 };
 
-class NE_API FAppUpdateEvent : public IEvent
+class FAppUpdateEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(AppUpdate)
@@ -55,7 +55,7 @@ public:
 	FORCEINLINE virtual int GetCategoryFlags() const override { return EventCategoryApplication; }
 };
 
-class NE_API FAppRenderEvent : public IEvent
+class FAppRenderEvent : public IEvent
 {
 public:
 	EVENT_CLASS_TYPE(AppRender)

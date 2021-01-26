@@ -22,14 +22,14 @@ public:
 	float Y;
 	float Z;
 
-	static NE_API const FVector ZeroVector;
-	static NE_API const FVector OneVector;
-	static NE_API const FVector UpVector;
-	static NE_API const FVector DownVector;
-	static NE_API const FVector ForwardVector;
-	static NE_API const FVector BackwardVector;
-	static NE_API const FVector RightVector;
-	static NE_API const FVector LeftVector;
+	static const FVector ZeroVector;
+	static const FVector OneVector;
+	static const FVector UpVector;
+	static const FVector DownVector;
+	static const FVector ForwardVector;
+	static const FVector BackwardVector;
+	static const FVector RightVector;
+	static const FVector LeftVector;
 
 	FORCEINLINE FVector();
 	FVector(struct FVector4 V);

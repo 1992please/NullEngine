@@ -3,7 +3,7 @@
 /**
  * CRC hash generation for different types of input data
  **/
-struct NE_API FCrc
+struct FCrc
 {
 	/** lookup table with precalculated CRC values - slicing by 8 implementation */
 	static uint32 CRCTablesSB8[8][256];

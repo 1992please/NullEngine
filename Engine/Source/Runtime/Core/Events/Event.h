@@ -23,7 +23,7 @@ enum EventCategory
 	EventCategoryMouseButton	= 1 << 4
 };
 
-class NE_API IEvent
+class IEvent
 {
 	friend class EventDispatcher;
 public:

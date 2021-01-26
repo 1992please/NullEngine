@@ -22,12 +22,12 @@ include "Engine/Source/ThirdParty/gl3w"
 include "Engine/Source/ThirdParty/imgui"
 
 project "NE"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "on"
-	location "Engine"
-	targetname "NullEngine"
+
+	location "%{wks.location}/Intermediate/ProjectFiles"
 	targetdir ("%{wks.location}/Binaries/" ..outputdir.. "/%{prj.name}")
 	objdir    ("%{wks.location}/Intermediate/Build/" ..outputdir.. "/%{prj.name}")
 
@@ -57,8 +57,7 @@ project "NE"
 	filter "system:windows"
 		systemversion "latest"
 		defines 
-		{ 
-			"NE_BUILD_DLL",
+		{
 			"NE_WINDOWS"
 		}
 
@@ -80,7 +79,10 @@ project "NE"
 project "TestGame"
 	kind "ConsoleApp"
 	language "C++"
-	location "Projects/%{prj.name}"
+	cppdialect "C++17"
+	staticruntime "on"
+
+	location "%{wks.location}/Intermediate/ProjectFiles"
 	targetdir ("%{wks.location}/Binaries/" ..outputdir.. "/%{prj.name}")
 	objdir    ("%{wks.location}/Intermediate/Build/" ..outputdir.. "/%{prj.name}")
 
@@ -102,16 +104,10 @@ project "TestGame"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
-		staticruntime "on"
 		systemversion "latest"
 		defines 
 		{ 
 			"NE_WINDOWS"
-		}
-		postbuildcommands
-		{
-			("copy %{wks.location}Binaries\\"..outputdir.."\\NE\\NullEngine.dll %{cfg.buildtarget.directory}")
 		}
 
 	filter "configurations:Debug"

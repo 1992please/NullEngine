@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/CoreTypes.h"
 
-class NE_API FLogger
+class FLogger
 {
 public:
 	enum LogType

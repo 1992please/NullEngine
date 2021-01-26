@@ -41,3 +41,24 @@ void FMemory::Free(void* Original)
 {
 	free(Original);
 }
+
+
+void* operator new(size_t size)
+{
+	return FMemory::Malloc(size);
+}
+
+void operator delete (void* mem)
+{
+	FMemory::Free(mem);
+}
+
+void* operator new[](size_t size)
+{
+	return FMemory::Malloc(size);
+}
+
+void operator delete[](void* mem)
+{
+	FMemory::Free(mem);
+}
