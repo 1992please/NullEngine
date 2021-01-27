@@ -3,7 +3,7 @@
 #include "Core/Application/Application.h"
 #include "Core/Application/ApplicationInput.h"
 
-#include "Core/Logging/Logger.h"
+#include "Core/Assert/Assert.h"
 
 
 

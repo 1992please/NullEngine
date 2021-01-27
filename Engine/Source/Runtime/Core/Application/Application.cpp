@@ -26,11 +26,13 @@ void FApplication::Run()
 {
 	while (bRunning)
 	{
+		pWindow->OnUpdate();
+
 		for (FGraphicLayer* Layer : GraphicLayerStack)
 		{
 			Layer->OnUpdate(0.0f);
 		}
-		pWindow->OnUpdate();
+
 
 		ImGuiLayer->Begin();
 		for (FGraphicLayer* Layer : GraphicLayerStack)

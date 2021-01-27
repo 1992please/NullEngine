@@ -18,4 +18,5 @@ private:
 	virtual void Shutdown();
 private:
 	struct GLFWwindow* glfwWindow;
+	class IGraphicsContext* GraphicsContext;
 };

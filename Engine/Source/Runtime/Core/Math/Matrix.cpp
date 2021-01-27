@@ -1,5 +1,5 @@
 #include "Matrix.h"
-#include "Core/Logging/Logger.h"
+#include "Core/Assert/Assert.h"
 
 const FMatrix FMatrix::Identity(FVector(1, 0, 0), FVector(0, 1, 0), FVector(0, 0, 1), FVector(0, 0, 0));
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/CoreTypes.h"
 #include "Core/Templates/TypeTraits.h"
-#include "Core/Logging/Logger.h"
+#include "Core/Assert/Assert.h"
 
 /**
  * Implements a delegate binding for C++ member functions.
