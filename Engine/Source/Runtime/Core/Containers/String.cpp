@@ -330,3 +330,80 @@ FString FString::Printf(const char* Fmt, ...)
 	return ResultString;
 }
 
+int32 FString::ParseIntoArrayLines(TArray<FString>& OutArray, bool InCullEmpty /*= true*/) const
+{
+	// default array of LineEndings
+	static const char* LineEndings[] =
+	{
+		"\r\n",
+		"\r",
+		"\n",
+	};
+
+	int32 NumLineEndings = NE_ARRAY_COUNT(LineEndings);
+	return ParseIntoArray(OutArray, LineEndings, NumLineEndings, InCullEmpty);
+}
+
+int32 FString::ParseIntoArray(TArray<FString>& OutArray, const char*const* DelimArray, int32 NumDelims, bool InCullEmpty /*= true*/) const
+{
+	// Make sure the delimit string is not null or empty
+	NE_ASSERT(DelimArray);
+	OutArray.Reset();
+	const char *Start = Data.GetData();
+	const int32 Length = Len();
+	if (Start)
+	{
+		int32 SubstringBeginIndex = 0;
+
+		// Iterate through string.
+		for (int32 i = 0; i < Len();)
+		{
+			int32 SubstringEndIndex = INDEX_NONE;
+			int32 DelimiterLength = 0;
+
+			// Attempt each delimiter.
+			for (int32 DelimIndex = 0; DelimIndex < NumDelims; ++DelimIndex)
+			{
+				DelimiterLength = FCString::Strlen(DelimArray[DelimIndex]);
+
+				// If we found a delimiter...
+				if (FCString::Strncmp(Start + i, DelimArray[DelimIndex], DelimiterLength) == 0)
+				{
+					// Mark the end of the substring.
+					SubstringEndIndex = i;
+					break;
+				}
+			}
+
+			if (SubstringEndIndex != INDEX_NONE)
+			{
+				const int32 SubstringLength = SubstringEndIndex - SubstringBeginIndex;
+				// If we're not culling empty strings or if we are but the string isn't empty anyways...
+				if (!InCullEmpty || SubstringLength != 0)
+				{
+					// ... add new string from substring beginning up to the beginning of this delimiter.
+					OutArray.Add(FString(SubstringEndIndex - SubstringBeginIndex, Start + SubstringBeginIndex));
+				}
+				// Next substring begins at the end of the discovered delimiter.
+				SubstringBeginIndex = SubstringEndIndex + DelimiterLength;
+				i = SubstringBeginIndex;
+			}
+			else
+			{
+				++i;
+			}
+		}
+
+		// Add any remaining characters after the last delimiter.
+		const int32 SubstringLength = Length - SubstringBeginIndex;
+		// If we're not culling empty strings or if we are but the string isn't empty anyways...
+		if (!InCullEmpty || SubstringLength != 0)
+		{
+			// ... add new string from substring beginning up to the beginning of this delimiter.
+			OutArray.Add(FString(Start + SubstringBeginIndex));
+		}
+	}
+
+	return OutArray.Num();
+}
+

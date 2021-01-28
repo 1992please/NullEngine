@@ -55,6 +55,28 @@ public:
 		}
 	}
 
+	FORCEINLINE explicit FString(int32 InCount, const char* InSrc)
+	{
+		if (InSrc)
+		{
+			if (InCount > 0 && *InSrc)
+			{
+				Data.Reserve(InCount + 1);
+				Data.AddUninitialized(InCount + 1);
+
+				FMemory::Memcpy(Data.GetData(), InSrc, InCount);
+
+				*(Data.GetData() + Data.Num() - 1) = '\0';
+			}
+		}
+	}
+
+	FORCEINLINE FString& operator=(TArray<char>&& Other)
+	{
+		Data = MoveTemp(Other);
+		return *this;
+	}
+
 	FORCEINLINE FString& operator=(const char* Other)
 	{
 		if (Data.GetData() != Other)
@@ -444,6 +466,9 @@ public:
 	}
 
 	static FString Printf(const char* Fmt, ...);
+
+	int32 ParseIntoArrayLines(TArray<FString>& OutArray, bool InCullEmpty = true) const;
+	int32 ParseIntoArray(TArray<FString>& OutArray, const char*const* DelimArray, int32 NumDelims, bool InCullEmpty = true) const;
 public:
 	/**
 	 * DO NOT USE DIRECTLY

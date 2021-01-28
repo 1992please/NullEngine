@@ -31,6 +31,14 @@ public:
 		, Data(nullptr)
 	{}
 
+	FORCEINLINE TArray(int32 Count)
+		: ArrayNum(0)
+		, ArrayMax(0)
+		, Data(nullptr)
+	{
+		AddUninitialized(Count);
+	}
+
 	FORCEINLINE TArray(const ElementType* Ptr, int32 Count) 
 		: Data(nullptr)
 	{

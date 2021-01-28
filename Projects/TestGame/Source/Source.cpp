@@ -174,27 +174,28 @@ public:
 		//		Element.Print();
 		//	}
 		//}
-		//{
-		//	TMap<int, WTF> hello;
-		//	hello.Add(5, WTF(300000, 50));
-		//	hello.Add(2, WTF(300, 50));
-		//	hello.Add(3, WTF(3000, 50));
-		//	hello.Add(1, WTF(30, 50));
-		//	WTF& OutValue = hello[5];
-		//	hello.Reserve(50);
-		//	hello.Num();
-		//	hello.Reset();
-		//	hello.Compact();
-		//	hello.GetAllocatedSize();
+		{
+			//TMap<int, WTF> hello;
+			//hello.Add(5, WTF(300000, 50));
+			//hello.Add(2, WTF(300, 50));
+			//hello.Add(3, WTF(3000, 50));
+			//hello.Add(1, WTF(30, 50));
+			//WTF& OutValue = hello[5];
+			//hello.Reserve(50);
+			//hello.Num();
+			//hello.Reset();
+			//hello.Compact();
+			//hello.GetAllocatedSize();
 
-		//	hello.FindOrAdd(5);
-		//	WTF& WTFValue = hello.Add(6);
+			//hello.FindOrAdd(5);
+			//WTF& WTFValue = hello.Add(6);
 
-		//	for (TPair<int, WTF>&it : hello)
-		//	{
+			//for (TPair<int, WTF>&it : hello)
+			//{
 
-		//	}
-		//}
+			
+			//actualTest.Add(testints[1], testints[0]);
+		}
 		//{
 		//	FString Shit;
 		//	Shit = "haha nad the big";

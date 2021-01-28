@@ -22,6 +22,8 @@ private:
 	FGraphicLayersStack GraphicLayerStack;
 	static FApplication* Instance;
 	class FImGuiLayer* ImGuiLayer;
+
+	uint32 VertexArray, VertexBuffer, IndexBuffer;
 };
 
 // should be define in client

@@ -9,9 +9,11 @@ struct TPair
 {
 	KeyType   Key;
 	ValueType Value;
-	explicit TPair(KeyType&& KeyArg, ValueType&& ValueArg)
-		: Key(Forward<KeyType>(KeyArg))
-		, Value(Forward<ValueType>(ValueArg))
+
+	template <typename InKeyType, typename InValueType>
+	explicit TPair(InKeyType&& KeyArg, InValueType&& ValueArg)
+		: Key(Forward<InKeyType>(KeyArg))
+		, Value(Forward<InValueType>(ValueArg))
 	{
 	}
 };

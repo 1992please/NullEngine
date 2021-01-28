@@ -28,7 +28,7 @@ void FLogger::Init()
 
 void FLogger::Log_Exec(LogCategory InLogCategory, LogType InLogType, const char* Fmt, ...)
 {
-	const int32 BufferSize = UE_ARRAY_COUNT(MsgLogfStaticBuffer);
+	const int32 BufferSize = NE_ARRAY_COUNT(MsgLogfStaticBuffer);
 	char* Buffer = MsgLogfStaticBuffer;
 	int32 Result = -1;
 

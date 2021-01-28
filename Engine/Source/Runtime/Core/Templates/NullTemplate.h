@@ -176,6 +176,6 @@ FORCEINLINE T StaticCast(ArgType&& Arg)
 
 // Number of elements in an array.
 template <typename T, uint32 N>
-char(&UE4ArrayCountHelper(const T(&)[N]))[N + 1];
+char(&NEArrayCountHelper(const T(&)[N]))[N + 1];
 
-#define UE_ARRAY_COUNT( array ) (sizeof(UE4ArrayCountHelper(array)) - 1)
+#define NE_ARRAY_COUNT( array ) (sizeof(NEArrayCountHelper(array)) - 1)
