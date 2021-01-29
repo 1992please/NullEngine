@@ -1,5 +1,31 @@
 #include "String.h"
 
+void FString::AppendInt(int32 InNum)
+{
+	const char* DigitToChar = "9876543210123456789";
+	constexpr int32 ZeroDigitIndex = 9;
+	bool bIsNumberNegative = InNum < 0;
+	const int32 TempBufferSize = 16; // 16 is big enough
+	char TempNum[TempBufferSize];
+	int32 TempAt = TempBufferSize; // fill the temp string from the top down.
+
+	// Convert to string assuming base ten.
+	do
+	{
+		TempNum[--TempAt] = DigitToChar[ZeroDigitIndex + (InNum % 10)];
+		InNum /= 10;
+	} while (InNum);
+
+	if (bIsNumberNegative)
+	{
+		TempNum[--TempAt] = '-';
+	}
+
+	const char* CharPtr = TempNum + TempAt;
+	const int32 NumChars = TempBufferSize - TempAt;
+	Append(CharPtr, NumChars);
+}
+
 bool FString::RemoveFromStart(const char* InPrefix, ESearchCase::Type SearchCase /*= ESearchCase::IgnoreCase*/)
 {
 	if (*InPrefix == 0)

@@ -5,7 +5,6 @@
 #include "Core/Templates/ChooseClass.h"
 #include "Core/Templates/TypeTraits.h"
 #include "Core/Templates/TypeHash.h"
-#include <initializer_list>
 
 #define NUMBER_OF_ELEMENTS_PER_HASH_BUCKET	2
 #define BASE_NUMBER_OF_HASH_BUCKETS			8

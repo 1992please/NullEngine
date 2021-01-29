@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 
+
 #define MAX_SPRINTF 1024
 
 /** Determines case sensitivity options for string comparisons. */
@@ -141,6 +142,10 @@ struct FCString
 	{
 		return Strcat(Dest, DestCount, Src);
 	}
+
+	static int32 Atoi(const char* String);
+
+	static float Atof(const char* String);
 
 	/**
 	 * strlen wrapper

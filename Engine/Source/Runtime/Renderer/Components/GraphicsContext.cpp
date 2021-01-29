@@ -3,6 +3,5 @@
 
 IGraphicsContext* IGraphicsContext::Create(void* InWindow)
 {
-	IGraphicsContext* Out = new FOpenGlContext(InWindow);
-	return Out;
+	return new FOpenGlContext(InWindow);
 }

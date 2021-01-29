@@ -1,7 +1,7 @@
 #include "CString.h"
 #include <stdio.h>
 #include <string.h>
-
+#include <stdlib.h>
 
 static constexpr uint8 LowerAscii[128] = {
 	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
@@ -29,6 +29,16 @@ char* FCString::Strcat(char* Dest, size_t DestCount, const char* Src)
 {
 	strcat_s(Dest, DestCount, Src);
 	return Dest;
+}
+
+int32 FCString::Atoi(const char* String)
+{
+	return atoi(String);
+}
+
+float FCString::Atof(const char* String)
+{
+	return atof(String);
 }
 
 int32 FCString::Strlen(const char* String)

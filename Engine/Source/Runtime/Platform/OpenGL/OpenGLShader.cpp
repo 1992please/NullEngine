@@ -68,8 +68,10 @@ FOpenGLShader::FOpenGLShader(const FString& InFileName, const FString& InShaderN
 
 void FOpenGLShader::Bind() const
 {
-	NE_ASSERT_F(bLinked, "Trying to bind shader with that didn't get linked yet.");
-	glUseProgram(Handle);
+	if (bLinked)
+	{
+		glUseProgram(RendererID);
+	}
 }
 
 void FOpenGLShader::Unbind() const
@@ -143,7 +145,7 @@ uint32 FOpenGLShader::LoadFromString(int32 ShaderIdx, const FString& InSource)
 		glGetShaderiv(ShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
 		TArray<char> infoLog(infoLogLength);
 		glGetShaderInfoLog(ShaderID, infoLogLength, NULL, infoLog.GetData());
-		NE_CORE_ERROR("Compile log: %S", infoLog);
+		NE_CORE_ERROR("Compile log ( %s ):\n%s", ShaderSeperator[ShaderIdx], infoLog.GetData());
 	}
 
 	return ShaderID;
@@ -151,25 +153,25 @@ uint32 FOpenGLShader::LoadFromString(int32 ShaderIdx, const FString& InSource)
 
 void FOpenGLShader::CreateAndLinkProgram(uint32* InShaders)
 {
-	Handle = glCreateProgram();
+	RendererID = glCreateProgram();
 
 	const int32 ShadersNo = NE_ARRAY_COUNT(ShaderTypes);
 
 	for (int i = 0; i < ShadersNo; i++)
 		if (InShaders[i] != 0)
-			glAttachShader(Handle, InShaders[i]);
+			glAttachShader(RendererID, InShaders[i]);
 
 	//link and check whether the program links fine
 	GLint status;
-	glLinkProgram(Handle);
-	glGetProgramiv(Handle, GL_LINK_STATUS, &status);
+	glLinkProgram(RendererID);
+	glGetProgramiv(RendererID, GL_LINK_STATUS, &status);
 	if (status == GL_FALSE) {
 		GLint infoLogLength;
 
-		glGetProgramiv(Handle, GL_INFO_LOG_LENGTH, &infoLogLength);
+		glGetProgramiv(RendererID, GL_INFO_LOG_LENGTH, &infoLogLength);
 		TArray<char> infoLog(infoLogLength);
-		glGetProgramInfoLog(Handle, infoLogLength, NULL, infoLog.GetData());
-		NE_CORE_ERROR("Link log: %s", infoLog);
+		glGetProgramInfoLog(RendererID, infoLogLength, NULL, infoLog.GetData());
+		NE_CORE_ERROR("Link log:\n%s", infoLog.GetData());
 	}
 	else
 	{
@@ -186,21 +188,21 @@ void FOpenGLShader::LoadUniformLocations()
 {
 	GLint NumUniforms = 0;
 
-	glGetProgramInterfaceiv(Handle, GL_UNIFORM, GL_ACTIVE_RESOURCES, &NumUniforms);
+	glGetProgramInterfaceiv(RendererID, GL_UNIFORM, GL_ACTIVE_RESOURCES, &NumUniforms);
 	GLenum properties[] = { GL_NAME_LENGTH, GL_TYPE, GL_LOCATION, GL_BLOCK_INDEX };
 
 	UniformLocations.Empty(NumUniforms);
 	char UniformName[UNIFORM_NAME_BUFFER_SIZE];
 	for (GLint UniformIndex = 0; UniformIndex < NumUniforms; ++UniformIndex) {
 		GLint Results[4];
-		glGetProgramResourceiv(Handle, GL_UNIFORM, UniformIndex, 4, properties, 4, NULL, Results);
+		glGetProgramResourceiv(RendererID, GL_UNIFORM, UniformIndex, 4, properties, 4, NULL, Results);
 		if (Results[3] != -1) continue;  // Skip uniforms in blocks
 
 		GLint nameBufSize = Results[0] + 1;
 
 		NE_ASSERT_F(nameBufSize <= UNIFORM_NAME_BUFFER_SIZE, "Uniform buffer is not large engough.");
 
-		glGetProgramResourceName(Handle, GL_UNIFORM, UniformIndex, nameBufSize, NULL, UniformName);
+		glGetProgramResourceName(RendererID, GL_UNIFORM, UniformIndex, nameBufSize, NULL, UniformName);
 
 		UniformLocations.Add(UniformName, Results[2]);
 	}
@@ -211,6 +213,6 @@ void FOpenGLShader::DeleteShaderProgram()
 	if (bLinked)
 	{
 		bLinked = false;
-		glDeleteProgram(Handle);
+		glDeleteProgram(RendererID);
 	}
 }

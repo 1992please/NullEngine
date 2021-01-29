@@ -2,7 +2,7 @@
 #include "Core/CoreTypes.h"
 #include "Core/Events/Event.h"
 #include "Core/Events/ApplicationEvent.h"
-#include "Rendering/GraphicLayers/GraphicLayersStack.h"
+#include "Renderer/GraphicLayers/GraphicLayersStack.h"
 
 class FApplication
 {
@@ -23,7 +23,10 @@ private:
 	static FApplication* Instance;
 	class FImGuiLayer* ImGuiLayer;
 
-	uint32 VertexArray, VertexBuffer, IndexBuffer;
+	uint32 VertexArray;
+	class IVertexBuffer* VertexBuffer;
+	class IIndexBuffer* IndexBuffer;
+	class IShader* Shader;
 };
 
 // should be define in client

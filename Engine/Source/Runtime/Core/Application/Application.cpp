@@ -1,13 +1,32 @@
 #include "Application.h"
-#include "Rendering/ImGui/ImGuiLayer.h"
+#include "Renderer/ImGui/ImGuiLayer.h"
 #include "Core/Application/ApplicationInput.h"
 #include "Core/Application/ApplicationWindow.h"
 #include "GL/gl3w.h"
-#include "Rendering/Shader.h"
+#include "Renderer/Components/Shader.h"
+#include "Renderer/Components/Buffers.h"
 
 FApplication* FApplication::Instance = nullptr;
 
-static IShader* Shader;
+static GLenum ShaderDataTypeToOpenGLBaseType(FBufferElement::EType InType)
+{
+	switch (InType)
+	{
+		case FBufferElement::TYPE_Float:	return GL_FLOAT;
+		case FBufferElement::TYPE_Float2:	return GL_FLOAT;
+		case FBufferElement::TYPE_Float3:	return GL_FLOAT;
+		case FBufferElement::TYPE_Float4:	return GL_FLOAT;
+		case FBufferElement::TYPE_Mat3:		return GL_FLOAT;
+		case FBufferElement::TYPE_Mat4:		return GL_FLOAT;
+		case FBufferElement::TYPE_Int:		return GL_INT;
+		case FBufferElement::TYPE_Int2:		return GL_INT;
+		case FBufferElement::TYPE_Int3:		return GL_INT;
+		case FBufferElement::TYPE_Int4:		return GL_INT;
+		case FBufferElement::TYPE_Bool:		return GL_BOOL;
+	}
+	NE_ASSERT_F(false, "Unknown Element Type");
+	return 0;
+}
 
 FApplication::FApplication()
 {
@@ -23,24 +42,43 @@ FApplication::FApplication()
 	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
 
-	glGenBuffers(1, &VertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, VertexBuffer);
+	float Verteces[] = {
+		0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+		- 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f };
 
-	TArray<FVector> Verteces;
-	Verteces.Emplace(0.0f, 0.5f, 0.0f);
-	Verteces.Emplace(0.5f, -0.5f, 0.0f);
-	Verteces.Emplace(-0.5f, -0.5f, 0.0f);
-	int size = Verteces.Num() * sizeof(FVector);
-	glBufferData(GL_ARRAY_BUFFER, size, Verteces.GetData(), GL_STATIC_DRAW);
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(FVector), nullptr);
+	VertexBuffer = IVertexBuffer::Create(Verteces, sizeof(Verteces));
+	{
+		FBufferLayout Layout = {
+			{ "Position" , FBufferElement::TYPE_Float3 },
+			{ "Color" , FBufferElement::TYPE_Float4 },
+		};
+		
+		VertexBuffer->SetLayout(Layout);
+	}
 
-	glGenBuffers(1, &IndexBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBuffer);
+	uint32 EleIndex = 0;
+	const FBufferLayout& lLayout = VertexBuffer->GetLayout();
+	for (const FBufferElement& Ele : lLayout)
+	{
+		glEnableVertexAttribArray(EleIndex);
+		glVertexAttribPointer(EleIndex, 
+			Ele.GetComponentCount(), 
+			ShaderDataTypeToOpenGLBaseType(Ele.Type), 
+			Ele.bNormalized ? GL_TRUE : GL_FALSE,
+			lLayout.GetStride(),
+			(const void*) Ele.Offset);
+
+		EleIndex++;
+	}
+
+
+
 
 	uint32 indices[3] = { 0, 1, 2 };
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32) * 3, indices, GL_STATIC_DRAW);
+
+	IndexBuffer = IIndexBuffer::Create(indices, 3);
 
 	Shader = IShader::Create("../../Engine/Shaders/TestShader.glsl");
 }
@@ -58,7 +96,7 @@ void FApplication::Run()
 		glClearColor(0.1f, 0.1f, 0.1f, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 		Shader->Unbind();
 		for (FGraphicLayer* Layer : GraphicLayerStack)

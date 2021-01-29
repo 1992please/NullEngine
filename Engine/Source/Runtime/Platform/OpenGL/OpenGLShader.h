@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/CoreTypes.h"
-#include "Rendering/Shader.h"
+#include "Renderer/Components/Shader.h"
 #include "Core/Containers/Map.h"
 
 class FOpenGLShader : public IShader
@@ -8,6 +8,7 @@ class FOpenGLShader : public IShader
 public:
 	FOpenGLShader(const FString& FileName, const FString& ShaderName);
 
+	virtual bool Islinked() const override { return bLinked; }
 	virtual void Bind() const override;
 	virtual void Unbind() const override;
 
@@ -22,12 +23,12 @@ public:
 	virtual const FString& GetName() const override { return ShaderName; }
 private:
 	void DeleteShaderProgram();
-	uint32 LoadFromString(int32 ShaderIdx, const FString& source);
+	uint32 LoadFromString(int32 ShaderIdx, const FString& InSource);
 	void CreateAndLinkProgram(uint32* InShaders);
 	void LoadUniformLocations();
 
 	bool bLinked;
-	int32 Handle;
+	uint32 RendererID;
 	FString ShaderName;
 	TMap<FString, int32> UniformLocations;
 };

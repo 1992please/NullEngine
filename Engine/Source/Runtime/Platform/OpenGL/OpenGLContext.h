@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/CoreTypes.h"
-#include "Rendering/GraphicsContext/GraphicsContext.h"
+#include "Renderer/Components/GraphicsContext.h"
 
 class FOpenGlContext : public IGraphicsContext
 {

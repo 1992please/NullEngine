@@ -9,6 +9,7 @@ public:
 	// Make it non-copyable
 	virtual ~IShader() = default;
 
+	virtual bool Islinked() const = 0;
 	virtual void Bind() const = 0;
 	virtual void Unbind() const = 0;
 

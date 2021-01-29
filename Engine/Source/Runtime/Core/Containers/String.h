@@ -227,6 +227,16 @@ public:
 		return *this;
 	}
 
+	/** appends the integer InNum to this string */
+	void AppendInt(int32 InNum);
+
+	static FORCEINLINE FString FromInt(int32 Num)
+	{
+		FString Ret;
+		Ret.AppendInt(Num);
+		return Ret;
+	}
+
 	template <typename StrType>
 	FORCEINLINE FString& operator+=(StrType&& Str) { return Append(Forward<StrType>(Str)); }
 	FORCEINLINE FString& operator+=(char Char) { return AppendChar(Char); }
