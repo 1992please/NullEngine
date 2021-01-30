@@ -3,6 +3,7 @@
 #include "MathUtility.h"
 #include "Rotator.h"
 #include "Core/Containers/String.h"
+#include "Core/Math/Color.h"
 
 namespace EAxis
 {
@@ -32,9 +33,11 @@ public:
 	static const FVector LeftVector;
 
 	FORCEINLINE FVector();
-	FVector(struct FVector4 V);
-	explicit FORCEINLINE FVector(float InF);
 	FORCEINLINE FVector(float InX, float InY, float InZ);
+	FORCEINLINE	FVector(struct FVector4 V);
+	explicit FORCEINLINE FVector(float InF);
+	explicit FVector(const FLinearColor& InColor);
+
 	//// Cross Product
 	FORCEINLINE FVector operator^(const FVector& V) const;
 	FORCEINLINE static FVector CrossProduct(const FVector& A, const FVector& B);
@@ -84,6 +87,11 @@ FORCEINLINE FVector::FVector(float InF)
 FORCEINLINE FVector::FVector(float InX, float InY, float InZ)
 	: X(InX), Y(InY), Z(InZ)
 {}
+
+FORCEINLINE FVector::FVector(const FLinearColor& InColor)
+	: X(InColor.R), Y(InColor.G), Z(InColor.B)
+{
+}
 
 FORCEINLINE FVector FVector::operator^(const FVector& V) const
 {

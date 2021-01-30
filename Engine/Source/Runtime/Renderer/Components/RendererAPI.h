@@ -1,5 +1,7 @@
 #pragma once
 #include "Core/CoreTypes.h"
+#include "Renderer/Components/VertexArray.h"
+#include "Core/Math/Color.h"
 
 class IRendererAPI
 {
@@ -10,8 +12,12 @@ public:
         Type_OpenGL = 1
     };
 
-	FORCEINLINE static EType GetAPI() { return API; }
 
+	virtual void SetClearColor(const FLinearColor& Color) = 0;
+	virtual void Clear() = 0;
+	virtual void DrawIndexed(const IVertexArray* InVertexArray) = 0;
+
+	FORCEINLINE static EType GetAPI() { return API; }
 private:
     static EType API;
 };

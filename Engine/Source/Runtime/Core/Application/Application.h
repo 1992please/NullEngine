@@ -3,7 +3,7 @@
 #include "Core/Events/Event.h"
 #include "Core/Events/ApplicationEvent.h"
 #include "Renderer/GraphicLayers/GraphicLayersStack.h"
-
+#include "Renderer/Components/RendererCamera.h"
 class FApplication
 {
 public:
@@ -22,11 +22,11 @@ private:
 	FGraphicLayersStack GraphicLayerStack;
 	static FApplication* Instance;
 	class FImGuiLayer* ImGuiLayer;
-
-	uint32 VertexArray;
-	class IVertexBuffer* VertexBuffer;
-	class IIndexBuffer* IndexBuffer;
 	class IShader* Shader;
+	class IShader* Shader2;
+	class IVertexArray* VertexArray;
+	class IVertexArray* VertexArray2;
+	FOrthographicCamera Camera;
 };
 
 // should be define in client

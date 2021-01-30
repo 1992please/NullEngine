@@ -16,7 +16,14 @@ public:
 	 * @param MinZ distance to the near Z plane
 	 * @param MaxZ distance to the far Z plane
 	 */
-	FPerspectiveMatrix(float HalfFOVX, float HalfFOVY, float MultFOVX, float MultFOVY, float MinZ, float MaxZ);
+	FORCEINLINE FPerspectiveMatrix(float HalfFOVX, float HalfFOVY, float MultFOVX, float MultFOVY, float MinZ, float MaxZ)
+		: FMatrix(
+			FPlane(MultFOVX / FMath::Tan(HalfFOVX), 0.0f, 0.0f, 0.0f),
+			FPlane(0.0f, MultFOVY / FMath::Tan(HalfFOVY), 0.0f, 0.0f),
+			FPlane(0.0f, 0.0f, (-MinZ - MaxZ) / (MinZ - MaxZ), 1.0f),
+			FPlane(0.0f, 0.0f, 2 * MinZ * MaxZ / (MinZ - MaxZ), 0.0f)
+		)
+	{ }
 
 	/**
 	 * Constructor
@@ -28,25 +35,18 @@ public:
 	 * @param MaxZ distance to the far Z plane
 	 * @note that the FOV you pass in is actually half the FOV, unlike most perspective matrix functions (D3DXMatrixPerspectiveFovLH).
 	 */
-	FPerspectiveMatrix(float HalfFOV, float Width, float Height, float MinZ, float MaxZ);
+	FORCEINLINE FPerspectiveMatrix::FPerspectiveMatrix(float HalfFOV, float Width, float Height, float MinZ, float MaxZ)
+		: FMatrix(
+			FPlane(Height / (FMath::Tan(HalfFOV) * Width), 0.0f, 0.0f, 0.0f),
+			FPlane(0.0f, 1.0F / FMath::Tan(HalfFOV), 0.0f, 0.0f),
+			FPlane(0.0f, 0.0f, (-MinZ - MaxZ) / (MinZ - MaxZ), 1.0f),
+			FPlane(0.0f, 0.0f, 2 * MinZ * MaxZ / (MinZ - MaxZ), 0.0f)
+		)
+	{ }
 };
 
 
-FORCEINLINE FPerspectiveMatrix::FPerspectiveMatrix(float HalfFOVX, float HalfFOVY, float MultFOVX, float MultFOVY, float MinZ, float MaxZ)
-	: FMatrix(
-		FPlane(MultFOVX / FMath::Tan(HalfFOVX), 0.0f, 0.0f, 0.0f),
-		FPlane(0.0f, MultFOVY / FMath::Tan(HalfFOVY), 0.0f, 0.0f),
-		FPlane(0.0f, 0.0f, (-MinZ - MaxZ) / (MinZ - MaxZ), 1.0f),
-		FPlane(0.0f, 0.0f, 2 * MinZ * MaxZ / (MinZ - MaxZ), 0.0f)
-	)
-{ }
 
 
-FORCEINLINE FPerspectiveMatrix::FPerspectiveMatrix(float HalfFOV, float Width, float Height, float MinZ, float MaxZ)
-	: FMatrix(
-		FPlane(Height / (FMath::Tan(HalfFOV) * Width), 0.0f, 0.0f, 0.0f),
-		FPlane(0.0f, 1.0F / FMath::Tan(HalfFOV), 0.0f, 0.0f),
-		FPlane(0.0f, 0.0f,  (-MinZ - MaxZ)/(MinZ - MaxZ), 1.0f),
-		FPlane(0.0f, 0.0f, 2 * MinZ * MaxZ / (MinZ - MaxZ), 0.0f)
-	)
-{ }
+
+

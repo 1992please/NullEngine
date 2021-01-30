@@ -3,47 +3,47 @@
 #include "Core/Containers/Array.h"
 #include "Core/Containers/String.h"
 
+enum class  EShaderDataType
+{
+	None = 0,
+	Float,
+	Float2,
+	Float3,
+	Float4,
+	Mat3,
+	Mat4,
+	Int,
+	Int2,
+	Int3,
+	Int4,
+	Bool
+};
+
 struct FBufferElement
 {
-	enum EType
-	{
-		TYPE_None = 0,
-		TYPE_Float,
-		TYPE_Float2,
-		TYPE_Float3,
-		TYPE_Float4,
-		TYPE_Mat3,
-		TYPE_Mat4,
-		TYPE_Int,
-		TYPE_Int2,
-		TYPE_Int3,
-		TYPE_Int4,
-		TYPE_Bool
-	};
-
 	FBufferElement() {}
 
-	FBufferElement(const FString& InName, EType InType, bool InNormalized = false)
+	FBufferElement(const FString& InName, EShaderDataType InType, bool InNormalized = false)
 		: Name(InName), Type(InType), Size(GetElementTypeSize(InType)), Offset(0), bNormalized(InNormalized)
 	{
 
 	}
 
-	static uint32 GetElementTypeSize(EType InType)
+	static uint32 GetElementTypeSize(EShaderDataType InType)
 	{
 		switch (InType)
 		{
-			case TYPE_Float:	return 4;
-			case TYPE_Float2:	return 4 * 2;
-			case TYPE_Float3:	return 4 * 3;
-			case TYPE_Float4:	return 4 * 4;
-			case TYPE_Mat3:		return 4 * 3 * 3;
-			case TYPE_Mat4:		return 4 * 4 * 4;
-			case TYPE_Int:		return 4;
-			case TYPE_Int2:		return 4 * 2;
-			case TYPE_Int3:		return 4 * 3;
-			case TYPE_Int4:		return 4 * 4;
-			case TYPE_Bool:		return 4;
+			case EShaderDataType::Float:	return 4;
+			case EShaderDataType::Float2:	return 4 * 2;
+			case EShaderDataType::Float3:	return 4 * 3;
+			case EShaderDataType::Float4:	return 4 * 4;
+			case EShaderDataType::Mat3:		return 4 * 3 * 3;
+			case EShaderDataType::Mat4:		return 4 * 4 * 4;
+			case EShaderDataType::Int:		return 4;
+			case EShaderDataType::Int2:		return 4 * 2;
+			case EShaderDataType::Int3:		return 4 * 3;
+			case EShaderDataType::Int4:		return 4 * 4;
+			case EShaderDataType::Bool:		return 4;
 		}
 		NE_ASSERT_F(false, "Unknown Element Type");
 		return 0;
@@ -53,23 +53,23 @@ struct FBufferElement
 	{
 		switch (Type)
 		{
-			case TYPE_Float:	return 1;
-			case TYPE_Float2:	return 2;
-			case TYPE_Float3:	return 3;
-			case TYPE_Float4:	return 4;
-			case TYPE_Mat3:		return 3 * 3;
-			case TYPE_Mat4:		return 4 * 4;
-			case TYPE_Int:		return 1;
-			case TYPE_Int2:		return 2;
-			case TYPE_Int3:		return 3;
-			case TYPE_Int4:		return 4;
-			case TYPE_Bool:		return 1;
+			case EShaderDataType::Float:	return 1;
+			case EShaderDataType::Float2:	return 2;
+			case EShaderDataType::Float3:	return 3;
+			case EShaderDataType::Float4:	return 4;
+			case EShaderDataType::Mat3:		return 3 * 3;
+			case EShaderDataType::Mat4:		return 4 * 4;
+			case EShaderDataType::Int:		return 1;
+			case EShaderDataType::Int2:		return 2;
+			case EShaderDataType::Int3:		return 3;
+			case EShaderDataType::Int4:		return 4;
+			case EShaderDataType::Bool:		return 1;
 		}
 		NE_ASSERT_F(false, "Unknown Element Type");
 		return 0;
 	}
 
-	EType Type;
+	EShaderDataType Type;
 	FString Name;
 	uint32 Offset;
 	uint32 Size;

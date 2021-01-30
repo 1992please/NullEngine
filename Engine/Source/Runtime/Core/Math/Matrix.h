@@ -1,6 +1,7 @@
 #pragma once
 #include "Plane.h"
 #include "Vector4.h"
+#include "SSEMath.h"
 
 struct alignas(16) FMatrix
 {
@@ -11,11 +12,6 @@ public:
 	// Constructors.
 	FORCEINLINE FMatrix();
 
-	/**
- * Constructor.
- *
- * @param EForceInit Force Init Enum.
- */
 	explicit FORCEINLINE FMatrix(EForceInit)
 	{
 		FMemory::Memzero(this, sizeof(*this));

@@ -38,7 +38,7 @@ int32 FCString::Atoi(const char* String)
 
 float FCString::Atof(const char* String)
 {
-	return atof(String);
+	return (float)atof(String);
 }
 
 int32 FCString::Strlen(const char* String)

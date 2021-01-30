@@ -96,7 +96,7 @@ void FOpenGLShader::SetVector4(const FString& InName, const FVector4& v)
 
 void FOpenGLShader::SetMatrix(const FString& InName, const FMatrix& m)
 {
-	glUniformMatrix4fv(UniformLocations[InName], 1, GL_TRUE, m);
+	glUniformMatrix4fv(UniformLocations[InName], 1, GL_FALSE, m);
 }
 
 void FOpenGLShader::SetFloat(const FString& InName, float val)

@@ -1,4 +1,6 @@
 #pragma once
+#include "Core/CoreTypes.h"
+#include "Core/Math/Vector.h"
 
 struct alignas(16) FVector4
 {
@@ -45,3 +47,5 @@ FORCEINLINE FVector4::FVector4(EForceInit)
 	, W(0.f)
 {
 }
+
+FVector::FVector(FVector4 V) : FVector(V.X, V.Y, V.Z) {}
