@@ -25,9 +25,11 @@ void FOrthographicCamera::RecalculateViewMatrix()
 		FPlane(0, 1, 0, 0),
 		FPlane(0, 0, 0, 1));
 
-	const FMatrix ViewRotationMatrix = FInverseRotationMatrix(FRotator(0.0f, 0.0f, Rotation)) * ViewPlanesMatrix;
+	const FMatrix ViewRotationMatrix = FInverseRotationMatrix(FRotator(0.0f, 0.0f, Rotation));
 
-	ViewMatrix = FTranslationMatrix(-Position) * ViewRotationMatrix;
+	ViewMatrix =  ViewRotationMatrix * FTranslationMatrix(-Position);
+
+	ViewMatrix = ViewMatrix * ViewPlanesMatrix;
 
 	ViewProjectionMatrix = ViewMatrix * ProjectionMatrix;
 }

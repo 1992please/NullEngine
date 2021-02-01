@@ -10,7 +10,7 @@ public:
 	virtual void OnAttach() {}
 	virtual void OnDettach() {}
 	virtual void OnUpdate(float DeltaTime) {}
-	virtual void OnImGuiUpdate() {}
+	virtual void OnImGuiRender() {}
 	virtual void OnEvent(IEvent& InEvent) {}
 	virtual ~FGraphicLayer();
 

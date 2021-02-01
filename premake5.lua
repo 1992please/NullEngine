@@ -60,6 +60,10 @@ project "NE"
 		{
 			"NE_WINDOWS"
 		}
+		disablewarnings
+		{
+			"4291" -- usingnew without delete
+		}
 
   filter "configurations:Debug"
     defines "NE_DEBUG"

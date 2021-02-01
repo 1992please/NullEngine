@@ -102,30 +102,23 @@ void FWindowsWindow::Init(const FWindowDetails& InDetails)
 		{
 			case GLFW_PRESS:
 			{
-				FKeyPressedEvent E(key, 0);
+				FKeyPressedEvent E((EKeyCode) key, 0);
 				OurWindow->WindowEventCallback.Execute(E);
 			}
 			break;
 			case GLFW_RELEASE:
 			{
-				FKeyReleasedEvent E(key);
+				FKeyReleasedEvent E((EKeyCode)key);
 				OurWindow->WindowEventCallback.Execute(E);
 			}
 			break;
 			case GLFW_REPEAT:
 			{
-				FKeyPressedEvent E(key, 1);
+				FKeyPressedEvent E((EKeyCode)key, 1);
 				OurWindow->WindowEventCallback.Execute(E);
 			}
 			break;
 		}
-	});
-
-	glfwSetCharCallback(glfwWindow, [](GLFWwindow* InWindow, unsigned int key)
-	{
-		FWindowsWindow* OurWindow = (FWindowsWindow*)glfwGetWindowUserPointer(InWindow);
-		FKeyTypedEvent E(key);
-		OurWindow->WindowEventCallback.Execute(E);
 	});
 
 	glfwSetMouseButtonCallback(glfwWindow, [](GLFWwindow* InWindow, int button, int action, int mods)
@@ -135,19 +128,19 @@ void FWindowsWindow::Init(const FWindowDetails& InDetails)
 		{
 			case GLFW_PRESS:
 			{
-				FMouseButtonPressedEvent E(button);
+				FMouseButtonPressedEvent E((EKeyCode)button);
 				OurWindow->WindowEventCallback.Execute(E);
 			}
 			break;
 			case GLFW_RELEASE:
 			{
-				FMouseButtonReleasedEvent E(button);
+				FMouseButtonReleasedEvent E((EKeyCode)button);
 				OurWindow->WindowEventCallback.Execute(E);
 			}
 			break;
 			case GLFW_REPEAT:
 			{
-				FMouseButtonPressedEvent E(button);
+				FMouseButtonPressedEvent E((EKeyCode)button);
 				OurWindow->WindowEventCallback.Execute(E);
 			}
 			break;
