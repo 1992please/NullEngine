@@ -1,11 +1,20 @@
 #pragma once
 
 #include "Renderer/Components/RenderCommand.h"
+#include "Core/Math/Matrix.h"
 
-class Renderer
+class FRenderer
 {
 public:
-    static void BeginScene();
+    static void BeginScene(class FOrthographicCamera& Camera);
     static void EndScene();
-    static void Submit(const IVertexArray* InVertexArray);
+    static void Submit(class IShader* InShader, const IVertexArray* InVertexArray);
+private:
+	struct FSceneData
+	{
+		FMatrix ViewProjectionMatrix;
+	};
+
+	static FSceneData* SceneData;
+
 };

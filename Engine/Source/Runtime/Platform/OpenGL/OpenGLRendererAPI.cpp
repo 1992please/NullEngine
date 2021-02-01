@@ -13,6 +13,5 @@ void FOpenGLRendererAPI::Clear()
 
 void FOpenGLRendererAPI::DrawIndexed(const IVertexArray* InVertexArray)
 {
-	InVertexArray->Bind();
 	glDrawElements(GL_TRIANGLES, InVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 }

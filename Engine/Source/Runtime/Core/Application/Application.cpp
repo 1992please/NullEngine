@@ -10,7 +10,7 @@
 FApplication* FApplication::Instance = nullptr;
 
 FApplication::FApplication()
-	: Camera(2, 2, 0.0f, 1.0f)
+	: Camera(3.2f, 1.8f, 0.0f, 1.0f)
 {
 	NE_ASSERT_F(!Instance, "Application already exists!");
 	Instance = this;
@@ -25,22 +25,22 @@ FApplication::FApplication()
 	Shader2 = IShader::Create("../../Engine/Shaders/TestShader2.glsl");
 
 	float Verteces[] = {
-		0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-		- 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f };
+		0.0f,	0.0f,	0.5f, 1.0f, 0.0f, 0.0f, 1.0f,
+		0.0f,	0.5f,	-0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
+		0.0f,	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f };
 	uint32 indices[3] = { 0, 1, 2 };
 
 	float Verteces2[] = {
-	0.75f, 0.75f, 0.0f, 
-	0.75f, -0.75f, 0.0f,
-	-0.75f, -0.75f, 0.0f,
-	-0.75f, 0.75f, 0.0f};
+	0.0f,	0.75f,	0.75f,
+	0.0f,	0.75f,	-0.75f,
+	0.0f,	-0.75f,	-0.75f,
+	0.0f, -0.75f, 0.75f};
 	uint32 indices2[6] = { 0, 1, 2, 0, 2, 3 };
 
 	IVertexBuffer* VertexBuffer = nullptr;
 	IIndexBuffer* IndexBuffer = nullptr;
-
-	Camera.SetPosition(FVector(.5f, 0.5f, 0.0f));
+	Camera.SetRotation(45.f);
+	Camera.SetPosition(FVector(.0f, 0.0f, -0.5f));
 
 	VertexBuffer = IVertexBuffer::Create(Verteces, sizeof(Verteces));
 	{
@@ -88,17 +88,13 @@ void FApplication::Run()
 		FRenderCommand::SetClearColor(FLinearColor(0.1f, 0.1f, 0.1f, 1));
 		FRenderCommand::Clear();
 
-		Renderer::BeginScene();
+		FRenderer::BeginScene(Camera);
 
-		Shader2->Bind();
-		Shader2->SetMatrix("uViewProjection", Camera.GetViewProjectionMatrix());
-		Renderer::Submit(VertexArray2);
+		FRenderer::Submit(Shader2, VertexArray2);
 
-		Shader->Bind();
-		Shader->SetMatrix("uViewProjection", Camera.GetViewProjectionMatrix());
-		Renderer::Submit(VertexArray);
+		FRenderer::Submit(Shader, VertexArray);
 
-		Renderer::EndScene();
+		FRenderer::EndScene();
 
 		//Shader2->Bind();
 		//VertexArray2->Bind();
