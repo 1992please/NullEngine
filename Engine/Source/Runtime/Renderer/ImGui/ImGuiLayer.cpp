@@ -56,8 +56,8 @@ void FImGuiLayer::OnEvent(IEvent& InEvent)
 
 void FImGuiLayer::OnImGuiRender()
 {
-	static bool show_demo_window = true;
-	ImGui::ShowDemoWindow(&show_demo_window);
+	//static bool show_demo_window = true;
+	//ImGui::ShowDemoWindow(&show_demo_window);
 }
 
 void FImGuiLayer::Begin()

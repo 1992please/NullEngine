@@ -14,11 +14,11 @@ void FRenderer::EndScene()
 
 }
 
-void FRenderer::Submit(IShader* InShader, const IVertexArray* InVertexArray)
+void FRenderer::Submit(IShader* InShader, const IVertexArray* InVertexArray, const FMatrix& Model)
 {
 	InShader->Bind();
-	InShader->SetMatrix("uViewProjection", SceneData->ViewProjectionMatrix);
-
+	InShader->SetMatrix("u_ViewProjection", SceneData->ViewProjectionMatrix);
+	InShader->SetMatrix("u_Model", Model);
 	InVertexArray->Bind();
 	FRenderCommand::DrawIndexed(InVertexArray);
 }

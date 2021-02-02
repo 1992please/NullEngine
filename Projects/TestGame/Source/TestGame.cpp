@@ -1,9 +1,12 @@
 #include "TestGame.h"
+#include "imgui/imgui.h"
 
 TestGame::TestGame()
 	: Camera(3.2f, 1.8f, 0.0f, 1.0f)
 	, CameraPosition(FVector::ZeroVector)
 	, CameraRotation(0.0f)
+	, ObjectPosition(0.0f)
+	, SquarColor(FLinearColor::Green)
 {
 
 }
@@ -12,6 +15,8 @@ void TestGame::OnAttach()
 {
 	Shader = IShader::Create("../../Engine/Shaders/TestShader.glsl");
 	Shader2 = IShader::Create("../../Engine/Shaders/TestShader2.glsl");
+	TextureShader = IShader::Create("../../Engine/Shaders/TextureShader.glsl");
+	Texture = ITexture2D::Create("../../Projects/TestGame/Content/super_mario.jpg");
 
 	float Verteces[] = {
 		0.0f,	0.0f,	0.5f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -20,10 +25,12 @@ void TestGame::OnAttach()
 	uint32 indices[3] = { 0, 1, 2 };
 
 	float Verteces2[] = {
-	0.0f,	0.75f,	0.75f,
-	0.0f,	0.75f,	-0.75f,
-	0.0f,	-0.75f,	-0.75f,
-	0.0f, -0.75f, 0.75f };
+		0.0f,	.5f,	.5f,	1.f,	1.f,
+		0.0f,	.5f,	-.5f,	1.f,	0.f,
+		0.0f,	-.5f,	-.5f,	0.f,	0.f,
+		0.0f,	-.5f,	.5f,	0.f,	1.f
+	};
+
 	uint32 indices2[6] = { 0, 1, 2, 0, 2, 3 };
 
 	IVertexBuffer* VertexBuffer = nullptr;
@@ -32,8 +39,8 @@ void TestGame::OnAttach()
 	VertexBuffer = IVertexBuffer::Create(Verteces, sizeof(Verteces));
 	{
 		FBufferLayout Layout = {
-			{ "Position" ,  EShaderDataType::Float3 },
-			{ "Color" , EShaderDataType::Float4 },
+			{ "a_Position" ,  EShaderDataType::Float3 },
+			{ "a_Color" , EShaderDataType::Float4 },
 		};
 
 		VertexBuffer->SetLayout(Layout);
@@ -49,7 +56,8 @@ void TestGame::OnAttach()
 	VertexBuffer = IVertexBuffer::Create(Verteces2, sizeof(Verteces2));
 	{
 		FBufferLayout Layout = {
-			{ "Position" ,  EShaderDataType::Float3 }
+			{ "a_Position" ,  EShaderDataType::Float3 },
+			{ "a_TexCoords" ,  EShaderDataType::Float2 }
 		};
 
 		VertexBuffer->SetLayout(Layout);
@@ -61,6 +69,9 @@ void TestGame::OnAttach()
 	VertexArray2->SetIndexBuffer(IndexBuffer);
 	VertexArray2->UnBind();
 
+	TextureShader->Bind();
+	TextureShader->SetInt("u_Texture", 0);
+
 }
 
 void TestGame::OnDettach()
@@ -70,7 +81,7 @@ void TestGame::OnDettach()
 
 void TestGame::OnUpdate(float DeltaTime)
 {
-	NE_LOG("DeltaTime %f", DeltaTime);
+	//NE_LOG("DeltaTime %f", DeltaTime);
 	if (IApplicationInput::IsKeyPressed(NE_KEY_UP))
 	{
 		CameraPosition.Z += DeltaTime;
@@ -89,6 +100,24 @@ void TestGame::OnUpdate(float DeltaTime)
 		CameraPosition.Y -= DeltaTime;
 	}
 
+	if (IApplicationInput::IsKeyPressed(NE_KEY_I))
+	{
+		ObjectPosition.Z += DeltaTime;
+	}
+	else if (IApplicationInput::IsKeyPressed(NE_KEY_K))
+	{
+		ObjectPosition.Z -= DeltaTime;
+	}
+
+	if (IApplicationInput::IsKeyPressed(NE_KEY_L))
+	{
+		ObjectPosition.Y += DeltaTime;
+	}
+	else if (IApplicationInput::IsKeyPressed(NE_KEY_J))
+	{
+		ObjectPosition.Y -= DeltaTime;
+	}
+
 	if (IApplicationInput::IsKeyPressed(NE_KEY_D))
 	{
 		CameraRotation += DeltaTime * 180;
@@ -103,16 +132,21 @@ void TestGame::OnUpdate(float DeltaTime)
 
 	FRenderer::BeginScene(Camera);
 
-	FRenderer::Submit(Shader2, VertexArray2);
+	FMatrix ScaleMat = FScaleMatrix(.1f);
 
-	FRenderer::Submit(Shader, VertexArray);
+	Texture->Bind();
+	FRenderer::Submit(TextureShader, VertexArray2, FScaleMatrix(1.0f));
+
+	//FRenderer::Submit(Shader, VertexArray);
 
 	FRenderer::EndScene();
 }
 
 void TestGame::OnImGuiRender()
 {
-
+	ImGui::Begin("Test");
+	ImGui::ColorEdit4("Color", &SquarColor.R);
+	ImGui::End();
 }
 
 void TestGame::OnEvent(IEvent& InEvent)

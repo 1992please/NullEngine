@@ -12,6 +12,7 @@
 #include "Renderer/Components/Buffers.h"
 #include "Renderer/Components/VertexArray.h"
 #include "Renderer/Components/RendererCamera.h"
+#include "Renderer/Components/Texture.h"
 
 #include "Core/Containers/BitArray.h"
 #include "Core/Containers/Array.h"
@@ -23,8 +24,6 @@
 #include "Core/Math/NullMath.h"
 
 #include "Core/Assert/Assert.h"
-
-
 
 
 // --Entry Point---------------------

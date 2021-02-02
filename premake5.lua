@@ -10,6 +10,7 @@ IncludeDir = {}
 IncludeDir["glfw"] = "Engine/Source/ThirdParty/glfw/include"
 IncludeDir["gl3w"] = "Engine/Source/ThirdParty/gl3w/include"
 IncludeDir["imgui"] = "Engine/Source/ThirdParty/imgui"
+IncludeDir["stb_image"] = "Engine/Source/ThirdParty/stb_image"
 
 	workspace_files 
 	{
@@ -43,7 +44,8 @@ project "NE"
 		"Engine/Source/ThirdParty/spdlog/include",
 		"%{IncludeDir.glfw}",
 		"%{IncludeDir.gl3w}",
-		"%{IncludeDir.imgui}"
+		"%{IncludeDir.imgui}",
+		"%{IncludeDir.stb_image}",
 	}
 
 	links
@@ -98,8 +100,9 @@ project "TestGame"
 
 	includedirs 
 	{ 
-		"Engine/Source/ThirdParty/spdlog/include",
-		"Engine/Source/Runtime",
+		"%{wks.location}/Engine/Source/ThirdParty/spdlog/include",
+		"%{wks.location}/Engine/Source/Runtime",
+		"%{wks.location}/Engine/Source/ThirdParty"
 	}
 
 	links

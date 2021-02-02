@@ -1,23 +1,26 @@
 #type vertex
 #version 460 core
 layout (location = 0) in vec3 a_VertexPosition;
+layout (location = 1) in vec2 a_TextureCoords;
 
 uniform mat4 u_ViewProjection;
 uniform mat4 u_Model;
-uniform vec4 u_Color;
 
-out vec4 v_Color;
+out vec2 v_TexCoords; 
+
 void main()
 {
     gl_Position = u_ViewProjection * u_Model * vec4(a_VertexPosition,1.0);
-    
-    v_Color = u_Color;
+    v_TexCoords = a_TextureCoords;
 }
 #type fragment
 #version 460 core
 layout( location = 0 ) out vec4 FragColor;
-in vec4 v_Color;
+
+in vec2 v_TexCoords; 
+
+uniform sampler2D u_Texture;
 
 void main() {
-	FragColor = v_Color;
+	FragColor = texture(u_Texture, v_TexCoords);
 }

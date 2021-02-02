@@ -11,4 +11,7 @@
 #include "Core/Math/RotationTranslationMatrix.h"
 #include "Core/Math/RotationMatrix.h"
 #include "Core/Math/PrespectiveMatrix.h"
+#include "Core/Math/TranslationMatrix.h"
+#include "Core/Math/ScaleMatrix.h"
+#include "Core/Math/InvRotationMatrix.h"
 #include "Core/Math/Color.h"

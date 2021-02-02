@@ -17,11 +17,16 @@ public:
 private:
 	class IShader* Shader;
 	class IShader* Shader2;
+	class IShader* TextureShader;
+	class ITexture2D* Texture;
+
 	class IVertexArray* VertexArray;
 	class IVertexArray* VertexArray2;
 
 	FVector CameraPosition;
 	float CameraRotation;
 
+	FVector ObjectPosition;
+	FLinearColor SquarColor;
 	FOrthographicCamera Camera;
 };

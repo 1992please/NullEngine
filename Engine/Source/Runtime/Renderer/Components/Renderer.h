@@ -8,7 +8,7 @@ class FRenderer
 public:
     static void BeginScene(class FOrthographicCamera& Camera);
     static void EndScene();
-    static void Submit(class IShader* InShader, const IVertexArray* InVertexArray);
+    static void Submit(class IShader* InShader, const IVertexArray* InVertexArray, const FMatrix& Model = FMatrix::Identity);
 private:
 	struct FSceneData
 	{
