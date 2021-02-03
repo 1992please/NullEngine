@@ -12,3 +12,28 @@ IShader* IShader::Create(const FString& InFileName, const FString& InName /*= FS
 	NE_ASSERT_F(false, "Unknown Renderer API!!");
 	return nullptr;
 }
+
+void FShaderLibrary::Add(const FString& InName, IShader* InShader)
+{
+	NE_ASSERT_F(!Exists(InName), "Shader already exits");
+	Shaders.Add(InName, InShader);
+}
+
+void FShaderLibrary::Add(IShader* InShader)
+{
+	Shaders.Add(InShader->GetName(), InShader);
+}
+
+IShader* FShaderLibrary::Load(const FString& InFilePath)
+{
+	IShader* CurShader = IShader::Create(InFilePath);
+	Add(CurShader);
+	return CurShader;
+}
+
+IShader* FShaderLibrary::Load(const FString& InName, const FString& InFilePath)
+{
+	IShader* CurShader = IShader::Create(InFilePath, InName);
+	Add(CurShader);
+	return CurShader;
+}

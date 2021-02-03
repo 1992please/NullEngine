@@ -13,10 +13,13 @@ TestGame::TestGame()
 
 void TestGame::OnAttach()
 {
-	Shader = IShader::Create("../../Engine/Shaders/TestShader.glsl");
-	Shader2 = IShader::Create("../../Engine/Shaders/TestShader2.glsl");
-	TextureShader = IShader::Create("../../Engine/Shaders/TextureShader.glsl");
+	OurShaderLibrary.Load("../../Engine/Shaders/TextureShader.glsl");
+	OurShaderLibrary.Load("../../Engine/Shaders/TestShader2.glsl");
+	OurShaderLibrary.Load("../../Engine/Shaders/TestShader.glsl");
 	Texture = ITexture2D::Create("../../Projects/TestGame/Content/super_mario.jpg");
+	Texture2 = ITexture2D::Create("../../Projects/TestGame/Content/mario_logo.png");
+	OurShaderLibrary.Get("TextureShader")->Bind();
+	OurShaderLibrary.Get("TextureShader")->SetInt("u_Texture", 0);
 
 	float Verteces[] = {
 		0.0f,	0.0f,	0.5f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -68,9 +71,6 @@ void TestGame::OnAttach()
 	VertexArray2->AddVertexBuffer(VertexBuffer);
 	VertexArray2->SetIndexBuffer(IndexBuffer);
 	VertexArray2->UnBind();
-
-	TextureShader->Bind();
-	TextureShader->SetInt("u_Texture", 0);
 
 }
 
@@ -135,8 +135,10 @@ void TestGame::OnUpdate(float DeltaTime)
 	FMatrix ScaleMat = FScaleMatrix(.1f);
 
 	Texture->Bind();
-	FRenderer::Submit(TextureShader, VertexArray2, FScaleMatrix(1.0f));
-
+	FRenderer::Submit(OurShaderLibrary.Get("TextureShader"), VertexArray2, FScaleMatrix(1.0f));
+	Texture2->Bind();
+	FRenderer::Submit(OurShaderLibrary.Get("TextureShader"), VertexArray2, FScaleMatrix(0.3f));
+	
 	//FRenderer::Submit(Shader, VertexArray);
 
 	FRenderer::EndScene();

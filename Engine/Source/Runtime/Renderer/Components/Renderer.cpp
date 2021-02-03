@@ -4,6 +4,11 @@
 
 FRenderer::FSceneData* FRenderer::SceneData = new FRenderer::FSceneData;
 
+void FRenderer::InitRenderer()
+{
+	FRenderCommand::InitRenderCommand();
+}
+
 void FRenderer::BeginScene(FOrthographicCamera& Camera)
 {
 	SceneData->ViewProjectionMatrix = Camera.GetViewProjectionMatrix();

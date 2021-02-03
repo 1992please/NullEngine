@@ -1,4 +1,4 @@
-#include "Vector.h"
+#include "NullMath.h"
 
 const FVector FVector::ZeroVector(0.0f, 0.0f, 0.0f);
 const FVector FVector::OneVector(1.0f, 1.0f, 1.0f);
@@ -9,4 +9,5 @@ const FVector FVector::BackwardVector(-1.0f, 0.0f, 0.0f);
 const FVector FVector::RightVector(0.0f, 1.0f, 0.0f);
 const FVector FVector::LeftVector(0.0f, -1.0f, 0.0f);
 
-
+const FVector2 FVector2::ZeroVector(0.0f, 0.0f); 
+const FVector4 FVector4::ZeroVector(0.0f, 0.0f, 0.0f, 0.0f);

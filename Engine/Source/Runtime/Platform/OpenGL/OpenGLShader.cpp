@@ -3,6 +3,7 @@
 #include "GL/gl3w.h"
 #include "Core/Assert/Assert.h"
 #include "Core/Misc/FileHelper.h"
+#include "Core/Misc/Paths.h"
 
 #define UNIFORM_NAME_BUFFER_SIZE 128
 
@@ -28,6 +29,11 @@ FOpenGLShader::FOpenGLShader(const FString& InFileName, const FString& InShaderN
 	: ShaderName(InShaderName)
 	, bLinked(false)
 {
+	if (ShaderName.IsEmpty())
+	{
+		ShaderName = FPaths::GetBaseFilename(InFileName);
+	}
+
 	FString FileContent;
 	if (FFileHelper::ReadFromTextFile(InFileName, FileContent))
 	{

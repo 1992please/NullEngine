@@ -3,10 +3,10 @@
 #include "Array.h"
 #include "Core/Misc/CString.h"
 #include "Core/Misc/Crc.h"
-#include "Core/Memory/NullMemory.h"
 #include "Core/Math/NumericLimits.h"
-#include "Core/Templates/NullTemplate.h"
 #include "Core/Math/MathUtility.h"
+#include "Core/Templates/NullTemplate.h"
+#include "Core/Memory/NullMemory.h"
 
 
 class FString
@@ -276,127 +276,93 @@ public:
 		}
 	}
 
-	/**
-	 * Removes the text from the start of the string if it exists.
-	 *
-	 * @param InPrefix the prefix to search for at the start of the string to remove.
-	 * @return true if the prefix was removed, otherwise false.
-	 */
 	bool RemoveFromStart(const char* InPrefix, ESearchCase::Type SearchCase = ESearchCase::IgnoreCase);
 
-	/**
-	 * Removes the text from the start of the string if it exists.
-	 *
-	 * @param InPrefix the prefix to search for at the start of the string to remove.
-	 * @return true if the prefix was removed, otherwise false.
-	 */
 	bool RemoveFromStart(const FString& InPrefix, ESearchCase::Type SearchCase = ESearchCase::IgnoreCase);
 
-	/**
-	 * Removes the text from the end of the string if it exists.
-	 *
-	 * @param InSuffix the suffix to search for at the end of the string to remove.
-	 * @return true if the suffix was removed, otherwise false.
-	 */
 	bool RemoveFromEnd(const char* InSuffix, ESearchCase::Type SearchCase = ESearchCase::IgnoreCase);
 
-	/**
-	 * Removes the text from the end of the string if it exists.
-	 *
-	 * @param InSuffix the suffix to search for at the end of the string to remove.
-	 * @return true if the suffix was removed, otherwise false.
-	 */
 	bool RemoveFromEnd(const FString& InSuffix, ESearchCase::Type SearchCase = ESearchCase::IgnoreCase);
 
-	/**
-	 * Concatenate this path with given path ensuring the / character is used between them
-	 *
-	 * @param Str       Pointer to an array of chars (not necessarily null-terminated) to be concatenated onto the end of this.
-	 * @param StrLength Exact number of characters from Str to append.
-	 */
 	void PathAppend(const char* Str, int32 StrLength);
 
-	/**
-	 * Test whether this string starts with given string.
-	 *
-	 * @param SearchCase		Indicates whether the search is case sensitive or not ( defaults to ESearchCase::IgnoreCase )
-	 * @return true if this string begins with specified text, false otherwise
-	 */
 	bool StartsWith(const char* InSuffix, ESearchCase::Type SearchCase = ESearchCase::IgnoreCase) const;
 
-	/**
-	 * Test whether this string starts with given string.
-	 *
-	 * @param SearchCase		Indicates whether the search is case sensitive or not ( defaults to ESearchCase::IgnoreCase )
-	 * @return true if this string begins with specified text, false otherwise
-	 */
 	bool StartsWith(const FString& InPrefix, ESearchCase::Type SearchCase = ESearchCase::IgnoreCase) const;
 
-	/**
-	 * Test whether this string ends with given string.
-	 *
-	 * @param SearchCase		Indicates whether the search is case sensitive or not ( defaults to ESearchCase::IgnoreCase )
-	 * @return true if this string ends with specified text, false otherwise
-	 */
 	bool EndsWith(const char* InSuffix, ESearchCase::Type SearchCase = ESearchCase::IgnoreCase) const;
 
-	/**
-	 * Test whether this string ends with given string.
-	 *
-	 * @param SearchCase		Indicates whether the search is case sensitive or not ( defaults to ESearchCase::IgnoreCase )
-	 * @return true if this string ends with specified text, false otherwise
-	 */
 	bool EndsWith(const FString& InSuffix, ESearchCase::Type SearchCase = ESearchCase::IgnoreCase) const;
 
-	/**
-	 * Searches the string for a substring, and returns index into this string
-	 * of the first found instance. Can search from beginning or end, and ignore case or not.
-	 *
-	 * @param SubStr			The string array of char to search for
-	 * @param StartPosition		The start character position to search from
-	 * @param SearchCase		Indicates whether the search is case sensitive or not
-	 * @param SearchDir			Indicates whether the search starts at the beginning or at the end.
-	 */
 	int32 Find(const char* SubStr, ESearchCase::Type SearchCase = ESearchCase::IgnoreCase,
 		ESearchDir::Type SearchDir = ESearchDir::FromStart, int32 StartPosition = INDEX_NONE) const;
 
-	/**
-	 * Searches the string for a substring, and returns index into this string
-	 * of the first found instance. Can search from beginning or end, and ignore case or not.
-	 *
-	 * @param SubStr			The string to search for
-	 * @param StartPosition		The start character position to search from
-	 * @param SearchCase		Indicates whether the search is case sensitive or not ( defaults to ESearchCase::IgnoreCase )
-	 * @param SearchDir			Indicates whether the search starts at the beginning or at the end ( defaults to ESearchDir::FromStart )
-	 */
 	FORCEINLINE int32 Find(const FString& SubStr, ESearchCase::Type SearchCase = ESearchCase::IgnoreCase,
 		ESearchDir::Type SearchDir = ESearchDir::FromStart, int32 StartPosition = INDEX_NONE) const
 	{
 		return Find(*SubStr, SearchCase, SearchDir, StartPosition);
 	}
 
-	/**
-	 * Returns whether this string contains the specified substring.
-	 *
-	 * @param SubStr			Find to search for
-	 * @param SearchCase		Indicates whether the search is case sensitive or not ( defaults to ESearchCase::IgnoreCase )
-	 * @param SearchDir			Indicates whether the search starts at the beginning or at the end ( defaults to ESearchDir::FromStart )
-	 * @return					Returns whether the string contains the substring
-	 **/
+	FORCEINLINE bool FindChar(char InChar, int32& Index) const
+	{
+		return Data.Find(InChar, Index);
+	}
+
+	template <typename Predicate>
+	FORCEINLINE int32 FindLastCharByPredicate(Predicate Pred, int32 Count) const
+	{
+		check(Count >= 0 && Count <= this->Len());
+		return Data.FindLastByPredicate(Pred, Count);
+	}
+
+	template <typename Predicate>
+	FORCEINLINE int32 FindLastCharByPredicate(Predicate Pred) const
+	{
+		return Data.FindLastByPredicate(Pred, this->Len());
+	}
+
+
+	/** Returns the substring from Start position for Count characters. */
+	FORCEINLINE FString Mid(int32 Start, int32 Count = MAX_int32) const
+	{
+		FString Result;
+		if (Count >= 0)
+		{
+			const int32 Length = Len();
+			const int32 RequestedStart = Start;
+			Start = FMath::Clamp(Start, 0, Length);
+			const int32 End = (int32)FMath::Clamp((int64)Count + RequestedStart, (int64)Start, (int64)Length);
+			Result = FString(End - Start, **this + Start);
+		}
+		return Result;
+	}
+
+	/** Returns the left most given number of characters */
+	FORCEINLINE FString Left(int32 Count) const &
+	{
+		return FString(FMath::Clamp(Count, 0, Len()), **this);
+	}
+
+	FORCEINLINE FString Left(int32 Count) &&
+	{
+		LeftInline(Count, false);
+		return MoveTemp(*this);
+	}
+
+	/** Modifies the string such that it is now the left most given number of characters */
+	FORCEINLINE void LeftInline(int32 Count, bool bAllowShrinking = true)
+	{
+		const int32 Length = Len();
+		Count = FMath::Clamp(Count, 0, Length);
+		RemoveAt(Count, Length - Count, bAllowShrinking);
+	}
+
 	FORCEINLINE bool Contains(const char* SubStr, ESearchCase::Type SearchCase = ESearchCase::IgnoreCase,
 		ESearchDir::Type SearchDir = ESearchDir::FromStart) const
 	{
 		return Find(SubStr, SearchCase, SearchDir) != INDEX_NONE;
 	}
 
-	/**
-	 * Returns whether this string contains the specified substring.
-	 *
-	 * @param SubStr			Find to search for
-	 * @param SearchCase		Indicates whether the search is case sensitive or not ( defaults to ESearchCase::IgnoreCase )
-	 * @param SearchDir			Indicates whether the search starts at the beginning or at the end ( defaults to ESearchDir::FromStart )
-	 * @return					Returns whether the string contains the substring
-	 **/
 	FORCEINLINE bool Contains(const FString& SubStr, ESearchCase::Type SearchCase = ESearchCase::IgnoreCase,
 		ESearchDir::Type SearchDir = ESearchDir::FromStart) const
 	{
@@ -479,6 +445,7 @@ public:
 
 	int32 ParseIntoArrayLines(TArray<FString>& OutArray, bool InCullEmpty = true) const;
 	int32 ParseIntoArray(TArray<FString>& OutArray, const char*const* DelimArray, int32 NumDelims, bool InCullEmpty = true) const;
+
 public:
 	/**
 	 * DO NOT USE DIRECTLY

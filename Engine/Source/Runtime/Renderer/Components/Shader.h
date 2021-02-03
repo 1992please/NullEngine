@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/CoreTypes.h"
 #include "Core/Containers/String.h"
+#include "Core/Containers/Map.h"
 #include "Core/Math/NullMath.h"
 
 class IShader
@@ -25,4 +26,19 @@ public:
 	virtual const FString& GetName() const = 0;
 
 	static IShader* Create(const FString& InFileName, const FString& InName = FString());
+};
+
+
+class FShaderLibrary
+{
+public:
+	void Add(const FString& InName, IShader* InShader);
+	void Add(IShader* InShader);
+	IShader* Load(const FString& InFilePath);
+	IShader* Load(const FString& InName, const FString& InFilePath);
+
+	FORCEINLINE IShader* Get(const FString& InName) { return Shaders[InName]; }
+	FORCEINLINE bool Exists(const FString& InName) const { return Shaders.Contains(InName); }
+private:
+	TMap<FString, IShader*> Shaders;
 };

@@ -15,10 +15,9 @@ public:
 	void OnEvent(IEvent& InEvent) override;
 
 private:
-	class IShader* Shader;
-	class IShader* Shader2;
-	class IShader* TextureShader;
+	FShaderLibrary OurShaderLibrary;
 	class ITexture2D* Texture;
+	class ITexture2D* Texture2;
 
 	class IVertexArray* VertexArray;
 	class IVertexArray* VertexArray2;

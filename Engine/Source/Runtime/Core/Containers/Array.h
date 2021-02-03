@@ -344,6 +344,40 @@ public:
 		return INDEX_NONE;
 	}
 
+	int32 FindLast(const ElementType& Item) const
+	{
+		for (const ElementType* RESTRICT Start = GetData(), *RESTRICT Data = Start + ArrayNum; Data != Start; )
+		{
+			--Data;
+			if (*Data == Item)
+			{
+				return static_cast<int32>(Data - Start);
+			}
+		}
+		return INDEX_NONE;
+	}
+
+	template <typename Predicate>
+	int32 FindLastByPredicate(Predicate Pred, int32 Count) const
+	{
+		NE_ASSERT(Count >= 0 && Count <= this->Num());
+		for (const ElementType* RESTRICT Start = GetData(), *RESTRICT Data = Start + Count; Data != Start; )
+		{
+			--Data;
+			if (Pred(*Data))
+			{
+				return static_cast<int32>(Data - Start);
+			}
+		}
+		return INDEX_NONE;
+	}
+
+	template <typename Predicate>
+	FORCEINLINE int32 FindLastByPredicate(Predicate Pred) const
+	{
+		return FindLastByPredicate(Pred, ArrayNum);
+	}
+
 	FORCEINLINE int32 AddUnique(ElementType&& Item) { return AddUniqueImpl(MoveTempIfPossible(Item)); }
 	FORCEINLINE int32 AddUnique(const ElementType& Item) { return AddUniqueImpl(Item); }
 

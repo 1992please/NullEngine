@@ -564,6 +564,12 @@ public:
 	{
 		return Elements.GetAllocatedSize() + (HashSize * sizeof(FSetElementId));
 	}
+
+	FORCEINLINE bool Contains(KeyInitType Key) const
+	{
+		return FindId(Key).IsValidId();
+	}
+
 private:
 	FSetElementId EmplaceImpl(uint32 KeyHash, SetElementType& Element, FSetElementId ElementId, bool* bIsAlreadyInSetPtr)
 	{

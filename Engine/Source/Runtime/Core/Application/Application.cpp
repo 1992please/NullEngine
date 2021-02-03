@@ -19,6 +19,8 @@ FApplication::FApplication()
 	pWindow->WindowEventCallback.BindRaw(this, &FApplication::OnEvent);
 	pWindow->SetVSync(false);
 
+	FRenderer::InitRenderer();
+
 	bRunning = true;
 	ImGuiLayer = new FImGuiLayer();
 	GraphicLayerStack.PushOverlay(ImGuiLayer);

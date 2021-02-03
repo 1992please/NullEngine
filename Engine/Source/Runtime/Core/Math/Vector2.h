@@ -19,6 +19,8 @@ public:
 	{
 		return FString::Printf("X=%3.3f Y=%3.3f", X, Y);
 	}
+
+	static const FVector2 ZeroVector;
 };
 
 FORCEINLINE FVector2::FVector2(float InX, float InY)

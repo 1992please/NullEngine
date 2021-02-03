@@ -20,6 +20,10 @@ public:
 	}
 
 
+	FORCEINLINE static void InitRenderCommand()
+	{
+		RendererAPI->InitRendererAPI();
+	}
 private:
 	static IRendererAPI* RendererAPI;
 };
