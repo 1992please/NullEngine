@@ -1,7 +1,8 @@
 #pragma once
-#include "Plane.h"
-#include "Vector4.h"
-#include "SSEMath.h"
+#include "Core/Math/Plane.h"
+#include "Core/Math/Vector4.h"
+#include "Core/Math/SSEMath.h"
+#include "Core/Math/MathUtility.h"
 
 struct alignas(16) FMatrix
 {
@@ -9,13 +10,13 @@ public:
 	float M[4][4];
 	static const FMatrix Identity;
 
-	// Constructors.
 	FORCEINLINE FMatrix();
 
 	explicit FORCEINLINE FMatrix(EForceInit)
 	{
 		FMemory::Memzero(this, sizeof(*this));
 	}
+
 	inline void SetIdentity();
 
 	FORCEINLINE FMatrix(const FVector& InX, const FVector& InY, const FVector& InZ, const FVector& InW);
@@ -35,102 +36,23 @@ public:
 
 	FORCEINLINE FMatrix GetTransposed() const;
 
-	inline FMatrix InverseFast() const
+	FORCEINLINE FMatrix InverseFast() const
 	{
 		FMatrix Result;
 		VectorMatrixInverse(&Result, this);
 		return Result;
 	}
 
-	inline FVector GetScaledAxis(EAxis::Type Axis) const;
-
-	// Homogeneous transform.
+	FORCEINLINE FVector GetScaledAxis(EAxis::Type Axis) const;
 	FORCEINLINE FVector4 TransformFVector4(const FVector4& V) const;
-
-	/** Transform a location - will take into account translation part of the FMatrix. */
 	FORCEINLINE FVector4 TransformPosition(const FVector &V) const;
-
-	/** Inverts the matrix and then transforms V - correctly handles scaling in this matrix. */
 	FORCEINLINE FVector InverseTransformPosition(const FVector &V) const;
-
-	/**
-	 *	Transform a direction vector - will not take into account translation part of the FMatrix.
-	 *	If you want to transform a surface normal (or plane) and correctly account for non-uniform scaling you should use TransformByUsingAdjointT.
-	 */
 	FORCEINLINE FVector4 TransformVector(const FVector& V) const;
-
-	/**
-	 *	Transform a direction vector by the inverse of this matrix - will not take into account translation part.
-	 *	If you want to transform a surface normal (or plane) and correctly account for non-uniform scaling you should use TransformByUsingAdjointT with adjoint of matrix inverse.
-	 */
 	FORCEINLINE FVector InverseTransformVector(const FVector &V) const;
 
-	static FMatrix Translate(float X, float Y, float Z)
-	{
-		FMatrix Result;
-		Result[0][0] = 1; Result[0][1] = 0;  Result[0][2] = 0;  Result[0][3] = 0;
-		Result[1][0] = 0; Result[1][1] = 1;  Result[1][2] = 0;  Result[1][3] = 0;
-		Result[2][0] = 0; Result[2][1] = 0;  Result[2][2] = 1;  Result[2][3] = 0;
-		Result[3][0] = X; Result[3][1] = Y;  Result[3][2] = Z;  Result[3][3] = 1;
-		return Result;
-
-	}
-
-	static FMatrix Rotate(FMatrix const& InMat, float angle, FVector InVec)
-	{
-		float const a = angle;
-		float const c = FMath::Cos(a);
-		float const s = FMath::Sin(a);
-
-		FVector axis(InVec.GetSafeNormal());
-		FVector temp(axis * (1.0f - c));
-
-		FMatrix RotateMat(ForceInit);
-		RotateMat[0][0] = c + temp[0] * axis[0];
-		RotateMat[0][1] = temp[0] * axis[1] + s * axis[2];
-		RotateMat[0][2] = temp[0] * axis[2] - s * axis[1];
-
-		RotateMat[1][0] = temp[1] * axis[0] - s * axis[2];
-		RotateMat[1][1] = c + temp[1] * axis[1];
-		RotateMat[1][2] = temp[1] * axis[2] + s * axis[0];
-
-		RotateMat[2][0] = temp[2] * axis[0] + s * axis[1];
-		RotateMat[2][1] = temp[2] * axis[1] - s * axis[0];
-		RotateMat[2][2] = c + temp[2] * axis[2];
-		RotateMat[3][3] = 1.0f;
-		FMatrix Result = RotateMat * InMat;
-
-		return Result;
-	}
-
-	static FMatrix Rotate(float angle, FVector InVec)
-	{
-		float const a = angle;
-		float const c = FMath::Cos(a);
-		float const s = FMath::Sin(a);
-
-		FVector axis(InVec.GetSafeNormal());
-		FVector temp(axis * (1.0f - c));
-
-		FMatrix RotateMat;
-		RotateMat[0][0] = c + temp[0] * axis[0];
-		RotateMat[0][1] = temp[0] * axis[1] + s * axis[2];
-		RotateMat[0][2] = temp[0] * axis[2] - s * axis[1];
-
-		RotateMat[1][0] = temp[1] * axis[0] - s * axis[2];
-		RotateMat[1][1] = c + temp[1] * axis[1];
-		RotateMat[1][2] = temp[1] * axis[2] + s * axis[0];
-
-		RotateMat[2][0] = temp[2] * axis[0] + s * axis[1];
-		RotateMat[2][1] = temp[2] * axis[1] - s * axis[0];
-		RotateMat[2][2] = c + temp[2] * axis[2];
-
-		return RotateMat;
-	}
-
-	/** Apply Scale to this matrix **/
 	inline FMatrix ApplyScale(float Scale) const;
 
+	inline FVector ExtractScaling(float Tolerance = SMALL_NUMBER);
 };
 
 struct FLookAtMatrix : FMatrix
@@ -339,4 +261,58 @@ inline FMatrix FMatrix::ApplyScale(float Scale) const
 		FPlane(0.0f, 0.0f, 0.0f, 1.0f)
 	);
 	return ScaleMatrix * (*this);
+}
+
+inline FVector FMatrix::ExtractScaling(float Tolerance/*=SMALL_NUMBER*/)
+{
+	FVector Scale3D(0, 0, 0);
+
+	// For each row, find magnitude, and if its non-zero re-scale so its unit length.
+	const float SquareSum0 = (M[0][0] * M[0][0]) + (M[0][1] * M[0][1]) + (M[0][2] * M[0][2]);
+	const float SquareSum1 = (M[1][0] * M[1][0]) + (M[1][1] * M[1][1]) + (M[1][2] * M[1][2]);
+	const float SquareSum2 = (M[2][0] * M[2][0]) + (M[2][1] * M[2][1]) + (M[2][2] * M[2][2]);
+
+	if (SquareSum0 > Tolerance)
+	{
+		float Scale0 = FMath::Sqrt(SquareSum0);
+		Scale3D[0] = Scale0;
+		float InvScale0 = 1.f / Scale0;
+		M[0][0] *= InvScale0;
+		M[0][1] *= InvScale0;
+		M[0][2] *= InvScale0;
+	}
+	else
+	{
+		Scale3D[0] = 0;
+	}
+
+	if (SquareSum1 > Tolerance)
+	{
+		float Scale1 = FMath::Sqrt(SquareSum1);
+		Scale3D[1] = Scale1;
+		float InvScale1 = 1.f / Scale1;
+		M[1][0] *= InvScale1;
+		M[1][1] *= InvScale1;
+		M[1][2] *= InvScale1;
+	}
+	else
+	{
+		Scale3D[1] = 0;
+	}
+
+	if (SquareSum2 > Tolerance)
+	{
+		float Scale2 = FMath::Sqrt(SquareSum2);
+		Scale3D[2] = Scale2;
+		float InvScale2 = 1.f / Scale2;
+		M[2][0] *= InvScale2;
+		M[2][1] *= InvScale2;
+		M[2][2] *= InvScale2;
+	}
+	else
+	{
+		Scale3D[2] = 0;
+	}
+
+	return Scale3D;
 }

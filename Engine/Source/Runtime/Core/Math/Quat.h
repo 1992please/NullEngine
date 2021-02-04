@@ -17,9 +17,19 @@ public:
 	FORCEINLINE FQuat(float InX, float InY, float InZ, float InW);
 	FORCEINLINE FQuat(const FQuat& Q);
 	explicit FQuat(const FMatrix& M);
+	explicit FORCEINLINE FQuat(const VectorRegister& V)
+	{
+		VectorStoreAligned(V, this);
+	}
 	//explicit FQuat(const FRotator& R);
 	//FQuat(FVector Axis, float AngleRad);
 	FRotator Rotator() const;
+
+	FORCEINLINE FQuat FQuat::Inverse() const
+	{
+		return FQuat(VectorQuaternionInverse(VectorLoadAligned(this)));
+	}
+
 };
 
 FORCEINLINE FQuat::FQuat(EForceInit ZeroOrNot)
@@ -42,9 +52,6 @@ FORCEINLINE FQuat::FQuat(const FQuat& Q)
 
 inline FQuat::FQuat(const FMatrix& M)
 {
-	// If Matrix is NULL, return Identity quaternion. If any of them is 0, you won't be able to construct rotation
-	// if you have two plane at least, we can reconstruct the frame using cross product, but that's a bit expensive op to do here
-	// for now, if you convert to matrix from 0 scale and convert back, you'll lose rotation. Don't do that. 
 	if (M.GetScaledAxis(EAxis::X).IsNearlyZero() || M.GetScaledAxis(EAxis::Y).IsNearlyZero() || M.GetScaledAxis(EAxis::Z).IsNearlyZero())
 	{
 		*this = FQuat::Identity;
@@ -60,12 +67,12 @@ inline FQuat::FQuat(const FMatrix& M)
 	if (tr > 0.0f)
 	{
 		float InvS = FMath::InvSqrt(tr + 1.f);
-		this->W = 0.5f * (1.f / InvS);
+		W = 0.5f * (1.f / InvS);
 		s = 0.5f * InvS;
 
-		this->X = (M.M[1][2] - M.M[2][1]) * s;
-		this->Y = (M.M[2][0] - M.M[0][2]) * s;
-		this->Z = (M.M[0][1] - M.M[1][0]) * s;
+		X = (M.M[1][2] - M.M[2][1]) * s;
+		Y = (M.M[2][0] - M.M[0][2]) * s;
+		Z = (M.M[0][1] - M.M[1][0]) * s;
 	}
 	else
 	{
@@ -95,9 +102,9 @@ inline FQuat::FQuat(const FMatrix& M)
 		qt[j] = (M.M[i][j] + M.M[j][i]) * s;
 		qt[k] = (M.M[i][k] + M.M[k][i]) * s;
 
-		this->X = qt[0];
-		this->Y = qt[1];
-		this->Z = qt[2];
-		this->W = qt[3];
+		X = qt[0];
+		Y = qt[1];
+		Z = qt[2];
+		W = qt[3];
 	}
 }

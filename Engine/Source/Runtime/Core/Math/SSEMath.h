@@ -35,9 +35,13 @@ namespace GlobalVectorConstants
 	static const VectorRegister FloatMinusOneHalf = MakeVectorRegister(-0.5f, -0.5f, -0.5f, -0.5f);
 	static const VectorRegister KindaSmallNumber = MakeVectorRegister(KINDA_SMALL_NUMBER, KINDA_SMALL_NUMBER, KINDA_SMALL_NUMBER, KINDA_SMALL_NUMBER);
 
+	static const VectorRegister QINV_SIGN_MASK = MakeVectorRegister(-1.f, -1.f, -1.f, 1.f);
+
 	static const VectorRegister DEG_TO_RAD = MakeVectorRegister(PI / (180.f), PI / (180.f), PI / (180.f), PI / (180.f));
 	static const VectorRegister DEG_TO_RAD_HALF = MakeVectorRegister((PI / 180.f)*0.5f, (PI / 180.f)*0.5f, (PI / 180.f)*0.5f, (PI / 180.f)*0.5f);
 	static const VectorRegister RAD_TO_DEG = MakeVectorRegister((180.f) / PI, (180.f) / PI, (180.f) / PI, (180.f) / PI);
+
+	static const VectorRegister XYZMask = MakeVectorRegister((uint32)0xffffffff, (uint32)0xffffffff, (uint32)0xffffffff, (uint32)0x00000000);
 
 	/** Bitmask to AND out the sign bit of each components in a vector */
 #define SIGN_BIT ((1 << 31))
@@ -54,87 +58,68 @@ namespace GlobalVectorConstants
 };
 
 
+FORCEINLINE VectorRegister VectorZero(void)
+{
+	return _mm_setzero_ps();
+}
 
-/**
- * @param A0	Selects which element (0-3) from 'A' into 1st slot in the result
- * @param A1	Selects which element (0-3) from 'A' into 2nd slot in the result
- * @param B2	Selects which element (0-3) from 'B' into 3rd slot in the result
- * @param B3	Selects which element (0-3) from 'B' into 4th slot in the result
- */
-#define SHUFFLEMASK(A0,A1,B2,B3) ( (A0) | ((A1)<<2) | ((B2)<<4) | ((B3)<<6) )
+FORCEINLINE VectorRegister VectorOne(void)
+{
+	return (GlobalVectorConstants::FloatOne);
+}
 
+
+#define SHUFFLEMASK(A0,A1,B2,B3)				( (A0) | ((A1)<<2) | ((B2)<<4) | ((B3)<<6) )
 #define VectorReplicate( Vec, ElementIndex )	_mm_shuffle_ps( Vec, Vec, SHUFFLEMASK(ElementIndex,ElementIndex,ElementIndex,ElementIndex) )
-
-#define VectorLoadAligned( Ptr )		_mm_load_ps( (float*)(Ptr) )
-#define VectorStoreAligned( Vec, Ptr )	_mm_store_ps( (float*)(Ptr), Vec )
-
- /**
-  * Combines two vectors using bitwise OR (treating each vector as a 128 bit field)
-  *
-  * @param Vec1	1st vector
-  * @param Vec2	2nd vector
-  * @return		VectorRegister( for each bit i: Vec1[i] | Vec2[i] )
-  */
-#define VectorBitwiseOr(Vec1, Vec2)	_mm_or_ps(Vec1, Vec2)
-
-/**
-* Combines two vectors using bitwise AND (treating each vector as a 128 bit field)
-*
-* @param Vec1	1st vector
-* @param Vec2	2nd vector
-* @return		VectorRegister( for each bit i: Vec1[i] & Vec2[i] )
-*/
-#define VectorBitwiseAnd(Vec1, Vec2) _mm_and_ps(Vec1, Vec2)
-
-/**
-* Combines two vectors using bitwise XOR (treating each vector as a 128 bit field)
-*
-* @param Vec1	1st vector
-* @param Vec2	2nd vector
-* @return		VectorRegister( for each bit i: Vec1[i] ^ Vec2[i] )
-*/
-#define VectorBitwiseXor(Vec1, Vec2) _mm_xor_ps(Vec1, Vec2)
-/**
-* Returns the absolute value (component-wise).
-*
-* @param Vec			Source vector
-* @return				VectorRegister( abs(Vec.x), abs(Vec.y), abs(Vec.z), abs(Vec.w) )
-*/
-#define VectorAbs( Vec )				_mm_and_ps(Vec, GlobalVectorConstants::SignMask)
-
-/**
-* Returns the negated value (component-wise).
-*
-* @param Vec			Source vector
-* @return				VectorRegister( -Vec.x, -Vec.y, -Vec.z, -Vec.w )
-*/
-#define VectorNegate( Vec )				_mm_sub_ps(_mm_setzero_ps(),Vec)
-
-/**
- * Creates a four-part mask based on component-wise > compares of the input vectors
- *
- * @param Vec1	1st vector
- * @param Vec2	2nd vector
- * @return		VectorRegister( Vec1.x > Vec2.x ? 0xFFFFFFFF : 0, same for yzw )
- */
+#define VectorLoadFloat1( Ptr )					_mm_load1_ps( (const float*)(Ptr) )
+#define VectorLoadAligned( Ptr )				_mm_load_ps( (float*)(Ptr) )
+#define VectorStoreAligned( Vec, Ptr )			_mm_store_ps( (float*)(Ptr), Vec )
+#define VectorMin( Vec1, Vec2 )					_mm_min_ps( Vec1, Vec2 )
+#define VectorMax( Vec1, Vec2 )					_mm_max_ps( Vec1, Vec2 )
+#define VectorBitwiseOr(Vec1, Vec2)				_mm_or_ps(Vec1, Vec2)
+#define VectorBitwiseAnd(Vec1, Vec2)			_mm_and_ps(Vec1, Vec2)
+#define VectorBitwiseXor(Vec1, Vec2)			_mm_xor_ps(Vec1, Vec2)
+#define VectorAbs( Vec )						_mm_and_ps(Vec, GlobalVectorConstants::SignMask)
+#define VectorNegate( Vec )						_mm_sub_ps(_mm_setzero_ps(),Vec)
 #define VectorCompareGT( Vec1, Vec2 )			_mm_cmpgt_ps( Vec1, Vec2 )
+#define VectorLoadFloat3( Ptr )					MakeVectorRegister( ((const float*)(Ptr))[0], ((const float*)(Ptr))[1], ((const float*)(Ptr))[2], 0.0f )
+#define VectorLoadFloat3_W0( Ptr )				MakeVectorRegister( ((const float*)(Ptr))[0], ((const float*)(Ptr))[1], ((const float*)(Ptr))[2], 0.0f )
+#define VectorLoadFloat3_W1( Ptr )				MakeVectorRegister( ((const float*)(Ptr))[0], ((const float*)(Ptr))[1], ((const float*)(Ptr))[2], 1.0f )
+#define VectorSet_W0( Vec )						_mm_and_ps( Vec, GlobalVectorConstants::XYZMask )
+#define VectorCompareEQ( Vec1, Vec2 )			_mm_cmpeq_ps( Vec1, Vec2 )
+#define VectorCompareNE( Vec1, Vec2 )			_mm_cmpneq_ps( Vec1, Vec2 )
+#define VectorCompareGT( Vec1, Vec2 )			_mm_cmpgt_ps( Vec1, Vec2 )
+#define VectorCompareGE( Vec1, Vec2 )			_mm_cmpge_ps( Vec1, Vec2 )
+#define VectorCompareLT( Vec1, Vec2 )			_mm_cmplt_ps( Vec1, Vec2 )
+#define VectorCompareLE( Vec1, Vec2 )			_mm_cmple_ps( Vec1, Vec2 )
+#define VectorSwizzle( Vec, X, Y, Z, W )		_mm_shuffle_ps( Vec, Vec, SHUFFLEMASK(X,Y,Z,W) )
+#define VectorReciprocalSqrt(Vec)				_mm_rsqrt_ps( Vec )
+#define VectorReciprocal(Vec)					_mm_rcp_ps(Vec)
 
 
- /**
-  * Does a bitwise vector selection based on a mask (e.g., created from VectorCompareXX)
-  *
-  * @param Mask  Mask (when 1: use the corresponding bit from Vec1 otherwise from Vec2)
-  * @param Vec1	1st vector
-  * @param Vec2	2nd vector
-  * @return		VectorRegister( for each bit i: Mask[i] ? Vec1[i] : Vec2[i] )
-  *
-  */
+FORCEINLINE VectorRegister VectorSet_W1(const VectorRegister& Vector)
+{
+	// Temp = (Vector[2]. Vector[3], 1.0f, 1.0f)
+	VectorRegister Temp = _mm_movehl_ps(VectorOne(), Vector);
+
+	// Return (Vector[0], Vector[1], Vector[2], 1.0f)
+	return _mm_shuffle_ps(Vector, Temp, SHUFFLEMASK(0, 1, 0, 3));
+}
+
+FORCEINLINE void VectorStoreFloat3(const VectorRegister& Vec, void* Ptr)
+{
+	union { VectorRegister v; float f[4]; } Tmp;
+	Tmp.v = Vec;
+	float* FloatPtr = (float*)(Ptr);
+	FloatPtr[0] = Tmp.f[0];
+	FloatPtr[1] = Tmp.f[1];
+	FloatPtr[2] = Tmp.f[2];
+}
 
 FORCEINLINE VectorRegister VectorSelect(const VectorRegister& Mask, const VectorRegister& Vec1, const VectorRegister& Vec2)
 {
 	return _mm_xor_ps(Vec2, _mm_and_ps(Mask, _mm_xor_ps(Vec1, Vec2)));
 }
-
 
 FORCEINLINE VectorRegister VectorAdd(const VectorRegister& Vec1, const VectorRegister& Vec2)
 {
@@ -151,8 +136,16 @@ FORCEINLINE VectorRegister VectorMultiply(const VectorRegister& Vec1, const Vect
 	return _mm_mul_ps(Vec1, Vec2);
 }
 
-#define VectorMultiplyAdd( Vec1, Vec2, Vec3 )	_mm_add_ps( _mm_mul_ps(Vec1, Vec2), Vec3 )
+FORCEINLINE VectorRegister VectorCross(const VectorRegister& Vec1, const VectorRegister& Vec2)
+{
+	VectorRegister A_YZXW = _mm_shuffle_ps(Vec1, Vec1, SHUFFLEMASK(1, 2, 0, 3));
+	VectorRegister B_ZXYW = _mm_shuffle_ps(Vec2, Vec2, SHUFFLEMASK(2, 0, 1, 3));
+	VectorRegister A_ZXYW = _mm_shuffle_ps(Vec1, Vec1, SHUFFLEMASK(2, 0, 1, 3));
+	VectorRegister B_YZXW = _mm_shuffle_ps(Vec2, Vec2, SHUFFLEMASK(1, 2, 0, 3));
+	return VectorSubtract(VectorMultiply(A_YZXW, B_ZXYW), VectorMultiply(A_ZXYW, B_YZXW));
+}
 
+#define VectorMultiplyAdd( Vec1, Vec2, Vec3 )	_mm_add_ps( _mm_mul_ps(Vec1, Vec2), Vec3 )
 
 FORCEINLINE void VectorMatrixMultiply(void *Result, const void* Matrix1, const void* Matrix2)
 {
@@ -220,7 +213,6 @@ FORCEINLINE VectorRegister VectorTransformVector(const VectorRegister&  VecP, co
 
 	return VTempX;
 }
-
 
 /**
  * Calculate the inverse of an FMatrix.
@@ -370,4 +362,149 @@ FORCEINLINE void VectorSinCos(VectorRegister* RESTRICT VSinAngles, VectorRegiste
 	C = VectorMultiplyAdd(XSquared, C, VectorReplicate(CosCoeff0, 1));
 	C = VectorMultiplyAdd(XSquared, C, VectorReplicate(CosCoeff0, 0));
 	*VCosAngles = VectorMultiply(C, sign);
+}
+
+FORCEINLINE VectorRegister VectorDot4(const VectorRegister& Vec1, const VectorRegister& Vec2)
+{
+	VectorRegister Temp1, Temp2;
+	Temp1 = VectorMultiply(Vec1, Vec2);
+	Temp2 = _mm_shuffle_ps(Temp1, Temp1, SHUFFLEMASK(2, 3, 0, 1));	// (Z,W,X,Y).
+	Temp1 = VectorAdd(Temp1, Temp2);								// (X*X + Z*Z, Y*Y + W*W, Z*Z + X*X, W*W + Y*Y)
+	Temp2 = _mm_shuffle_ps(Temp1, Temp1, SHUFFLEMASK(1, 2, 3, 0));	// Rotate left 4 bytes (Y,Z,W,X).
+	return VectorAdd(Temp1, Temp2);								// (X*X + Z*Z + Y*Y + W*W, Y*Y + W*W + Z*Z + X*X, Z*Z + X*X + W*W + Y*Y, W*W + Y*Y + X*X + Z*Z)
+}
+
+/**
+* Return the reciprocal of the square root of each component
+*
+* @param Vector		Vector
+* @return			VectorRegister(1/sqrt(Vec.X), 1/sqrt(Vec.Y), 1/sqrt(Vec.Z), 1/sqrt(Vec.W))
+*/
+FORCEINLINE VectorRegister VectorReciprocalSqrtAccurate(const VectorRegister& Vec)
+{
+	// Perform two passes of Newton-Raphson iteration on the hardware estimate
+	//    v^-0.5 = x
+	// => x^2 = v^-1
+	// => 1/(x^2) = v
+	// => F(x) = x^-2 - v
+	//    F'(x) = -2x^-3
+
+	//    x1 = x0 - F(x0)/F'(x0)
+	// => x1 = x0 + 0.5 * (x0^-2 - Vec) * x0^3
+	// => x1 = x0 + 0.5 * (x0 - Vec * x0^3)
+	// => x1 = x0 + x0 * (0.5 - 0.5 * Vec * x0^2)
+
+	const VectorRegister OneHalf = GlobalVectorConstants::FloatOneHalf;
+	const VectorRegister VecDivBy2 = VectorMultiply(Vec, OneHalf);
+
+	// Initial estimate
+	const VectorRegister x0 = VectorReciprocalSqrt(Vec);
+
+	// First iteration
+	VectorRegister x1 = VectorMultiply(x0, x0);
+	x1 = VectorSubtract(OneHalf, VectorMultiply(VecDivBy2, x1));
+	x1 = VectorMultiplyAdd(x0, x1, x0);
+
+	// Second iteration
+	VectorRegister x2 = VectorMultiply(x1, x1);
+	x2 = VectorSubtract(OneHalf, VectorMultiply(VecDivBy2, x2));
+	x2 = VectorMultiplyAdd(x1, x2, x1);
+
+	return x2;
+}
+
+/**
+ * Computes the reciprocal of a vector (component-wise) and returns the result.
+ *
+ * @param Vec	1st vector
+ * @return		VectorRegister( 1.0f / Vec.x, 1.0f / Vec.y, 1.0f / Vec.z, 1.0f / Vec.w )
+ */
+FORCEINLINE VectorRegister VectorReciprocalAccurate(const VectorRegister& Vec)
+{
+	// Perform two passes of Newton-Raphson iteration on the hardware estimate
+	//   x1 = x0 - f(x0) / f'(x0)
+	//
+	//    1 / Vec = x
+	// => x * Vec = 1 
+	// => F(x) = x * Vec - 1
+	//    F'(x) = Vec
+	// => x1 = x0 - (x0 * Vec - 1) / Vec
+	//
+	// Since 1/Vec is what we're trying to solve, use an estimate for it, x0
+	// => x1 = x0 - (x0 * Vec - 1) * x0 = 2 * x0 - Vec * x0^2 
+
+	// Initial estimate
+	const VectorRegister x0 = VectorReciprocal(Vec);
+
+	// First iteration
+	const VectorRegister x0Squared = VectorMultiply(x0, x0);
+	const VectorRegister x0Times2 = VectorAdd(x0, x0);
+	const VectorRegister x1 = VectorSubtract(x0Times2, VectorMultiply(Vec, x0Squared));
+
+	// Second iteration
+	const VectorRegister x1Squared = VectorMultiply(x1, x1);
+	const VectorRegister x1Times2 = VectorAdd(x1, x1);
+	const VectorRegister x2 = VectorSubtract(x1Times2, VectorMultiply(Vec, x1Squared));
+
+	return x2;
+}
+
+
+// Returns ((Vector dot Vector) >= 1e-8) ? (Vector / |Vector|) : DefaultValue
+// Uses accurate 1/sqrt, not the estimate
+FORCEINLINE VectorRegister VectorNormalizeSafe(const VectorRegister& Vector, const VectorRegister& DefaultValue)
+{
+	const VectorRegister SquareSum = VectorDot4(Vector, Vector);
+	const VectorRegister NonZeroMask = VectorCompareGE(SquareSum, GlobalVectorConstants::SmallLengthThreshold);
+	const VectorRegister InvLength = VectorReciprocalSqrtAccurate(SquareSum);
+	const VectorRegister NormalizedVector = VectorMultiply(InvLength, Vector);
+	return VectorSelect(NonZeroMask, NormalizedVector, DefaultValue);
+}
+
+
+
+
+
+
+
+/**
+ * Rotate a vector using a unit Quaternion.
+ *
+ * @param Quat Unit Quaternion to use for rotation.
+ * @param VectorW0 Vector to rotate. W component must be zero.
+ * @return Vector after rotation by Quat.
+ */
+FORCEINLINE VectorRegister VectorQuaternionRotateVector(const VectorRegister& Quat, const VectorRegister& VectorW0)
+{
+	// Q * V * Q.Inverse
+	//const VectorRegister InverseRotation = VectorQuaternionInverse(Quat);
+	//const VectorRegister Temp = VectorQuaternionMultiply2(Quat, VectorW0);
+	//const VectorRegister Rotated = VectorQuaternionMultiply2(Temp, InverseRotation);
+
+	// Equivalence of above can be shown to be:
+	// http://people.csail.mit.edu/bkph/articles/Quaternions.pdf
+	// V' = V + 2w(Q x V) + (2Q x (Q x V))
+	// refactor:
+	// V' = V + w(2(Q x V)) + (Q x (2(Q x V)))
+	// T = 2(Q x V);
+	// V' = V + w*(T) + (Q x T)
+
+	const VectorRegister QW = VectorReplicate(Quat, 3);
+	VectorRegister T = VectorCross(Quat, VectorW0);
+	T = VectorAdd(T, T);
+	const VectorRegister VTemp0 = VectorMultiplyAdd(QW, T, VectorW0);
+	const VectorRegister VTemp1 = VectorCross(Quat, T);
+	const VectorRegister Rotated = VectorAdd(VTemp0, VTemp1);
+	return Rotated;
+}
+
+FORCEINLINE VectorRegister VectorQuaternionInverse(const VectorRegister& NormalizedQuat)
+{
+	return VectorMultiply(GlobalVectorConstants::QINV_SIGN_MASK, NormalizedQuat);
+}
+
+FORCEINLINE VectorRegister VectorQuaternionInverseRotateVector(const VectorRegister& Quat, const VectorRegister& VectorW0)
+{
+	const VectorRegister QInv = VectorQuaternionInverse(Quat);
+	return VectorQuaternionRotateVector(QInv, VectorW0);
 }
