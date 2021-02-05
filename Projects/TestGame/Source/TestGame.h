@@ -15,17 +15,15 @@ public:
 	void OnEvent(IEvent& InEvent) override;
 
 private:
-	FShaderLibrary OurShaderLibrary;
+	IShader* FlatShader;
 	class ITexture2D* Texture;
 	class ITexture2D* Texture2;
 
 	class IVertexArray* VertexArray;
-	class IVertexArray* VertexArray2;
 
 	FVector CameraPosition;
 	float CameraRotation;
 
-	FVector ObjectPosition;
-	FLinearColor SquarColor;
-	FOrthographicCamera Camera;
+	FLinearColor SquareColor;
+	F2DCameraController CameraController;
 };

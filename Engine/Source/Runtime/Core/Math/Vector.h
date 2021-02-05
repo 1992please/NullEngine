@@ -4,6 +4,7 @@
 #include "Rotator.h"
 #include "Core/Containers/String.h"
 #include "Core/Math/Color.h"
+#include "Core/Misc/Crc.h"
 
 namespace EAxis
 {
@@ -34,10 +35,11 @@ public:
 
 	FORCEINLINE FVector();
 	FORCEINLINE FVector(float InX, float InY, float InZ);
-	FORCEINLINE	FVector(struct FVector4 V);
+	FORCEINLINE	FVector(const struct FVector4& V);
+	FORCEINLINE	FVector(const struct FVector2& V);
 	explicit FORCEINLINE FVector(float InF);
 	explicit FVector(const FLinearColor& InColor);
-
+	explicit FORCEINLINE FVector(EForceInit);
 	//// Cross Product
 	FORCEINLINE FVector operator^(const FVector& V) const;
 	FORCEINLINE static FVector CrossProduct(const FVector& A, const FVector& B);
@@ -90,8 +92,11 @@ FORCEINLINE FVector::FVector(float InX, float InY, float InZ)
 
 FORCEINLINE FVector::FVector(const FLinearColor& InColor)
 	: X(InColor.R), Y(InColor.G), Z(InColor.B)
-{
-}
+{}
+
+FORCEINLINE FVector::FVector(EForceInit)
+	: X(0.0f), Y(0.0f), Z(0.0f)
+{}
 
 FORCEINLINE FVector FVector::operator^(const FVector& V) const
 {
@@ -287,4 +292,14 @@ FORCEINLINE FVector FVector::ProjectOnTo(const FVector& A) const
 FORCEINLINE FString FVector::ToString() const
 {
 	return FString::Printf("X=%3.3f Y=%3.3f Z=%3.3f", X, Y, Z);
+}
+
+FORCEINLINE FVector operator*(float Scale, const FVector& V)
+{
+	return V.operator*(Scale);
+}
+
+FORCEINLINE uint32 GetTypeHash(const FVector& Vector)
+{
+	return FCrc::MemCrc32(&Vector, sizeof(Vector));
 }

@@ -61,4 +61,4 @@ FORCEINLINE FVector4::FVector4(const FLinearColor& InColor)
 }
 
 
-FVector::FVector(FVector4 V) : FVector(V.X, V.Y, V.Z) {}
+FVector::FVector(const FVector4& V) : FVector(V.X, V.Y, V.Z) {}

@@ -1,20 +1,20 @@
 #pragma once
 #include "Core/CoreTypes.h"
 #include "Renderer/Components/RendererCamera.h"
+#include "Core/Math/Transform.h"
 
-class FOrthographicCameraController
+class F2DCameraController
 {
 public:
-	FOrthographicCameraController(float InAspectRatio, bool InCanRotate);
+	F2DCameraController(float InAspectRatio);
 
 	void OnUpdate(float DeltaTime);
-	void OnEvent(struct FEvent& InEvent);
+	void OnEvent(class IEvent& InEvent);
 
 	void OnResize(float InWidth, float InHeight);
 
 	FOrthographicCamera& GetCamera() { return Camera; }
 	const FOrthographicCamera& GetCamera() const { return Camera; }
-
 	float GetZoomLevel() const { return ZoomLevel; }
 	void SetZoomLevel(float level) { ZoomLevel = level; }
 private:
@@ -24,12 +24,10 @@ private:
 private:
 	float AspectRatio;
 	float ZoomLevel;
-	FOrthographicCamera Camera;
+	F2DCamera Camera;
 
-	bool bCanRotate;
+	FVector2 CameraPos;
 
-	FVector CameraPosition;
-	float CameraRotation;
 	float CameraTranslationSpeed;
 	float CameraRotationSpeed;
 };

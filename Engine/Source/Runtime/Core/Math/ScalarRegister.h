@@ -1,4 +1,5 @@
 #pragma once
+#include "Core/CoreTypes.h"
 #include "Core/Math/SSEMath.h"
 #include "NullMath.h"
 
@@ -7,65 +8,65 @@ class ScalarRegister
 public:
 	VectorRegister Value;
 
-	FORCEINLINE ScalarRegister::ScalarRegister()
+	FORCEINLINE ScalarRegister()
 	{
 	}
 
-	FORCEINLINE ScalarRegister::ScalarRegister(const ScalarRegister& VectorValue)
+	FORCEINLINE ScalarRegister(const ScalarRegister& VectorValue)
 	{
 		Value = VectorValue.Value;
 	}
 
-	FORCEINLINE ScalarRegister::ScalarRegister(const float& ScalarValue)
+	FORCEINLINE ScalarRegister(const float& ScalarValue)
 	{
 		Value = VectorLoadFloat1(&ScalarValue);
 	}
 
-	FORCEINLINE ScalarRegister::ScalarRegister(VectorRegister VectorValue)
+	FORCEINLINE ScalarRegister(VectorRegister VectorValue)
 	{
 		Value = VectorValue;
 	}
 
-	FORCEINLINE ScalarRegister ScalarRegister::operator*(const ScalarRegister& RHS) const
+	FORCEINLINE ScalarRegister operator*(const ScalarRegister& RHS) const
 	{
 		return ScalarRegister(VectorMultiply(Value, RHS.Value));
 	}
 
-	FORCEINLINE ScalarRegister ScalarRegister::operator+(const ScalarRegister& RHS) const
+	FORCEINLINE ScalarRegister operator+(const ScalarRegister& RHS) const
 	{
 		return ScalarRegister(VectorAdd(Value, RHS.Value));
 	}
 
-	FORCEINLINE ScalarRegister& ScalarRegister::operator+=(const ScalarRegister& RHS)
+	FORCEINLINE ScalarRegister& operator+=(const ScalarRegister& RHS)
 	{
 		Value = VectorAdd(Value, RHS.Value);
 		return *this;
 	}
 
-	FORCEINLINE ScalarRegister& ScalarRegister::operator-=(const ScalarRegister& RHS)
+	FORCEINLINE ScalarRegister& operator-=(const ScalarRegister& RHS)
 	{
 		Value = VectorSubtract(Value, RHS.Value);
 		return *this;
 	}
 
-	FORCEINLINE ScalarRegister ScalarRegister::operator-(const ScalarRegister& RHS) const
+	FORCEINLINE ScalarRegister operator-(const ScalarRegister& RHS) const
 	{
 		return ScalarRegister(VectorSubtract(Value, RHS.Value));
 	}
 
-	FORCEINLINE ScalarRegister& ScalarRegister::operator=(const ScalarRegister& RHS)
+	FORCEINLINE ScalarRegister& operator=(const ScalarRegister& RHS)
 	{
 		Value = RHS.Value;
 		return *this;
 	}
 
-	FORCEINLINE ScalarRegister& ScalarRegister::operator=(const VectorRegister& RHS)
+	FORCEINLINE ScalarRegister& operator=(const VectorRegister& RHS)
 	{
 		Value = RHS;
 		return *this;
 	}
 
-	FORCEINLINE ScalarRegister::operator VectorRegister() const
+	FORCEINLINE operator VectorRegister() const
 	{
 		return Value;
 	}

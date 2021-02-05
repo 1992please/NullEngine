@@ -291,6 +291,12 @@ public:
 			? (Dividend + Divisor / 2) / Divisor
 			: (Dividend - Divisor / 2 + 1) / Divisor;
 	}
+
+	template< class T, class U >
+	static FORCEINLINE T Lerp(const T& A, const T& B, const U& Alpha)
+	{
+		return (T)(A + Alpha * (B - A));
+	}
 };
 
 FORCEINLINE float FMath::InvSqrt(float F)

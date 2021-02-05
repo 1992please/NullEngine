@@ -6,6 +6,7 @@
 #include "Core/Math/Rotator.h"
 #include "Core/Math/Quat.h"
 #include "Core/Math/Plane.h"
+#include "Core/Math/Transform.h"
 #include "Core/Math/NumericLimits.h"
 #include "Core/Math/Matrix.h"
 #include "Core/Math/RotationTranslationMatrix.h"

@@ -1,8 +1,10 @@
 #pragma once
+#include "Core/CoreTypes.h"
 #include "Core/Math/Plane.h"
 #include "Core/Math/Vector4.h"
 #include "Core/Math/SSEMath.h"
 #include "Core/Math/MathUtility.h"
+#include "Core/Containers/String.h"
 
 struct alignas(16) FMatrix
 {
@@ -50,18 +52,17 @@ public:
 	FORCEINLINE FVector4 TransformVector(const FVector& V) const;
 	FORCEINLINE FVector InverseTransformVector(const FVector &V) const;
 
+	FORCEINLINE FVector GetOrigin() const;
+
 	inline FMatrix ApplyScale(float Scale) const;
 
 	inline FVector ExtractScaling(float Tolerance = SMALL_NUMBER);
-};
 
-struct FLookAtMatrix : FMatrix
-{
-	/**
-	 * Creates a view matrix given an eye position, a position to look at, and an up vector.
-	 * This does the same thing as D3DXMatrixLookAtLH.
-	 */
-	FLookAtMatrix(const FVector& EyePosition, const FVector& LookAtPosition, const FVector& UpVector);
+	inline float Determinant() const;
+
+	inline void SetAxis(int32 i, const FVector& Axis);
+
+	FString ToString() const;
 };
 
 FORCEINLINE FMatrix::FMatrix()
@@ -184,26 +185,6 @@ inline bool FMatrix::operator!=(const FMatrix& Other) const
 	return !(*this == Other);
 }
 
-
-FORCEINLINE FLookAtMatrix::FLookAtMatrix(const FVector& EyePosition, const FVector& LookAtPosition, const FVector& UpVector)
-{
-	const FVector ZAxis = (LookAtPosition - EyePosition).GetSafeNormal();
-	const FVector XAxis = (UpVector ^ ZAxis).GetSafeNormal();
-	const FVector YAxis = ZAxis ^ XAxis;
-
-	for (uint32 RowIndex = 0; RowIndex < 3; RowIndex++)
-	{
-		M[RowIndex][0] = (&XAxis.X)[RowIndex];
-		M[RowIndex][1] = (&YAxis.X)[RowIndex];
-		M[RowIndex][2] = (&ZAxis.X)[RowIndex];
-		M[RowIndex][3] = 0.0f;
-	}
-	M[3][0] = -EyePosition | XAxis;
-	M[3][1] = -EyePosition | YAxis;
-	M[3][2] = -EyePosition | ZAxis;
-	M[3][3] = 1.0f;
-}
-
 // Homogeneous transform.
 
 FORCEINLINE FVector4 FMatrix::TransformFVector4(const FVector4 &P) const
@@ -315,4 +296,41 @@ inline FVector FMatrix::ExtractScaling(float Tolerance/*=SMALL_NUMBER*/)
 	}
 
 	return Scale3D;
+}
+
+FORCEINLINE FVector FMatrix::GetOrigin() const
+{
+	return FVector(M[3][0], M[3][1], M[3][2]);
+}
+
+inline float FMatrix::Determinant() const
+{
+	return	M[0][0] * (
+		M[1][1] * (M[2][2] * M[3][3] - M[2][3] * M[3][2]) -
+		M[2][1] * (M[1][2] * M[3][3] - M[1][3] * M[3][2]) +
+		M[3][1] * (M[1][2] * M[2][3] - M[1][3] * M[2][2])
+		) -
+		M[1][0] * (
+			M[0][1] * (M[2][2] * M[3][3] - M[2][3] * M[3][2]) -
+			M[2][1] * (M[0][2] * M[3][3] - M[0][3] * M[3][2]) +
+			M[3][1] * (M[0][2] * M[2][3] - M[0][3] * M[2][2])
+			) +
+		M[2][0] * (
+			M[0][1] * (M[1][2] * M[3][3] - M[1][3] * M[3][2]) -
+			M[1][1] * (M[0][2] * M[3][3] - M[0][3] * M[3][2]) +
+			M[3][1] * (M[0][2] * M[1][3] - M[0][3] * M[1][2])
+			) -
+		M[3][0] * (
+			M[0][1] * (M[1][2] * M[2][3] - M[1][3] * M[2][2]) -
+			M[1][1] * (M[0][2] * M[2][3] - M[0][3] * M[2][2]) +
+			M[2][1] * (M[0][2] * M[1][3] - M[0][3] * M[1][2])
+			);
+}
+
+inline void FMatrix::SetAxis(int32 i, const FVector& Axis)
+{
+	NE_ASSERT(i >= 0 && i <= 2);
+	M[i][0] = Axis.X;
+	M[i][1] = Axis.Y;
+	M[i][2] = Axis.Z;
 }

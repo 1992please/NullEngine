@@ -1,12 +1,19 @@
 #include "Renderer.h"
 #include "Renderer/Components/RendererCamera.h"
 #include "Renderer/Components/Shader.h"
+#include "Renderer/Components/Renderer2D.h"
 
 FRenderer::FSceneData* FRenderer::SceneData = new FRenderer::FSceneData;
 
 void FRenderer::InitRenderer()
 {
-	FRenderCommand::InitRenderCommand();
+	FRenderCommand::Init();
+	FRenderer2D::Init();
+}
+
+void FRenderer::OnWindowResize(uint32 InWidth, uint32 InHeight)
+{
+	FRenderCommand::SetViewport(0, 0, InWidth, InHeight);
 }
 
 void FRenderer::BeginScene(FOrthographicCamera& Camera)

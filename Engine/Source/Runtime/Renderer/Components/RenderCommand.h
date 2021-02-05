@@ -1,4 +1,5 @@
 #pragma once
+#include "Core/CoreTypes.h"
 #include "Renderer/Components/RendererAPI.h"
 
 class FRenderCommand
@@ -20,10 +21,16 @@ public:
 	}
 
 
-	FORCEINLINE static void InitRenderCommand()
+	FORCEINLINE static void Init()
 	{
-		RendererAPI->InitRendererAPI();
+		RendererAPI->Init();
 	}
+
+	FORCEINLINE static void SetViewport(uint32 X, uint32 Y, uint32 InWidth, uint32 InHeight)
+	{
+		RendererAPI->SetViewport(X, Y, InWidth, InHeight);
+	}
+
 private:
 	static IRendererAPI* RendererAPI;
 };

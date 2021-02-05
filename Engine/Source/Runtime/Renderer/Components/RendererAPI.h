@@ -11,8 +11,8 @@ public:
         Type_None = 0,
         Type_OpenGL = 1
     };
-
-	virtual void InitRendererAPI() = 0;
+	virtual void SetViewport(uint32 X, uint32 Y, uint32 InWidth, uint32 InHeight) = 0;
+	virtual void Init() = 0;
 	virtual void SetClearColor(const FLinearColor& Color) = 0;
 	virtual void Clear() = 0;
 	virtual void DrawIndexed(const IVertexArray* InVertexArray) = 0;

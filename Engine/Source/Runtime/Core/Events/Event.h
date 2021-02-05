@@ -39,28 +39,6 @@ public:
 	bool bHandled = false;
 };
 
-//class FEventDispatcher
-//{
-//public:
-//	FEventDispatcher(FEvent& InEvent)
-//		: Event(InEvent)
-//	{
-//	}
-//
-//	template<typename T>
-//	bool Dispatch(bool(*Func)(T&))
-//	{
-//		if (Event.GetEventType() == T::GetStaticType())
-//		{
-//			Event.bHandled = Func(*(T*)&Event);
-//			return true;
-//		}
-//		return false;
-//	}
-//private:
-//	FEvent& Event;
-//};
-
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\
 								virtual EventType GetEventType() const override { return GetStaticType(); }\
 								virtual const char* GetName() const override { return #type; }

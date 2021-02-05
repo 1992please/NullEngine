@@ -8,6 +8,7 @@
 #include "Core/Events/ApplicationEvent.h"
 
 #include "Renderer/Components/Renderer.h"
+#include "Renderer/Components/Renderer2D.h"
 #include "Renderer/Components/Shader.h"
 #include "Renderer/Components/Buffers.h"
 #include "Renderer/Components/VertexArray.h"
@@ -25,7 +26,4 @@
 
 #include "Core/Assert/Assert.h"
 
-
-// --Entry Point---------------------
-#include "Core/Application/EntryPoint.h"
-// ----------------------------------
+#include "Engine/CameraController.h"

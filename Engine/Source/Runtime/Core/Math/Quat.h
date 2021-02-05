@@ -17,10 +17,10 @@ public:
 	FORCEINLINE FQuat(float InX, float InY, float InZ, float InW);
 	FORCEINLINE FQuat(const FQuat& Q);
 	explicit FQuat(const FMatrix& M);
-	explicit FORCEINLINE FQuat(const VectorRegister& V)
-	{
-		VectorStoreAligned(V, this);
-	}
+	explicit FORCEINLINE FQuat(const VectorRegister& V);
+	FORCEINLINE FQuat operator*(const FQuat& Q) const;
+	FORCEINLINE FQuat operator*=(const FQuat& Q);
+
 	//explicit FQuat(const FRotator& R);
 	//FQuat(FVector Axis, float AngleRad);
 	FRotator Rotator() const;
@@ -107,4 +107,23 @@ inline FQuat::FQuat(const FMatrix& M)
 		Z = qt[2];
 		W = qt[3];
 	}
+}
+
+FORCEINLINE FQuat::FQuat(const VectorRegister& V)
+{
+	VectorStoreAligned(V, this);
+}
+
+FORCEINLINE FQuat FQuat::operator*(const FQuat& Q) const
+{
+	FQuat Result;
+	VectorQuaternionMultiply(&Result, this, &Q);
+	return Result;
+}
+
+
+FORCEINLINE FQuat FQuat::operator*=(const FQuat& Q)
+{
+	VectorQuaternionMultiply(this, this, &Q);
+	return *this;
 }

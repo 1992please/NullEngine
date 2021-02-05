@@ -1,12 +1,13 @@
 #pragma once
 #include "Core/CoreTypes.h"
 #include "Core/Memory/NullMemory.h"
+#include "Core/Math/MathUtility.h"
+
 #include <intrin.h>
 
 typedef __m128	VectorRegister;
 typedef __m128i VectorRegisterInt;
 typedef __m128d VectorRegisterDouble;
-
 
 FORCEINLINE VectorRegister MakeVectorRegister(uint32 X, uint32 Y, uint32 Z, uint32 W)
 {
@@ -33,9 +34,16 @@ namespace GlobalVectorConstants
 	static const VectorRegister FloatMinus1_111 = MakeVectorRegister(-1.f, 1.f, 1.f, 1.f);
 	static const VectorRegister FloatOneHalf = MakeVectorRegister(0.5f, 0.5f, 0.5f, 0.5f);
 	static const VectorRegister FloatMinusOneHalf = MakeVectorRegister(-0.5f, -0.5f, -0.5f, -0.5f);
-	static const VectorRegister KindaSmallNumber = MakeVectorRegister(KINDA_SMALL_NUMBER, KINDA_SMALL_NUMBER, KINDA_SMALL_NUMBER, KINDA_SMALL_NUMBER);
 
+	static const VectorRegister ThreshQuatNormalized = MakeVectorRegister(THRESH_QUAT_NORMALIZED, THRESH_QUAT_NORMALIZED, THRESH_QUAT_NORMALIZED, THRESH_QUAT_NORMALIZED);
 	static const VectorRegister QINV_SIGN_MASK = MakeVectorRegister(-1.f, -1.f, -1.f, 1.f);
+
+	static const VectorRegister KindaSmallNumber = MakeVectorRegister(KINDA_SMALL_NUMBER, KINDA_SMALL_NUMBER, KINDA_SMALL_NUMBER, KINDA_SMALL_NUMBER);
+	static const VectorRegister SmallNumber = MakeVectorRegister(SMALL_NUMBER, SMALL_NUMBER, SMALL_NUMBER, SMALL_NUMBER);
+
+	static const VectorRegister QMULTI_SIGN_MASK0 = MakeVectorRegister(1.f, -1.f, 1.f, -1.f);
+	static const VectorRegister QMULTI_SIGN_MASK1 = MakeVectorRegister(1.f, 1.f, -1.f, -1.f);
+	static const VectorRegister QMULTI_SIGN_MASK2 = MakeVectorRegister(-1.f, 1.f, 1.f, -1.f);
 
 	static const VectorRegister DEG_TO_RAD = MakeVectorRegister(PI / (180.f), PI / (180.f), PI / (180.f), PI / (180.f));
 	static const VectorRegister DEG_TO_RAD_HALF = MakeVectorRegister((PI / 180.f)*0.5f, (PI / 180.f)*0.5f, (PI / 180.f)*0.5f, (PI / 180.f)*0.5f);
@@ -71,6 +79,8 @@ FORCEINLINE VectorRegister VectorOne(void)
 
 #define SHUFFLEMASK(A0,A1,B2,B3)				( (A0) | ((A1)<<2) | ((B2)<<4) | ((B3)<<6) )
 #define VectorReplicate( Vec, ElementIndex )	_mm_shuffle_ps( Vec, Vec, SHUFFLEMASK(ElementIndex,ElementIndex,ElementIndex,ElementIndex) )
+#define VectorSwizzle( Vec, X, Y, Z, W )		_mm_shuffle_ps( Vec, Vec, SHUFFLEMASK(X,Y,Z,W) )
+#define VectorShuffle( Vec1, Vec2, X, Y, Z, W )	_mm_shuffle_ps( Vec1, Vec2, SHUFFLEMASK(X,Y,Z,W) )
 #define VectorLoadFloat1( Ptr )					_mm_load1_ps( (const float*)(Ptr) )
 #define VectorLoadAligned( Ptr )				_mm_load_ps( (float*)(Ptr) )
 #define VectorStoreAligned( Vec, Ptr )			_mm_store_ps( (float*)(Ptr), Vec )
@@ -92,10 +102,10 @@ FORCEINLINE VectorRegister VectorOne(void)
 #define VectorCompareGE( Vec1, Vec2 )			_mm_cmpge_ps( Vec1, Vec2 )
 #define VectorCompareLT( Vec1, Vec2 )			_mm_cmplt_ps( Vec1, Vec2 )
 #define VectorCompareLE( Vec1, Vec2 )			_mm_cmple_ps( Vec1, Vec2 )
-#define VectorSwizzle( Vec, X, Y, Z, W )		_mm_shuffle_ps( Vec, Vec, SHUFFLEMASK(X,Y,Z,W) )
 #define VectorReciprocalSqrt(Vec)				_mm_rsqrt_ps( Vec )
 #define VectorReciprocal(Vec)					_mm_rcp_ps(Vec)
-
+#define VectorAnyGreaterThan( Vec1, Vec2 )		_mm_movemask_ps( _mm_cmpgt_ps(Vec1, Vec2) )
+#define VectorMultiplyAdd( Vec1, Vec2, Vec3 )	_mm_add_ps( _mm_mul_ps(Vec1, Vec2), Vec3 )
 
 FORCEINLINE VectorRegister VectorSet_W1(const VectorRegister& Vector)
 {
@@ -144,8 +154,6 @@ FORCEINLINE VectorRegister VectorCross(const VectorRegister& Vec1, const VectorR
 	VectorRegister B_YZXW = _mm_shuffle_ps(Vec2, Vec2, SHUFFLEMASK(1, 2, 0, 3));
 	return VectorSubtract(VectorMultiply(A_YZXW, B_ZXYW), VectorMultiply(A_ZXYW, B_YZXW));
 }
-
-#define VectorMultiplyAdd( Vec1, Vec2, Vec3 )	_mm_add_ps( _mm_mul_ps(Vec1, Vec2), Vec3 )
 
 FORCEINLINE void VectorMatrixMultiply(void *Result, const void* Matrix1, const void* Matrix2)
 {
@@ -507,4 +515,19 @@ FORCEINLINE VectorRegister VectorQuaternionInverseRotateVector(const VectorRegis
 {
 	const VectorRegister QInv = VectorQuaternionInverse(Quat);
 	return VectorQuaternionRotateVector(QInv, VectorW0);
+}
+
+FORCEINLINE VectorRegister VectorQuaternionMultiply2(const VectorRegister& Quat1, const VectorRegister& Quat2)
+{
+	VectorRegister Result = VectorMultiply(VectorReplicate(Quat1, 3), Quat2);
+	Result = VectorMultiplyAdd(VectorMultiply(VectorReplicate(Quat1, 0), VectorSwizzle(Quat2, 3, 2, 1, 0)), GlobalVectorConstants::QMULTI_SIGN_MASK0, Result);
+	Result = VectorMultiplyAdd(VectorMultiply(VectorReplicate(Quat1, 1), VectorSwizzle(Quat2, 2, 3, 0, 1)), GlobalVectorConstants::QMULTI_SIGN_MASK1, Result);
+	Result = VectorMultiplyAdd(VectorMultiply(VectorReplicate(Quat1, 2), VectorSwizzle(Quat2, 1, 0, 3, 2)), GlobalVectorConstants::QMULTI_SIGN_MASK2, Result);
+
+	return Result;
+}
+
+FORCEINLINE void VectorQuaternionMultiply(void* RESTRICT Result, const void* RESTRICT Quat1, const void* RESTRICT Quat2)
+{
+	*((VectorRegister *)Result) = VectorQuaternionMultiply2(*((const VectorRegister *)Quat1), *((const VectorRegister *)Quat2));
 }

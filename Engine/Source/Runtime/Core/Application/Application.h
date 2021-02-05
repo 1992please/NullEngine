@@ -11,11 +11,13 @@ public:
 	virtual void Run();
 
 	void OnEvent(class IEvent& InEvent);
-	void OnWindowCloseEvent(class FWindowCloseEvent&);
+	bool OnWindowCloseEvent(class FWindowCloseEvent& InWindowEvent);
+	bool OnWindowResizeEvent(class FWindowResizeEvent& InWindowResizeEvent);
 	FORCEINLINE class IApplicationWindow* GetWindow() const { return pWindow; }
 	FORCEINLINE static FApplication* GetApplication() { return Instance; }
 private:
 	bool bRunning;
+	bool bMinimized;
 	FGraphicLayersStack GraphicLayerStack;
 
 	class IApplicationWindow* pWindow;
@@ -23,5 +25,3 @@ private:
 	class FImGuiLayer* ImGuiLayer;
 
 };
-
-extern FGraphicLayer* GetExternalLayer();
