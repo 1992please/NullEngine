@@ -1,4 +1,4 @@
-#include "Engine.h"
+#include "NullEngine.h"
 
 
 class TestGame : public FGraphicLayer
@@ -16,8 +16,7 @@ public:
 
 private:
 	IShader* FlatShader;
-	class ITexture2D* Texture;
-	class ITexture2D* Texture2;
+	class ITexture2D* MarioTexture;
 
 	class IVertexArray* VertexArray;
 

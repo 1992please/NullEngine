@@ -9,7 +9,7 @@ public:
     virtual uint32 GetWidth() const = 0;
 	virtual uint32 GetHeight() const = 0;
 	virtual uint32 GetRendererID() const = 0;
-    virtual void SetData(void* InData, uint32 InSize) = 0;
+    virtual void SetData(const void* InData, uint32 InSize) = 0;
     virtual void Bind(uint32 InSlot = 0) const = 0;
     virtual bool operator==(const ITexture& other) const = 0;
 };

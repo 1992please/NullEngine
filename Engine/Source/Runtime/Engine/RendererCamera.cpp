@@ -4,17 +4,19 @@
 #include "Core/Math/RotationMatrix.h"
 
 FOrthographicCamera::FOrthographicCamera(float InWidth, float InHeight, float InNearPlane , float InFarPlane)
-	: ProjectionMatrix(FReversedZOrthoMatrix(InWidth, InHeight, 1.0f / (InFarPlane - InNearPlane), -InNearPlane))
-	, Position(EForceInit::ForceInitToZero)
+	: Position(EForceInit::ForceInitToZero)
 	, Rotation(EForceInit::ForceInitToZero)
 	, ViewMatrix(FMatrix::Identity)
 {
-	ViewProjectionMatrix = ViewMatrix * ProjectionMatrix;
+	SetProjection(InWidth, InHeight, InNearPlane, InFarPlane);
 }
 
 void FOrthographicCamera::SetProjection(float InWidth, float InHeight, float InNearPlane /*= 0.0f*/, float InFarPlane /*= 1.0f*/)
 {
-	ProjectionMatrix = FReversedZOrthoMatrix(InWidth, InHeight, 1.0f / (InFarPlane - InNearPlane), -InNearPlane);
+	ProjectionMatrix = FReversedZOrthoMatrix(InWidth, InHeight, 2.0f / (InFarPlane - InNearPlane), -InNearPlane);
+	FVector Result1 = ProjectionMatrix.TransformPosition(FVector(-0.1f, -0.1f, 0.5f));
+	FVector Result2 = ProjectionMatrix.TransformPosition(FVector(-0.1f, -0.1f, 0.0f));
+	FVector Result3 = ProjectionMatrix.TransformPosition(FVector(-0.1f, -0.1f, .99f));
 	ViewProjectionMatrix = ViewMatrix * ProjectionMatrix;
 }
 
@@ -38,12 +40,6 @@ void FOrthographicCamera::RecalculateViewMatrix()
 	ViewMatrix = ViewMatrix * ViewPlanesMatrix;
 
 	ViewProjectionMatrix = ViewMatrix * ProjectionMatrix;
-}
-
-F2DCamera::F2DCamera(float InWidth, float InHeight)
-	: FOrthographicCamera(InWidth, InHeight, -1.0f, 1000.f)
-{
-
 }
 
 void F2DCamera::RecalculateViewMatrix()

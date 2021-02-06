@@ -5,8 +5,10 @@ class FAppTime
 {
 public:
 	static void InitAppTime();
-	static void UpdateAppTime();
-	
+
+	static double GetTimeNow();
+
+	static void UpdateTime();
 	FORCEINLINE static double GetTimeSeconds() { return TimeSeconds; }
 	FORCEINLINE static double GetDeltaTime() { return DeltaTime; }
 private:

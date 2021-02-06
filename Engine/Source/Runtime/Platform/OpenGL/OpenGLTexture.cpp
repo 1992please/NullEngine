@@ -64,7 +64,7 @@ FOpenGLTexture2D::~FOpenGLTexture2D()
 	glDeleteTextures(1, &RendererID);
 }
 
-void FOpenGLTexture2D::SetData(void* InData, uint32 InSize)
+void FOpenGLTexture2D::SetData(const void* InData, uint32 InSize)
 {
 	uint32 nChannels = DataFormat == GL_RGBA ? 4 : 3;
 	NE_ASSERT_F(InSize == Width * Height * nChannels, "Data must be entire texture!");

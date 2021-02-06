@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/CoreTypes.h"
-#include "Renderer/Components/RendererCamera.h"
+#include "Engine/RendererCamera.h"
 #include "Core/Math/Transform.h"
 
 class F2DCameraController

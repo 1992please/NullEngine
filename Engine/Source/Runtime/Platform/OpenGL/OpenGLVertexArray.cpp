@@ -57,7 +57,7 @@ void FOpenGLVertexArray::AddVertexBuffer(IVertexBuffer* InVertexBuffer)
 			ShaderDataTypeToOpenGLBaseType(Ele.Type),
 			Ele.bNormalized ? GL_TRUE : GL_FALSE,
 			Layout.GetStride(),
-			(const void*)Ele.Offset);
+			(const void*)(size_t)Ele.Offset);
 
 		EleIndex++;
 	}

@@ -1,12 +1,12 @@
 #pragma once
-#include "Core/CoreTypes.h"
+#include "Engine/Engine.h"
 #include "Core/Math/OrthoMatrix.h"
 #include "Core/Math/Transform.h"
 class FOrthographicCamera
 {
 public:
-	FOrthographicCamera(float InWidth, float InHeight, float InNearPlane = 0.0f, float InFarPlane = 1.0f);
-	void SetProjection(float InWidth, float InHeight, float InNearPlane = 0.0f, float InFarPlane = 1.0f);
+	FOrthographicCamera(float InWidth, float InHeight, float InNearPlane, float InFarPlane);
+	void SetProjection(float InWidth, float InHeight, float InNearPlane, float InFarPlane);
 
 	FORCEINLINE void SetPosition(const FVector& InPostion) { Position = InPostion; RecalculateViewMatrix(); }
 	FORCEINLINE void SetRotation(const FRotator& InRotation) { Rotation = InRotation; RecalculateViewMatrix(); }
@@ -26,6 +26,13 @@ protected:
 class F2DCamera : public FOrthographicCamera
 {
 public:
-	F2DCamera(float InWidth, float InHeight);
+	F2DCamera(float InWidth, float InHeight)
+		: FOrthographicCamera(InWidth, InHeight, 0.0f, WORLD_MAX) {}
+
+	FORCEINLINE void SetProjection(float InWidth, float InHeight)
+	{
+		FOrthographicCamera::SetProjection(InWidth, InHeight, 0.0f, WORLD_MAX);
+	}
+private:
 	virtual void RecalculateViewMatrix() override;
 };

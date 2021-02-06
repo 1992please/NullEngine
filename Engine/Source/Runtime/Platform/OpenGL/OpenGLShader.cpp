@@ -177,7 +177,7 @@ void FOpenGLShader::CreateAndLinkProgram(uint32* InShaders)
 		glGetProgramiv(RendererID, GL_INFO_LOG_LENGTH, &infoLogLength);
 		TArray<char> infoLog(infoLogLength);
 		glGetProgramInfoLog(RendererID, infoLogLength, NULL, infoLog.GetData());
-		NE_CORE_ERROR("Link log:\n%s", infoLog.GetData());
+		NE_ASSERT_F(false, "Link log:\n%s", infoLog.GetData());
 	}
 	else
 	{

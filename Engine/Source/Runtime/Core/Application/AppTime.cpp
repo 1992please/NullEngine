@@ -17,11 +17,18 @@ void FAppTime::InitAppTime()
 	DeltaTime = 0.0;
 }
 
-void FAppTime::UpdateAppTime()
+void FAppTime::UpdateTime()
 {
 	LARGE_INTEGER Cycles;
 	QueryPerformanceCounter(&Cycles);
 	double CurrentTime = Cycles.QuadPart * SecondsPerCycle;
 	DeltaTime = CurrentTime - TimeSeconds;
 	TimeSeconds = CurrentTime;
+}
+
+double FAppTime::GetTimeNow()
+{
+	LARGE_INTEGER Cycles;
+	QueryPerformanceCounter(&Cycles);
+	return Cycles.QuadPart * SecondsPerCycle;
 }

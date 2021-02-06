@@ -36,12 +36,8 @@ FApplication::~FApplication()
 
 void FApplication::Run()
 {
-	FAppTime::InitAppTime();
 	while (bRunning)
 	{
-		FRenderCommand::SetClearColor(FLinearColor(0.1f, 0.1f, 0.1f, 1));
-		FRenderCommand::Clear();
-
 		const float DeltaTime = (float)FAppTime::GetDeltaTime();
 
 		if (!bMinimized)
@@ -61,7 +57,7 @@ void FApplication::Run()
 
 		pWindow->OnUpdate();
 
-		FAppTime::UpdateAppTime();
+		FAppTime::UpdateTime();
 	}
 }
 

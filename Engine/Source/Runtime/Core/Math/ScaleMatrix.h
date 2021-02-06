@@ -6,7 +6,7 @@ class FScaleMatrix
 	: public FMatrix
 {
 public:
-	FScaleMatrix( float Scale )
+	FORCEINLINE FScaleMatrix( float Scale )
     	: FMatrix(
 		FPlane(Scale,	0.0f,	0.0f,	0.0f),
 		FPlane(0.0f,	Scale,	0.0f,	0.0f),
@@ -15,7 +15,7 @@ public:
 	    )
     { }
 
-	FScaleMatrix( const FVector& Scale )
+	FORCEINLINE FScaleMatrix( const FVector& Scale )
     	: FMatrix(
 		FPlane(Scale.X,	0.0f,		0.0f,		0.0f),
 		FPlane(0.0f,	Scale.Y,	0.0f,		0.0f),

@@ -5,6 +5,11 @@ void FOpenGLRendererAPI::Init()
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_DEPTH_TEST);
+
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glCullFace(GL_BACK);
 }
 
 void FOpenGLRendererAPI::SetViewport(uint32 X, uint32 Y, uint32 InWidth, uint32 InHeight)

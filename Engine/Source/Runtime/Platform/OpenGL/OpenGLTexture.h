@@ -12,7 +12,7 @@ public:
 	virtual uint32 GetWidth() const override { return Width; }
 	virtual uint32 GetHeight() const override { return Height; }
 	virtual uint32 GetRendererID() const override { return RendererID; }
-	virtual void SetData(void* InData, uint32 InSize) override;
+	virtual void SetData(const void* InData, uint32 InSize) override;
 	virtual void Bind(uint32 InSlot = 0) const override;
 	virtual bool operator==(const ITexture& other) const override;
 
