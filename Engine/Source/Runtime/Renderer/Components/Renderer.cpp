@@ -3,6 +3,7 @@
 #include "Renderer/Components/Shader.h"
 #include "Renderer/Components/Renderer2D.h"
 
+// TODO: replace with memory stack push
 FRenderer::FSceneData* FRenderer::SceneData = new FRenderer::FSceneData;
 
 void FRenderer::InitRenderer()

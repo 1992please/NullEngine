@@ -5,7 +5,7 @@ class FCFile
 {
 public:
     FCFile(const char* InFilePath);
-    void WriteData(void* InData, uint32 InDataSize);
+    void WriteData(const void* InData, uint32 InDataSize);
     ~FCFile();
 private:
 	void* FileHandle;

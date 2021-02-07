@@ -324,10 +324,10 @@ void FString::RemoveSpacesInline()
 
 FString FString::Printf(const char* Fmt, ...)
 {
-	int32       BufferSize = STARTING_BUFFER_SIZE;
-	char       StartingBuffer[STARTING_BUFFER_SIZE];
-	char*       Buffer = StartingBuffer;
-	int32       Result = -1;
+	int32	BufferSize = STARTING_BUFFER_SIZE;
+	char	StartingBuffer[STARTING_BUFFER_SIZE];
+	char*	Buffer = StartingBuffer;
+	int32	Result = -1;
 
 	// First try to print to a stack allocated location 
 	GET_VARARGS_RESULT(Buffer, BufferSize, BufferSize - 1, Fmt, Fmt, Result);
@@ -354,6 +354,38 @@ FString FString::Printf(const char* Fmt, ...)
 	}
 
 	return ResultString;
+}
+
+void FString::Appendf(const char* Fmt, ...)
+{
+	int32	BufferSize = STARTING_BUFFER_SIZE;
+	char	StartingBuffer[STARTING_BUFFER_SIZE];
+	char*	Buffer = StartingBuffer;
+	int32	Result = -1;
+
+	// First try to print to a stack allocated location 
+	GET_VARARGS_RESULT(Buffer, BufferSize, BufferSize - 1, Fmt, Fmt, Result);
+
+	// If that fails, start allocating regular memory
+	if (Result == -1)
+	{
+		Buffer = nullptr;
+		while (Result == -1)
+		{
+			BufferSize *= 2;
+			Buffer = (char*)FMemory::Realloc(Buffer, BufferSize);
+			GET_VARARGS_RESULT(Buffer, BufferSize, BufferSize - 1, Fmt, Fmt, Result);
+		};
+	}
+
+	Buffer[Result] = 0;
+
+	*this += Buffer;
+
+	if (BufferSize != STARTING_BUFFER_SIZE)
+	{
+		FMemory::Free(Buffer);
+	}
 }
 
 int32 FString::ParseIntoArrayLines(TArray<FString>& OutArray, bool InCullEmpty /*= true*/) const
