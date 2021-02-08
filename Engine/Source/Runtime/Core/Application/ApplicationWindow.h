@@ -1,7 +1,6 @@
 #pragma once
 #include "Core/CoreTypes.h"
 #include "Core/Events/Event.h"
-#include "Core/Containers/String.h"
 
 DECLARE_DELEGATE(OnWindowEventCallback, IEvent&)
 

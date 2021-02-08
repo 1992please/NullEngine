@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "GraphicsContext.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 

@@ -1,7 +1,6 @@
 #pragma once
 #include "Core/CoreTypes.h"
 #include "Renderer/Components/Shader.h"
-#include "Core/Containers/Map.h"
 
 class FOpenGLShader : public IShader
 {

@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "Logger.h"

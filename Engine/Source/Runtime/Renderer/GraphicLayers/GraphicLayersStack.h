@@ -1,7 +1,6 @@
 #pragma once
 #include "Core/CoreTypes.h"
 #include "GraphicLayer.h"
-#include "Core/Containers/Array.h"
 
 class FGraphicLayersStack
 {

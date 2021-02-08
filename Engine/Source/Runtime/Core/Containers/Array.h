@@ -10,7 +10,7 @@
 #include "Core/Algo/IntroSort.h"
 #include "Core/Algo/HeapSort.h"
 
-#include "Core/Assert/Assert.h"
+#include "Core/Debug/Assert.h"
 
 #include "Core/Memory/NullMemory.h"
 #include <initializer_list>

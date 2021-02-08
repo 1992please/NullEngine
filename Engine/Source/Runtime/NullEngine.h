@@ -1,5 +1,7 @@
 #pragma once
 
+#include "NullPCH.h"
+
 #include "Core/CoreMinimal.h"
 
 #include "Renderer/GraphicLayers/GraphicLayer.h"

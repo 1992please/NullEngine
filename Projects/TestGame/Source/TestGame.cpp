@@ -12,35 +12,36 @@ TestGame::TestGame()
 
 void TestGame::OnAttach()
 {
+	NE_PROFILE_FUNCTION();
 	MarioTexture = ITexture2D::Create("../../Projects/TestGame/Content/mario_logo.png");
 
 }
 
 void TestGame::OnDettach()
 {
-
+	NE_PROFILE_FUNCTION();
 }
 
 void TestGame::OnUpdate(float DeltaTime)
 {
-	NE_PROFILE_FUNCTION()
+	NE_PROFILE_FUNCTION();
 		//NE_LOG("DeltaTime %f", DeltaTime);
 	
 	{
-		NE_PROFILE_SCOPE("Camera Controller")
+		NE_PROFILE_SCOPE("Camera Controller");
 		CameraController.OnUpdate(DeltaTime);
 	}
 
 
 	{
-		NE_PROFILE_SCOPE("Renderer Start")
+		NE_PROFILE_SCOPE("Renderer Start");
 		FRenderCommand::SetClearColor(FLinearColor(0.1f, 0.1f, 0.1f, 1));
 		FRenderCommand::Clear();
 	}
 
 
 	{
-		NE_PROFILE_SCOPE("Renderer")
+		NE_PROFILE_SCOPE("Renderer");
 		FRenderer2D::BeginScene(CameraController.GetCamera());
 
 		FRenderer2D::DrawQuad({ 0.0f, 0.0f, 0.1f }, FVector2(10.0f), { 0.8f, 0.2f, 0.3f, 1.0f });

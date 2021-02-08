@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "RendererCamera.h"
 #include "Core/Math/InvRotationMatrix.h"
 #include "Core/Math/TranslationMatrix.h"
@@ -13,6 +14,8 @@ FOrthographicCamera::FOrthographicCamera(float InWidth, float InHeight, float In
 
 void FOrthographicCamera::SetProjection(float InWidth, float InHeight, float InNearPlane /*= 0.0f*/, float InFarPlane /*= 1.0f*/)
 {
+	NE_PROFILE_FUNCTION();
+
 	ProjectionMatrix = FReversedZOrthoMatrix(InWidth, InHeight, 2.0f / (InFarPlane - InNearPlane), -InNearPlane);
 	FVector Result1 = ProjectionMatrix.TransformPosition(FVector(-0.1f, -0.1f, 0.5f));
 	FVector Result2 = ProjectionMatrix.TransformPosition(FVector(-0.1f, -0.1f, 0.0f));
@@ -22,6 +25,7 @@ void FOrthographicCamera::SetProjection(float InWidth, float InHeight, float InN
 
 void FOrthographicCamera::RecalculateViewMatrix()
 {
+	NE_PROFILE_FUNCTION();
 	// Care all calculation hear are inversed matrices 
 	// remember the math rule Inverse(AB) = Inverse(B) * Inverse(A)
 
@@ -44,6 +48,8 @@ void FOrthographicCamera::RecalculateViewMatrix()
 
 void F2DCamera::RecalculateViewMatrix()
 {
+	NE_PROFILE_FUNCTION();
+
 	const FMatrix ViewRotationMatrix = FInverseRotationMatrix(Rotation);
 
 	ViewMatrix = ViewRotationMatrix * FTranslationMatrix(-Position);

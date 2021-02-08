@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "OpenGLVertexArray.h"
 #include "GL/gl3w.h"
 
@@ -24,26 +25,36 @@ static GLenum ShaderDataTypeToOpenGLBaseType(EShaderDataType InType)
 FOpenGLVertexArray::FOpenGLVertexArray()
 	: IndexBuffer(nullptr)
 {
+	NE_PROFILE_FUNCTION();
+
 	glCreateVertexArrays(1, &RendererID);
 }
 
 FOpenGLVertexArray::~FOpenGLVertexArray()
 {
+	NE_PROFILE_FUNCTION();
+
 	glDeleteVertexArrays(1, &RendererID);
 }
 
 void FOpenGLVertexArray::Bind() const
 {
+	NE_PROFILE_FUNCTION();
+
 	glBindVertexArray(RendererID);
 }
 
 void FOpenGLVertexArray::UnBind() const
 {
+	NE_PROFILE_FUNCTION();
+
 	glBindVertexArray(0);
 }
 
 void FOpenGLVertexArray::AddVertexBuffer(IVertexBuffer* InVertexBuffer)
 {
+	NE_PROFILE_FUNCTION();
+
 	glBindVertexArray(RendererID);
 	InVertexBuffer->Bind();
 	uint32 EleIndex = 0;
@@ -68,6 +79,8 @@ void FOpenGLVertexArray::AddVertexBuffer(IVertexBuffer* InVertexBuffer)
 
 void FOpenGLVertexArray::SetIndexBuffer(IIndexBuffer* InIndexBuffer)
 {
+	NE_PROFILE_FUNCTION();
+
 	glBindVertexArray(RendererID);
 	InIndexBuffer->Bind();
 	IndexBuffer = InIndexBuffer;

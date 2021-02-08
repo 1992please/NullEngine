@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "String.h"
 
 void FString::AppendInt(int32 InNum)

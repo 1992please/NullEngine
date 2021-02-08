@@ -1,7 +1,7 @@
+#include "NullPCH.h"
 #include "Buffers.h"
 #include "Platform/OpenGL/OpenGLBuffers.h"
 #include "Renderer/Components/RendererAPI.h"
-#include "Core/Assert/Assert.h"
 
 IVertexBuffer* IVertexBuffer::Create(float* InVertices, uint32 InSize)
 {

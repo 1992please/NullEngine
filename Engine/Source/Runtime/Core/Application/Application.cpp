@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "Application.h"
 #include "Renderer/ImGui/ImGuiLayer.h"
 #include "Core/Application/AppTime.h"
@@ -15,6 +16,9 @@ FApplication::FApplication()
 	: bMinimized(false)
 	, bRunning(true)
 {
+	NE_PROFILE_FUNCTION();
+
+
 	NE_ASSERT_F(!Instance, "Application already exists!");
 	Instance = this;
 
@@ -36,24 +40,37 @@ FApplication::~FApplication()
 
 void FApplication::Run()
 {
+	NE_PROFILE_FUNCTION();
+
 	while (bRunning)
 	{
+		NE_PROFILE_SCOPE("RunLoop");
 		const float DeltaTime = (float)FAppTime::GetDeltaTime();
 
 		if (!bMinimized)
 		{
-			for (FGraphicLayer* Layer : GraphicLayerStack)
 			{
-				Layer->OnUpdate(DeltaTime);
+				NE_PROFILE_SCOPE("LayerStack OnUpdate");
+				for (FGraphicLayer* Layer : GraphicLayerStack)
+				{
+					Layer->OnUpdate(DeltaTime);
+				}
 			}
+
 		}
 
-		ImGuiLayer->Begin();
-		for (FGraphicLayer* Layer : GraphicLayerStack)
-		{
-			Layer->OnImGuiRender();
-		}
-		ImGuiLayer->End();
+
+			{
+				ImGuiLayer->Begin();
+				{
+					NE_PROFILE_SCOPE("LayerStack OnImGUI")
+					for (FGraphicLayer* Layer : GraphicLayerStack)
+					{
+						Layer->OnImGuiRender();
+					}
+				}
+				ImGuiLayer->End();
+			}
 
 		pWindow->OnUpdate();
 
@@ -63,6 +80,8 @@ void FApplication::Run()
 
 void FApplication::OnEvent(IEvent& InEvent)
 {
+	NE_PROFILE_FUNCTION();
+
 	switch (InEvent.GetEventType())
 	{
 		case EventType::WindowResize:	InEvent.bHandled |= OnWindowResizeEvent(static_cast<FWindowResizeEvent&>(InEvent)); break;
@@ -89,6 +108,7 @@ bool FApplication::OnWindowCloseEvent(FWindowCloseEvent&)
 
 bool FApplication::OnWindowResizeEvent(class FWindowResizeEvent& InWindowResizeEvent)
 {
+	NE_PROFILE_FUNCTION();
 	if (InWindowResizeEvent.GetWidth() == 0 || InWindowResizeEvent.GetHeight() == 0)
 	{
 		bMinimized = true;

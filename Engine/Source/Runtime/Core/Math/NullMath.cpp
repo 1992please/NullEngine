@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "NullMath.h"
 
 const FVector FVector::ZeroVector(0.0f, 0.0f, 0.0f);

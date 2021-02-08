@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "VertexArray.h"
 #include "RendererAPI.h"
 #include "Platform/OpenGL/OpenGLVertexArray.h"

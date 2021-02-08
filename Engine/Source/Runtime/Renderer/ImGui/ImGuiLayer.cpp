@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "ImGuiLayer.h"
 
 #include "imgui.h"
@@ -20,6 +21,8 @@ FImGuiLayer::~FImGuiLayer()
 
 void FImGuiLayer::OnAttach()
 {
+	NE_PROFILE_FUNCTION();
+
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -39,6 +42,8 @@ void FImGuiLayer::OnAttach()
 
 void FImGuiLayer::OnDettach()
 {
+	NE_PROFILE_FUNCTION();
+
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
@@ -62,6 +67,8 @@ void FImGuiLayer::OnImGuiRender()
 
 void FImGuiLayer::Begin()
 {
+	NE_PROFILE_FUNCTION();
+
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
@@ -70,6 +77,8 @@ void FImGuiLayer::Begin()
 
 void FImGuiLayer::End()
 {
+	NE_PROFILE_FUNCTION();
+
 	// Rendering
 	ImGuiIO& io = ImGui::GetIO();
 	IApplicationWindow* Window = FApplication::GetApplication()->GetWindow();

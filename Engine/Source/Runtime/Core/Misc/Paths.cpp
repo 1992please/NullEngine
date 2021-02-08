@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "Paths.h"
 
 auto IsSlashOrBackslash = [](char C) { return C == '/' || C == '\\'; };

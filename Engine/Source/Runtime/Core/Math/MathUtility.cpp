@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "MathUtility.h"
 
 float FMath::Atan2(float Y, float X)

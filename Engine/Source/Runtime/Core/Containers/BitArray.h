@@ -3,7 +3,7 @@
 #include "Core/Math/MathUtility.h"
 #include "Core/Math/NumericLimits.h"
 #include "Core/Memory/NullMemory.h"
-#include "Core/Assert/Assert.h"
+#include "Core/Debug/Assert.h"
 
 #define NumBitsPerDWORD ((uint32)32)
 #define NumBitsPerDWORDLogTwo ((int32)5)

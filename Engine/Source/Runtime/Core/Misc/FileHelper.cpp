@@ -1,5 +1,5 @@
+#include "NullPCH.h"
 #include "FileHelper.h"
-#include <windows.h>
 #include "Core/Math/NumericLimits.h"
 
 bool FFileHelper::ReadFromTextFile(const FString& FileName, FString& OutFileContent)

@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "NullMemory.h"
 #include <string.h>
 #include <stdlib.h>

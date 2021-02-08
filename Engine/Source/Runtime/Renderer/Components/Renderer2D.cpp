@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "Renderer2D.h"
 #include "Renderer/Components/VertexArray.h"
 #include "Renderer/Components/Shader.h"
@@ -21,6 +22,8 @@ static FRenderer2DStorage Storage;
 
 void FRenderer2D::Init()
 {
+	NE_PROFILE_FUNCTION();
+
 	Storage.VertexArray = IVertexArray::Create();
 	Storage.TextureShader = IShader::Create("../../Engine/Shaders/TextureShader.glsl");
 	Storage.TextureShader->Bind();
@@ -57,12 +60,16 @@ void FRenderer2D::Init()
 
 void FRenderer2D::Shutdown()
 {
+	NE_PROFILE_FUNCTION();
+
 	delete Storage.VertexArray;
 	delete Storage.TextureShader;
 }
 
 void FRenderer2D::BeginScene(const FOrthographicCamera& InCamera)
 {
+	NE_PROFILE_FUNCTION();
+
 	Storage.TextureShader->Bind();
 	Storage.TextureShader->SetMatrix("u_ViewProjection", InCamera.GetViewProjectionMatrix());
 
@@ -70,11 +77,14 @@ void FRenderer2D::BeginScene(const FOrthographicCamera& InCamera)
 
 void FRenderer2D::EndScene()
 {
+	NE_PROFILE_FUNCTION();
 
 }
 
 void FRenderer2D::DrawQuad(const FVector& InPosition, const FVector2& InSize, const FLinearColor& InColor, const ITexture2D* InTexture)
 {
+	NE_PROFILE_FUNCTION();
+
 	Storage.TextureShader->SetMatrix("u_Model", FScaleMatrix(InSize) * FTranslationMatrix(InPosition));
 	Storage.TextureShader->SetVector4("u_Color", InColor);
 	if (InTexture)

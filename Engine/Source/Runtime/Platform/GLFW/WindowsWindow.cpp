@@ -1,7 +1,5 @@
+#include "NullPCH.h"
 #include "WindowsWindow.h"
-#include "Core/Assert/Assert.h"
-#include "Core/Delegates/Delegate.h"
-
 #include "Core/Events/ApplicationEvent.h"
 #include "Core/Events/MouseEvent.h"
 #include "Core/Events/KeyEvent.h"
@@ -25,22 +23,30 @@ IApplicationWindow* IApplicationWindow::Create(const FWindowDetails& InDetails)
 
 FWindowsWindow::FWindowsWindow(const FWindowDetails& InDetails)
 {
+	NE_PROFILE_FUNCTION();
+
 	Init(InDetails);
 }
 
 FWindowsWindow::~FWindowsWindow()
 {
+	NE_PROFILE_FUNCTION();
+
 	Shutdown();
 }
 
 void FWindowsWindow::OnUpdate()
 {
+	NE_PROFILE_FUNCTION();
+
 	glfwPollEvents();
 	GraphicsContext->SwapBuffers();
 }
 
 void FWindowsWindow::SetVSync(bool enabled)
 {
+	NE_PROFILE_FUNCTION();
+
 	if (enabled)
 		glfwSwapInterval(1);
 	else
@@ -51,6 +57,8 @@ void FWindowsWindow::SetVSync(bool enabled)
 
 void FWindowsWindow::Init(const FWindowDetails& InDetails)
 {
+	NE_PROFILE_FUNCTION();
+
 	Width = InDetails.Width;
 	Height = InDetails.Height;
 	Title = InDetails.Title;
@@ -165,5 +173,7 @@ void FWindowsWindow::Init(const FWindowDetails& InDetails)
 
 void FWindowsWindow::Shutdown()
 {
+	NE_PROFILE_FUNCTION();
+
 	glfwDestroyWindow(glfwWindow);
 }

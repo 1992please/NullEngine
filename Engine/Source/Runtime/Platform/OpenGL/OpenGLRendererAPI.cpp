@@ -1,8 +1,11 @@
+#include "NullPCH.h"
 #include "OpenGLRendererAPI.h"
 #include "GL/gl3w.h"
 
 void FOpenGLRendererAPI::Init()
 {
+	NE_PROFILE_FUNCTION();
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);

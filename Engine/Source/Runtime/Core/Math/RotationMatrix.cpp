@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "RotationMatrix.h"
 
 //FMatrix FRotationMatrix::Make(FQuat const& Rot)

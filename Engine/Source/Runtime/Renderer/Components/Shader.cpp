@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "Shader.h"
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Renderer/Components/RendererAPI.h"

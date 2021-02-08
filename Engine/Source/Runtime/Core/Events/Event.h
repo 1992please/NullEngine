@@ -1,8 +1,5 @@
 #pragma once
-
 #include "Core/CoreTypes.h"
-#include "Core/Containers/String.h"
-#include "Core/Delegates/Delegate.h"
 
 enum class EventType
 {

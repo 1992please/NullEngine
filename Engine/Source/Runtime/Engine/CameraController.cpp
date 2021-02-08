@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "CameraController.h"
 #include "Core/Events/Event.h"
 #include "Core/Events/MouseEvent.h"
@@ -15,6 +16,8 @@ F2DCameraController::F2DCameraController(float InAspectRatio)
 
 void F2DCameraController::OnUpdate(float DeltaTime)
 {
+	NE_PROFILE_FUNCTION();
+
 	FVector2 CameraDelta(ForceInit);
 	const float Delta = DeltaTime * CameraTranslationSpeed;
 
@@ -48,6 +51,8 @@ void F2DCameraController::OnUpdate(float DeltaTime)
 
 void F2DCameraController::OnEvent(IEvent& InEvent)
 {
+	NE_PROFILE_FUNCTION();
+
 	switch (InEvent.GetEventType())
 	{
 		case EventType::WindowResize:	InEvent.bHandled |= OnWindowResized(static_cast<FWindowResizeEvent&>(InEvent)); break;
@@ -57,12 +62,14 @@ void F2DCameraController::OnEvent(IEvent& InEvent)
 
 void F2DCameraController::OnResize(float InWidth, float InHeight)
 {
+	NE_PROFILE_FUNCTION();
 	AspectRatio = InWidth / InHeight;
 	Camera.SetProjection(ZoomLevel * AspectRatio, ZoomLevel);
 }
 
 bool F2DCameraController::OnMouseScrolled(class FMouseScrolledEvent& InEvent)
 {
+	NE_PROFILE_FUNCTION();
 	ZoomLevel -= InEvent.GetYOffset() * .1f;
 	ZoomLevel = FMath::Max(ZoomLevel, .25f);
 	Camera.SetProjection(ZoomLevel * AspectRatio, ZoomLevel);

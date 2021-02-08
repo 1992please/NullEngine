@@ -1,6 +1,5 @@
 #pragma once
 #include "Core/CoreTypes.h"
-#include "Core/Containers/String.h"
 
 class ITexture
 {

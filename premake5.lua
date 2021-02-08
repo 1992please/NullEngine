@@ -56,6 +56,9 @@ project "NE"
 		"opengl32.lib"
 	}
 
+	pchheader "NullPCH.h"
+	pchsource "Engine/Source/Runtime/NullPCH.cpp"
+
 	filter "system:windows"
 		systemversion "latest"
 		defines 

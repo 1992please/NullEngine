@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "Color.h"
 #include "Core/Math/Vector.h"
 #include "Core/Math/Vector4.h"

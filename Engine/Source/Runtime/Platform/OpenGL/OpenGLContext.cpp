@@ -1,5 +1,5 @@
+#include "NullPCH.h"
 #include "OpenGLContext.h"
-#include "Core/Assert/Assert.h"
 #include "GL/gl3w.h"
 #include "GLFW/glfw3.h"
 
@@ -10,6 +10,8 @@ FOpenGlContext::FOpenGlContext(void* InWindow)
 
 void FOpenGlContext::Init()
 {
+	NE_PROFILE_FUNCTION();
+
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -28,6 +30,8 @@ void FOpenGlContext::Init()
 
 void FOpenGlContext::SwapBuffers()
 {
+	NE_PROFILE_FUNCTION();
+
 	glfwSwapBuffers(WindowHandle);
 }
 

@@ -1,12 +1,11 @@
 #pragma once
 #include "Core/CoreTypes.h"
-#include "Core/Logging/Logger.h"
 #include "Core/Application/AppTime.h"
 #include "Core/Misc/CFile.h"
 #include "Core/Containers/String.h"
 
-#define PROFILER_CONTENT_SIZE		4096
-#define PROFILER_FLUSH_THRESHOLD	3000
+#define PROFILER_CONTENT_SIZE		1048576
+#define PROFILER_FLUSH_THRESHOLD	1047552
 
 class FProfiler
 {

@@ -1,7 +1,6 @@
 #pragma once
 #include "Core/CoreTypes.h"
 #include "Renderer/Components/VertexArray.h"
-#include "Core/Containers/Array.h"
 
 class FOpenGLVertexArray : public IVertexArray
 {

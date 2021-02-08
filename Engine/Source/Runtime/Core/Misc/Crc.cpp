@@ -1,7 +1,8 @@
+#include "NullPCH.h"
 #include "Crc.h"
 #include "Core/Templates/NullTemplate.h"
 #include "Core/Templates/AlignmentTemplates.h"
-#include "Core/Assert/Assert.h"
+#include "Core/Debug/Assert.h"
 
 /** CRC 32 polynomial */
 enum { Crc32Poly = 0x04c11db7 };

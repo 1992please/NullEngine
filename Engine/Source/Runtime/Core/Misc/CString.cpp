@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "CString.h"
 #include <stdio.h>
 #include <string.h>

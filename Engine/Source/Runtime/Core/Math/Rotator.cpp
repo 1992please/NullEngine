@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "Rotator.h"
 #include "Quat.h"
 

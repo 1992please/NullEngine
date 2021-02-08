@@ -1,7 +1,7 @@
+#include "NullPCH.h"
 #include "OpenGLShader.h"
 #include "Core/Templates/NullTemplate.h"
 #include "GL/gl3w.h"
-#include "Core/Assert/Assert.h"
 #include "Core/Misc/FileHelper.h"
 #include "Core/Misc/Paths.h"
 
@@ -29,6 +29,8 @@ FOpenGLShader::FOpenGLShader(const FString& InFileName, const FString& InShaderN
 	: ShaderName(InShaderName)
 	, bLinked(false)
 {
+	NE_PROFILE_FUNCTION();
+
 	if (ShaderName.IsEmpty())
 	{
 		ShaderName = FPaths::GetBaseFilename(InFileName);
@@ -74,6 +76,8 @@ FOpenGLShader::FOpenGLShader(const FString& InFileName, const FString& InShaderN
 
 void FOpenGLShader::Bind() const
 {
+	NE_PROFILE_FUNCTION();
+
 	if (bLinked)
 	{
 		glUseProgram(RendererID);
@@ -82,51 +86,71 @@ void FOpenGLShader::Bind() const
 
 void FOpenGLShader::Unbind() const
 {
+	NE_PROFILE_FUNCTION();
+
 	glUseProgram(0);
 }
 
 void FOpenGLShader::SetVector2(const FString& InName, const FVector2& v)
 {
+	NE_PROFILE_FUNCTION();
+
 	glUniform2f(UniformLocations[InName], v.X, v.Y);
 }
 
 void FOpenGLShader::SetVector(const FString& InName, const FVector& v)
 {
+	NE_PROFILE_FUNCTION();
+
 	glUniform3f(UniformLocations[InName], v.X, v.Y, v.Z);
 }
 
 void FOpenGLShader::SetVector4(const FString& InName, const FVector4& v)
 {
+	NE_PROFILE_FUNCTION();
+
 	glUniform4f(UniformLocations[InName], v.X, v.Y, v.Z, v.W);
 }
 
 void FOpenGLShader::SetMatrix(const FString& InName, const FMatrix& m)
 {
+	NE_PROFILE_FUNCTION();
+
 	glUniformMatrix4fv(UniformLocations[InName], 1, GL_FALSE, m);
 }
 
 void FOpenGLShader::SetFloat(const FString& InName, float val)
 {
+	NE_PROFILE_FUNCTION();
+
 	glUniform1f(UniformLocations[InName], val);
 }
 
 void FOpenGLShader::SetInt(const FString& InName, int32 val)
 {
+	NE_PROFILE_FUNCTION();
+
 	glUniform1i(UniformLocations[InName], val);
 }
 
 void FOpenGLShader::SetBool(const FString& InName, bool val)
 {
+	NE_PROFILE_FUNCTION();
+
 	glUniform1i(UniformLocations[InName], val);
 }
 
 void FOpenGLShader::SetUInt(const FString& InName, uint32 val)
 {
+	NE_PROFILE_FUNCTION();
+
 	glUniform1ui(UniformLocations[InName], val);
 }
 
 uint32 FOpenGLShader::LoadFromString(int32 ShaderIdx, const FString& InSource)
 {
+	NE_PROFILE_FUNCTION();
+
 	if (InSource.IsEmpty())
 		return 0;
 
@@ -159,6 +183,8 @@ uint32 FOpenGLShader::LoadFromString(int32 ShaderIdx, const FString& InSource)
 
 void FOpenGLShader::CreateAndLinkProgram(uint32* InShaders)
 {
+	NE_PROFILE_FUNCTION();
+
 	RendererID = glCreateProgram();
 
 	const int32 ShadersNo = NE_ARRAY_COUNT(ShaderTypes);
@@ -192,6 +218,8 @@ void FOpenGLShader::CreateAndLinkProgram(uint32* InShaders)
 
 void FOpenGLShader::LoadUniformLocations()
 {
+	NE_PROFILE_FUNCTION();
+
 	GLint NumUniforms = 0;
 
 	glGetProgramInterfaceiv(RendererID, GL_UNIFORM, GL_ACTIVE_RESOURCES, &NumUniforms);
@@ -216,6 +244,8 @@ void FOpenGLShader::LoadUniformLocations()
 
 void FOpenGLShader::DeleteShaderProgram()
 {
+	NE_PROFILE_FUNCTION();
+
 	if (bLinked)
 	{
 		bLinked = false;

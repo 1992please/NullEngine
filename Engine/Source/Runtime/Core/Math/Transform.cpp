@@ -1,3 +1,4 @@
+#include "NullPCH.h"
 #include "Transform.h"
 
 const FTransform FTransform::Identity(FQuat(0.f, 0.f, 0.f, 1.f), FVector(0.f), FVector(1.f));

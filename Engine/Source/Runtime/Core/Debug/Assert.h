@@ -1,5 +1,5 @@
 #include "Core/CoreTypes.h"
-#include "Core/Logging/Logger.h"
+#include "Core/Debug/Logger.h"
 #include "Core/Misc/CString.h"
 
 #if NE_DEBUG

@@ -1,13 +1,13 @@
 #pragma once
 #include "Core/CoreTypes.h"
-#include "Array.h"
+#include "Core/Containers/Array.h"
 #include "Core/Misc/CString.h"
 #include "Core/Misc/Crc.h"
 #include "Core/Math/NumericLimits.h"
 #include "Core/Math/MathUtility.h"
 #include "Core/Templates/NullTemplate.h"
 #include "Core/Memory/NullMemory.h"
-
+#include "Core/Debug/Assert.h"
 
 class FString
 {

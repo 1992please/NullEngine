@@ -1,7 +1,5 @@
 #pragma once
 #include "Core/CoreTypes.h"
-#include "Core/Containers/Array.h"
-#include "Core/Containers/String.h"
 
 enum class  EShaderDataType
 {
