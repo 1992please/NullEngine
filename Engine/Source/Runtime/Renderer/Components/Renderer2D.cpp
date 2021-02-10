@@ -81,12 +81,36 @@ void FRenderer2D::EndScene()
 
 }
 
-void FRenderer2D::DrawQuad(const FVector& InPosition, const FVector2& InSize, const FLinearColor& InColor, const ITexture2D* InTexture)
+
+void FRenderer2D::DrawQuad(const FVector& InPosition, const FVector2& InSize, const FLinearColor& InColor /*= FLinearColor::White*/, const class ITexture2D* InTexture /*= nullptr*/, const FVector2& Tiling /*= FVector2(1.0f)*/)
 {
 	NE_PROFILE_FUNCTION();
 
 	Storage.TextureShader->SetMatrix("u_Model", FScaleMatrix(InSize) * FTranslationMatrix(InPosition));
 	Storage.TextureShader->SetVector4("u_Color", InColor);
+	Storage.TextureShader->SetVector2("u_Tiling", Tiling);
+	if (InTexture)
+	{
+		InTexture->Bind();
+	}
+	else
+	{
+		Storage.WhiteTexture->Bind();
+	}
+
+
+	Storage.VertexArray->Bind();
+	FRenderCommand::DrawIndexed(Storage.VertexArray);
+}
+
+
+void FRenderer2D::DrawRotatedQuad(const FVector& InPosition, const FVector2& InSize, float Rotation, const FLinearColor& InColor, const ITexture2D* InTexture, const FVector2& Tiling)
+{
+	NE_PROFILE_FUNCTION();
+
+	Storage.TextureShader->SetMatrix("u_Model", FScaleMatrix(InSize) * FRotationTranslationMatrix(FRotator(0.0f, 0.0f, Rotation), InPosition));
+	Storage.TextureShader->SetVector4("u_Color", InColor);
+	Storage.TextureShader->SetVector2("u_Tiling", Tiling);
 	if (InTexture)
 	{
 		InTexture->Bind();

@@ -1,8 +1,14 @@
 #pragma once
 #include "MathUtility.h"
+#include "Core/Containers/String.h"
 
 struct FQuat;
-
+/*
+* Pitch: Rotation around the right axis (around Y axis), Looking up and down (0=Straight Ahead, +Up, -Down) ---> not left handed rotation
+* Yaw: Rotation around the up axis (around Z axis), Running in circles 0=East, +North, -South. 
+* Roll: Rotation around the forward axis (around X axis), Tilting your head, 0=Straight, +Clockwise, -CCW.  ---> not left handed rotation
+* not left handed rotations will be always negative in the calculations
+*/
 struct FRotator
 {
 public:
@@ -17,21 +23,15 @@ public:
 	explicit FORCEINLINE FRotator(EForceInit);
 	explicit FRotator(const FQuat& Quat);
 	FQuat Quaternion() const;
-	/**
-	 * Clamps an angle to the range of [0, 360).
-	 *
-	 * @param Angle The angle to clamp.
-	 * @return The clamped angle.
-	 */
+
 	static float ClampAxis(float Angle);
 
-	/**
-	 * Clamps an angle to the range of (-180, 180].
-	 *
-	 * @param Angle The Angle to clamp.
-	 * @return The clamped angle.
-	 */
 	static float NormalizeAxis(float Angle);
+
+	FORCEINLINE FString FRotator::ToString() const
+	{
+		return FString::Printf("P=%f Y=%f R=%f", Pitch, Yaw, Roll);
+	}
 };
 
 FORCEINLINE FRotator::FRotator(float InF)

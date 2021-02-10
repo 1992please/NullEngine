@@ -1,10 +1,6 @@
 #pragma once
 #include "Core/CoreTypes.h"
-
-struct FVector;
-struct FVector2;
-struct FLinearColor;
-class ITexture2D;
+#include "Core/Math/NullMath.h"
 
 class FRenderer2D
 {
@@ -15,5 +11,16 @@ public:
 	static void EndScene();
 
 	// Primitives
-	static void DrawQuad(const FVector& InPosition, const FVector2& InSize, const FLinearColor& InColor, const ITexture2D* InTexture = nullptr);
+	static void DrawQuad(const FVector& InPosition,
+		const FVector2& InSize,
+		const FLinearColor& InColor = FLinearColor::White,
+		const class ITexture2D* InTexture = nullptr,
+		const FVector2& Tiling = FVector2(1.0f));
+
+	static void DrawRotatedQuad(const FVector& InPosition, 
+		const FVector2& InSize, 
+		float Rotation,
+		const FLinearColor& InColor = FLinearColor::White, 
+		const class ITexture2D* InTexture = nullptr, 
+		const FVector2& Tiling = FVector2(1.0f));
 };

@@ -26,9 +26,9 @@ FQuat FRotator::Quaternion() const
 	FMath::SinCos(&SR, &CR, RollNoWinding * RADS_DIVIDED_BY_2);
 
 	FQuat RotationQuat;
-	RotationQuat.X = CR * SP*SY - SR * CP*CY;
-	RotationQuat.Y = -CR * SP*CY - SR * CP*SY;
-	RotationQuat.Z = CR * CP*SY - SR * SP*CY;
+	RotationQuat.X = -CR * SP*CY - SR * CP*SY;
+	RotationQuat.Y =  CR * CP*SY - SR * SP*CY;
+	RotationQuat.Z =  CR * SP*SY - SR * CP*CY;
 	RotationQuat.W = CR * CP*CY + SR * SP*SY;
 	return RotationQuat;
 }
