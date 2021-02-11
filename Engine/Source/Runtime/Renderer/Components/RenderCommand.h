@@ -15,9 +15,9 @@ public:
 		RendererAPI->Clear();
 	}
 
-	FORCEINLINE static void DrawIndexed(const IVertexArray* InVertexArray)
+	FORCEINLINE static void DrawIndexed(const IVertexArray* InVertexArray, uint32 InCount = 0)
 	{
-		RendererAPI->DrawIndexed(InVertexArray);
+		RendererAPI->DrawIndexed(InVertexArray, InCount);
 	}
 
 

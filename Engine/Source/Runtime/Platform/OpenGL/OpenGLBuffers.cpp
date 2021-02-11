@@ -11,6 +11,14 @@ FOpenGLVertexBuffer::FOpenGLVertexBuffer(float* InVertices, uint32 InSize)
 	glBufferData(GL_ARRAY_BUFFER, InSize, InVertices, GL_STATIC_DRAW);
 }
 
+FOpenGLVertexBuffer::FOpenGLVertexBuffer(uint32 InSize)
+{
+	NE_PROFILE_FUNCTION();
+	glGenBuffers(1, &RendererID);
+	glBindBuffer(GL_ARRAY_BUFFER, RendererID);
+	glBufferData(GL_ARRAY_BUFFER, InSize, nullptr, GL_DYNAMIC_DRAW);
+}
+
 void FOpenGLVertexBuffer::Bind() const
 {
 	NE_PROFILE_FUNCTION();
@@ -23,6 +31,12 @@ void FOpenGLVertexBuffer::UnBind() const
 	NE_PROFILE_FUNCTION();
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void FOpenGLVertexBuffer::SetData(const void* InData, uint32 InSize)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, RendererID);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, InSize, InData);
 }
 
 FOpenGLVertexBuffer::~FOpenGLVertexBuffer()

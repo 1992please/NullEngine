@@ -9,7 +9,7 @@ public:
 	static void Shutdown();
     static void BeginScene(const class FOrthographicCamera& InCamera);
 	static void EndScene();
-
+	static void Flush();
 	// Primitives
 	static void DrawQuad(const FVector& InPosition,
 		const FVector2& InSize,

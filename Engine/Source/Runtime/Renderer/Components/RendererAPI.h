@@ -15,7 +15,7 @@ public:
 	virtual void Init() = 0;
 	virtual void SetClearColor(const FLinearColor& Color) = 0;
 	virtual void Clear() = 0;
-	virtual void DrawIndexed(const IVertexArray* InVertexArray) = 0;
+	virtual void DrawIndexed(const IVertexArray* InVertexArray, uint32 IndexCount = 0) = 0;
 
 	FORCEINLINE static EType GetAPI() { return API; }
 private:

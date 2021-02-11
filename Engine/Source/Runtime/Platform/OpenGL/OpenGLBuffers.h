@@ -5,10 +5,13 @@
 class FOpenGLVertexBuffer : public IVertexBuffer
 {
 public:
-    FOpenGLVertexBuffer(float* InVertices, uint32 InSize);
+	FOpenGLVertexBuffer(float* InVertices, uint32 InSize);
+	FOpenGLVertexBuffer(uint32 InSize);
     virtual void Bind() const override;
     virtual void UnBind() const override;
 	virtual void SetLayout(const FBufferLayout& InLayout) override { Layout = InLayout; }
+	virtual void SetData(const void* InData, uint32 InSize) override;
+
 	virtual const FBufferLayout& GetLayout() const override { return Layout; }
 	virtual ~FOpenGLVertexBuffer();
 private:

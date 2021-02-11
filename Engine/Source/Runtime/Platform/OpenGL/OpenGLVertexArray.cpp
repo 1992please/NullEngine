@@ -24,6 +24,7 @@ static GLenum ShaderDataTypeToOpenGLBaseType(EShaderDataType InType)
 
 FOpenGLVertexArray::FOpenGLVertexArray()
 	: IndexBuffer(nullptr)
+	, VertexBuffer(nullptr)
 {
 	NE_PROFILE_FUNCTION();
 
@@ -35,6 +36,16 @@ FOpenGLVertexArray::~FOpenGLVertexArray()
 	NE_PROFILE_FUNCTION();
 
 	glDeleteVertexArrays(1, &RendererID);
+
+	if (VertexBuffer)
+	{
+		delete VertexBuffer;
+	}
+
+	if (IndexBuffer)
+	{
+		delete IndexBuffer;
+	}
 }
 
 void FOpenGLVertexArray::Bind() const
@@ -49,9 +60,10 @@ void FOpenGLVertexArray::UnBind() const
 	NE_PROFILE_FUNCTION();
 
 	glBindVertexArray(0);
+
 }
 
-void FOpenGLVertexArray::AddVertexBuffer(IVertexBuffer* InVertexBuffer)
+void FOpenGLVertexArray::SetVertexBuffer(IVertexBuffer* InVertexBuffer)
 {
 	NE_PROFILE_FUNCTION();
 
@@ -73,7 +85,7 @@ void FOpenGLVertexArray::AddVertexBuffer(IVertexBuffer* InVertexBuffer)
 		EleIndex++;
 	}
 
-	VertexBuffers.Add(InVertexBuffer);
+	VertexBuffer = InVertexBuffer;
 
 }
 
@@ -85,4 +97,3 @@ void FOpenGLVertexArray::SetIndexBuffer(IIndexBuffer* InIndexBuffer)
 	InIndexBuffer->Bind();
 	IndexBuffer = InIndexBuffer;
 }
-

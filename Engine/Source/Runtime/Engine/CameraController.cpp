@@ -8,7 +8,7 @@
 F2DCameraController::F2DCameraController(float InAspectRatio)
 	: AspectRatio(InAspectRatio)
 	, ZoomLevel(1.0f)
-	, Camera(ZoomLevel * AspectRatio, ZoomLevel)
+	, Camera(2 * ZoomLevel * AspectRatio, 2 * ZoomLevel)
 	, CameraTranslationSpeed(1.0f)
 	, CameraRotationSpeed(180.0f)
 	, CameraPos(ForceInit)

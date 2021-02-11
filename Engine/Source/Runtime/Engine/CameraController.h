@@ -24,7 +24,7 @@ private:
 private:
 	float AspectRatio;
 	float ZoomLevel;
-	F2DCamera Camera;
+	FOrthographicCamera Camera;
 
 	FVector2 CameraPos;
 

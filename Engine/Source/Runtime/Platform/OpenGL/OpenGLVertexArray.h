@@ -10,12 +10,12 @@ public:
 
 	virtual void Bind() const override;
 	virtual void UnBind() const override;
-	virtual void AddVertexBuffer(IVertexBuffer* InVertexBuffer) override;
+	virtual void SetVertexBuffer(IVertexBuffer* InVertexBuffer) override;
 	virtual void SetIndexBuffer(IIndexBuffer* InIndexBuffer) override;
-	virtual const TArray<IVertexBuffer*>& GetVertexBuffers() const override { return VertexBuffers; }
+	virtual IVertexBuffer* GetVertexBuffer() const override { return VertexBuffer; }
 	virtual const IIndexBuffer* GetIndexBuffer() const override { return IndexBuffer; }
 private:
 	uint32 RendererID;
-	TArray<IVertexBuffer*> VertexBuffers;
+	IVertexBuffer* VertexBuffer;
 	IIndexBuffer* IndexBuffer;
 };

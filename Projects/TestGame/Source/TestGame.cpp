@@ -47,10 +47,9 @@ void TestGame::OnUpdate(float DeltaTime)
 		NE_PROFILE_SCOPE("Renderer");
 		FRenderer2D::BeginScene(CameraController.GetCamera());
 
-		FRenderer2D::DrawRotatedQuad({ 0.0f, 0.0f, 0.1f }, FVector2(10.0f), 10.f, { 0.8f, 0.2f, 0.3f, 1.0f });
-		//FRenderer2D::DrawQuad({ .0f, .0f , 0.5f}, FVector2(1.0f), { 0.3f, 0.2f, 0.8f, 1.0f });
-		//FRenderer2D::DrawQuad({ -0.1f, -0.1f, .1f }, FVector2(1.0f), { 0.2f, 0.8f, 0.3f, 1.0f });
-		FRenderer2D::DrawQuad({ 0, 0 , 1.0f }, FVector2(1.0f), FLinearColor(1.0f, 1.0f, 1.0f, .5), MarioTexture);
+		for(int i = 0; i < 10; i++)
+			for(int j = 0; j < 10; j++)
+				FRenderer2D::DrawQuad({ i * 0.11f - 5 * 0.11f, j * 0.11f - 5 * 0.11f , 0.0f }, FVector2(0.1f), FLinearColor::Green);
 
 		FRenderer2D::EndScene();
 	}

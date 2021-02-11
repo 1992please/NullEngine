@@ -5,8 +5,8 @@
 class FOrthographicCamera
 {
 public:
-	FOrthographicCamera(float InWidth, float InHeight, float InNearPlane, float InFarPlane);
-	void SetProjection(float InWidth, float InHeight, float InNearPlane, float InFarPlane);
+	FOrthographicCamera(float InWidth, float InHeight);
+	void SetProjection(float InWidth, float InHeight);
 
 	FORCEINLINE void SetPosition(const FVector& InPostion) { Position = InPostion; RecalculateViewMatrix(); }
 	FORCEINLINE void SetRotation(const FRotator& InRotation) { Rotation = InRotation; RecalculateViewMatrix(); }
@@ -21,18 +21,4 @@ protected:
 	FMatrix ProjectionMatrix;
 	FMatrix ViewMatrix;
 	FMatrix ViewProjectionMatrix;
-};
-
-class F2DCamera : public FOrthographicCamera
-{
-public:
-	F2DCamera(float InWidth, float InHeight)
-		: FOrthographicCamera(InWidth, InHeight, 0.0f, WORLD_MAX) {}
-
-	FORCEINLINE void SetProjection(float InWidth, float InHeight)
-	{
-		FOrthographicCamera::SetProjection(InWidth, InHeight, 0.0f, WORLD_MAX);
-	}
-private:
-	virtual void RecalculateViewMatrix() override;
 };

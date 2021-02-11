@@ -30,7 +30,8 @@ void FOpenGLRendererAPI::Clear()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void FOpenGLRendererAPI::DrawIndexed(const IVertexArray* InVertexArray)
+void FOpenGLRendererAPI::DrawIndexed(const IVertexArray* InVertexArray, uint32 IndexCount)
 {
-	glDrawElements(GL_TRIANGLES, InVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+	const uint32 Count = IndexCount ? IndexCount : InVertexArray->GetIndexBuffer()->GetCount();
+	glDrawElements(GL_TRIANGLES, Count, GL_UNSIGNED_INT, nullptr);
 }

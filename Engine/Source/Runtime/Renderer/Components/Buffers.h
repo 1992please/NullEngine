@@ -112,8 +112,10 @@ public:
     virtual void UnBind() const = 0;
 	virtual void SetLayout(const FBufferLayout& InLayout) = 0;
 	virtual const FBufferLayout& GetLayout() const = 0;
+	virtual void SetData(const void* InData, uint32 InSize) = 0;
 
-    static IVertexBuffer* Create(float* InVertices, uint32 InSize);
+	static IVertexBuffer* Create(float* InVertices, uint32 InSize);
+	static IVertexBuffer* Create(uint32 InSize);
 };
 
 class IIndexBuffer
