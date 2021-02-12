@@ -152,6 +152,7 @@ struct FCString
 	 */
 	static int32 Strlen(const char* String);
 
+	// n means indicating the count, i means it's case sensetive
 
 	static int32 Strcmp(const char* String1, const char* String2);
 	static int32 Strncmp(const char* String1, const char* String2, size_t Count);

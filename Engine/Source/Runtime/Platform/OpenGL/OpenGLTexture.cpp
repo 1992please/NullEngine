@@ -22,14 +22,13 @@ FOpenGLTexture2D::FOpenGLTexture2D(uint32 InWidth, uint32 InHeight)
 	glTextureParameteri(RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
-FOpenGLTexture2D::FOpenGLTexture2D(const FString& InPath)
-	:InternalFormat(0), DataFormat(0)
+FOpenGLTexture2D::FOpenGLTexture2D(const char* InPath)
+	:InternalFormat(0), DataFormat(0), Path(InPath)
 {
 	NE_PROFILE_FUNCTION();
-
 	int width, height, channels;
 	stbi_set_flip_vertically_on_load(1);
-	stbi_uc* ImageData = stbi_load(*InPath, &width, &height, &channels, 0);
+	stbi_uc* ImageData = stbi_load(*Path, &width, &height, &channels, 0);
 
 	NE_ASSERT(ImageData);
 

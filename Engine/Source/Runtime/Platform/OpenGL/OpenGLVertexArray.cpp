@@ -17,6 +17,7 @@ static GLenum ShaderDataTypeToOpenGLBaseType(EShaderDataType InType)
 		case  EShaderDataType::Int3:	return GL_INT;
 		case  EShaderDataType::Int4:	return GL_INT;
 		case  EShaderDataType::Bool:	return GL_BOOL;
+
 	}
 	NE_ASSERT_F(false, "Unknown Element Type");
 	return 0;

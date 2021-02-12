@@ -399,7 +399,7 @@ int32 FString::ParseIntoArrayLines(TArray<FString>& OutArray, bool InCullEmpty /
 		"\n",
 	};
 
-	int32 NumLineEndings = NE_ARRAY_COUNT(LineEndings);
+	int32 NumLineEndings = ARRAY_COUNT(LineEndings);
 	return ParseIntoArray(OutArray, LineEndings, NumLineEndings, InCullEmpty);
 }
 

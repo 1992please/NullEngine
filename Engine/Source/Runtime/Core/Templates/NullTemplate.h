@@ -178,4 +178,4 @@ FORCEINLINE T StaticCast(ArgType&& Arg)
 template <typename T, uint32 N>
 char(&NEArrayCountHelper(const T(&)[N]))[N + 1];
 
-#define NE_ARRAY_COUNT( array ) (sizeof(NEArrayCountHelper(array)) - 1)
+#define ARRAY_COUNT( array ) (sizeof(NEArrayCountHelper(array)) - 1)

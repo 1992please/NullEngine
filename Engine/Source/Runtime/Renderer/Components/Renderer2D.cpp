@@ -14,13 +14,15 @@
 const uint32 MaxQuads = 10000;
 const uint32 MaxVerteces = MaxQuads * 4;
 const uint32 MaxIndeces = MaxQuads * 6;
+const uint32 MaxTextureSlots = 32; // TODO get the actual render cap
 
 struct FQuadVertex
 {
 	FVector Position;
 	FLinearColor Color;
 	FVector2 TexCoords;
-	//TODO: texId
+	float TexIndex;
+	FVector2 Tiling;
 };
 
 struct FRenderer2DStorage
@@ -32,6 +34,14 @@ struct FRenderer2DStorage
 	uint32 QuadIndexCount;
 	FQuadVertex* QuadVertexBufferBase;
 	FQuadVertex* QuadVertexBufferPtr;
+
+	const ITexture2D* TextureSlots[MaxTextureSlots];
+	uint32 TextureSlotIndex = 1; // 0 = white texture
+
+	FVector4 QuadVertexPositions[4];
+	FVector2 QuadTextureCoords[4];
+
+	FRenderer2D::FStatistics Statistics;
 };
 
 static FRenderer2DStorage Storage;
@@ -43,19 +53,21 @@ void FRenderer2D::Init()
 
 	Storage.QuadVertexArray = IVertexArray::Create();
 	Storage.TextureShader = IShader::Create("../../Engine/Shaders/TextureShader.glsl");
-	//Storage.TextureShader->Bind();
-	//Storage.TextureShader->SetInt("u_Texture", 0);
-	//Storage.WhiteTexture = ITexture2D::Create(1, 1);
-	//Storage.WhiteTexture->SetData(&FColor::White, sizeof(FColor));
+
+	Storage.WhiteTexture = ITexture2D::Create(1, 1);
+	Storage.WhiteTexture->SetData(&FColor::White, sizeof(FColor));
+	Storage.TextureSlots[0] = Storage.WhiteTexture;
+
 	Storage.QuadIndexCount = 0;
-	Storage.QuadVertexBufferBase = nullptr;
-	Storage.QuadVertexBufferPtr = nullptr;
-	//float Verteces[] = {
-	//	.5f,    .5f,   0.0f,   1.0,   1.0,
-	//	.5f,   -.5f,   0.0f,   1.0,   0.0,
-	//	-.5f,  -.5f,   0.0f,   0.0,   0.0,
-	//	-.5f,   .5f,   0.0f,   0.0,   1.0,
-	//};
+	Storage.QuadVertexBufferBase = new FQuadVertex[MaxVerteces];
+	Storage.QuadVertexBufferPtr = Storage.QuadVertexBufferBase;
+
+	int32 Samplers[MaxTextureSlots];
+	for (int32 i = 0; i < MaxTextureSlots; i++)
+		Samplers[i] = i;
+	
+	Storage.TextureShader->Bind();
+	Storage.TextureShader->SetIntArray("u_Textures", Samplers, MaxTextureSlots);
 
 	// TODO stack allocation in fucture memory mamagement
 	uint32* Indices = new uint32[MaxIndeces];
@@ -71,26 +83,40 @@ void FRenderer2D::Init()
 		Indices[i + 5] = offset + 0;
 		offset += 4;
 	}
+	IIndexBuffer* QuadIndexBuffer = IIndexBuffer::Create(Indices, MaxIndeces);
+	delete[] Indices;
+
 
 	IVertexBuffer* QuadVertexBuffer = IVertexBuffer::Create(MaxVerteces * sizeof(FQuadVertex));
 	{
 		FBufferLayout Layout = {
 			{ "a_Position" ,  EShaderDataType::Float3 },
 			{ "a_Color" ,  EShaderDataType::Float4 },
-			{ "a_TextureCoords" ,  EShaderDataType::Float2 }
+			{ "a_TextureCoords" ,  EShaderDataType::Float2 },
+			{ "a_TexIndex" ,  EShaderDataType::Float },
+			{ "a_Tiling" ,  EShaderDataType::Float2 }
 		};
 
 		QuadVertexBuffer->SetLayout(Layout);
 	}
 
-	Storage.QuadVertexBufferBase = new FQuadVertex[MaxVerteces];
 
-	IIndexBuffer* QuadIndexBuffer = IIndexBuffer::Create(Indices, MaxIndeces);
+
+
 
 	Storage.QuadVertexArray->SetVertexBuffer(QuadVertexBuffer);
 	Storage.QuadVertexArray->SetIndexBuffer(QuadIndexBuffer);
 
-	delete[] Indices;
+	Storage.QuadVertexPositions[0] = { -.5f, -.5f, 0.0f, 1.0f };
+	Storage.QuadVertexPositions[1] = { .5f, -.5f, 0.0f, 1.0f };
+	Storage.QuadVertexPositions[2] = { .5f, .5f, 0.0f, 1.0f };
+	Storage.QuadVertexPositions[3] = { -.5f, .5f, 0.0f, 1.0f };
+
+	Storage.QuadTextureCoords[0] = { 0.0f, 0.0f };
+	Storage.QuadTextureCoords[1] = { 1.0f, 0.0f };
+	Storage.QuadTextureCoords[2] = { 1.0f, 1.0f };
+	Storage.QuadTextureCoords[3] = { 0.0f, 1.0f };
+
 }
 
 void FRenderer2D::Shutdown()
@@ -106,8 +132,11 @@ void FRenderer2D::BeginScene(const FOrthographicCamera& InCamera)
 
 	Storage.TextureShader->Bind();
 	Storage.TextureShader->SetMatrix("u_ViewProjection", InCamera.GetViewProjectionMatrix());
+
 	Storage.QuadVertexBufferPtr = Storage.QuadVertexBufferBase;
 	Storage.QuadIndexCount = 0;
+	Storage.TextureSlotIndex = 1;
+
 }
 
 
@@ -115,43 +144,86 @@ void FRenderer2D::BeginScene(const FOrthographicCamera& InCamera)
 void FRenderer2D::EndScene()
 {
 	NE_PROFILE_FUNCTION();
-	uint32 DataSize = uint32((uint8*)Storage.QuadVertexBufferPtr - (uint8*)Storage.QuadVertexBufferBase);
-	Storage.QuadVertexArray->GetVertexBuffer()->SetData(Storage.QuadVertexBufferBase, DataSize);
+
 	Flush();
 }
-
 
 void FRenderer2D::Flush()
 {
 	NE_PROFILE_FUNCTION();
-	FRenderCommand::DrawIndexed(Storage.QuadVertexArray, Storage.QuadIndexCount);
+
+	if (Storage.QuadIndexCount != 0)
+	{
+		uint32 DataSize = uint32((uint8*)Storage.QuadVertexBufferPtr - (uint8*)Storage.QuadVertexBufferBase);
+		Storage.QuadVertexArray->GetVertexBuffer()->SetData(Storage.QuadVertexBufferBase, DataSize);
+
+		for (uint32 i = 0; i < Storage.TextureSlotIndex; i++)
+		{
+			Storage.TextureSlots[i]->Bind(i);
+		}
+
+		FRenderCommand::DrawIndexed(Storage.QuadVertexArray, Storage.QuadIndexCount);
+
+#if !NE_SHIPPING
+		Storage.Statistics.DrawCalls++;
+#endif
+	}
+}
+
+void FRenderer2D::FlushAndReset()
+{
+	Flush();
+	Storage.QuadVertexBufferPtr = Storage.QuadVertexBufferBase;
+	Storage.QuadIndexCount = 0;
+	Storage.TextureSlotIndex = 1;
 }
 
 void FRenderer2D::DrawQuad(const FVector& InPosition, const FVector2& InSize, const FLinearColor& InColor /*= FLinearColor::White*/, const class ITexture2D* InTexture /*= nullptr*/, const FVector2& Tiling /*= FVector2(1.0f)*/)
 {
 	NE_PROFILE_FUNCTION();
 
-	Storage.QuadVertexBufferPtr->Position = InPosition;
-	Storage.QuadVertexBufferPtr->Color = InColor;
-	Storage.QuadVertexBufferPtr->TexCoords = { 0.0f, 0.0f };
-	Storage.QuadVertexBufferPtr++;
+	if (Storage.QuadIndexCount >= MaxIndeces || Storage.TextureSlotIndex >= MaxTextureSlots)
+	{
+		FlushAndReset();
+	}
 
-	Storage.QuadVertexBufferPtr->Position = { InPosition.X + InSize.X, InPosition.Y, InPosition.Z };
-	Storage.QuadVertexBufferPtr->Color = InColor;
-	Storage.QuadVertexBufferPtr->TexCoords = { 1.0f, 0.0f };
-	Storage.QuadVertexBufferPtr++;
+	uint32 TextureIndex = 0;
 
-	Storage.QuadVertexBufferPtr->Position = { InPosition.X + InSize.X, InPosition.Y + InSize.Y, InPosition.Z };
-	Storage.QuadVertexBufferPtr->Color = InColor;
-	Storage.QuadVertexBufferPtr->TexCoords = { 1.0f, 1.0f };
-	Storage.QuadVertexBufferPtr++;
+	if (InTexture)
+	{
+		for (uint32 i = 1; i < Storage.TextureSlotIndex; i++)
+		{
+			if (*Storage.TextureSlots[i] == *InTexture)
+			{
+				TextureIndex = i;
+				break;
+			}
+		}
 
-	Storage.QuadVertexBufferPtr->Position = { InPosition.X, InPosition.Y + InSize.Y, InPosition.Z };
-	Storage.QuadVertexBufferPtr->Color = InColor;
-	Storage.QuadVertexBufferPtr->TexCoords = { 0.0f, 1.0f };
-	Storage.QuadVertexBufferPtr++;
+		if (TextureIndex == 0)
+		{
+			TextureIndex = Storage.TextureSlotIndex++;
+			Storage.TextureSlots[TextureIndex] = InTexture;
+		}
+	}
+
+	const FMatrix Model = FScaleMatrix(InSize) * FTranslationMatrix(InPosition);
+
+	for (int32 i = 0; i < 4; i++)
+	{
+		Storage.QuadVertexBufferPtr->Position = Model.TransformFVector4(Storage.QuadVertexPositions[i]);
+		Storage.QuadVertexBufferPtr->Color = InColor;
+		Storage.QuadVertexBufferPtr->TexCoords = Storage.QuadTextureCoords[i];
+		Storage.QuadVertexBufferPtr->TexIndex = (float)TextureIndex;
+		Storage.QuadVertexBufferPtr->Tiling = Tiling;
+		Storage.QuadVertexBufferPtr++;
+	}
 
 	Storage.QuadIndexCount += 6;
+
+#if !NE_SHIPPING
+	Storage.Statistics.QuadCount++;
+#endif
 }
 
 
@@ -159,19 +231,56 @@ void FRenderer2D::DrawRotatedQuad(const FVector& InPosition, const FVector2& InS
 {
 	NE_PROFILE_FUNCTION();
 
-	Storage.TextureShader->SetMatrix("u_Model", FScaleMatrix(InSize) * FRotationTranslationMatrix(FRotator(0.0f, 0.0f, Rotation), InPosition));
-	Storage.TextureShader->SetVector4("u_Color", InColor);
-	Storage.TextureShader->SetVector2("u_Tiling", Tiling);
+	if (Storage.QuadIndexCount >= MaxIndeces)
+	{
+		FlushAndReset();
+	}
+
+	uint32 TextureIndex = 0;
+
 	if (InTexture)
 	{
-		InTexture->Bind();
+		for (uint32 i = 1; i < Storage.TextureSlotIndex; i++)
+		{
+			if (*Storage.TextureSlots[i] == *InTexture)
+			{
+				TextureIndex = i;
+				break;
+			}
+		}
+
+		if (TextureIndex == 0)
+		{
+			TextureIndex = Storage.TextureSlotIndex++;
+			Storage.TextureSlots[TextureIndex] = InTexture;
+		}
 	}
-	else
+
+	const FMatrix Model = FScaleMatrix(InSize) * FRotationTranslationMatrix(FRotator(0.0f, 0.0f, Rotation), InPosition);
+
+	for (int32 i = 0; i < 4; i++)
 	{
-		Storage.WhiteTexture->Bind();
+		Storage.QuadVertexBufferPtr->Position = Model.TransformFVector4(Storage.QuadVertexPositions[i]);
+		Storage.QuadVertexBufferPtr->Color = InColor;
+		Storage.QuadVertexBufferPtr->TexCoords = Storage.QuadTextureCoords[i];
+		Storage.QuadVertexBufferPtr->TexIndex = (float)TextureIndex;
+		Storage.QuadVertexBufferPtr->Tiling = Tiling;
+		Storage.QuadVertexBufferPtr++;
 	}
 
+	Storage.QuadIndexCount += 6;
 
-	Storage.QuadVertexArray->Bind();
-	FRenderCommand::DrawIndexed(Storage.QuadVertexArray);
+#if !NE_SHIPPING
+	Storage.Statistics.QuadCount++;
+#endif
+}
+
+FRenderer2D::FStatistics& FRenderer2D::GetStatistics()
+{
+	return Storage.Statistics;
+}
+
+void FRenderer2D::ResetStatistics()
+{
+	FMemory::Memzero(&Storage.Statistics, sizeof(Storage.Statistics));
 }

@@ -39,7 +39,7 @@ FOpenGLShader::FOpenGLShader(const FString& InFileName, const FString& InShaderN
 	FString FileContent;
 	if (FFileHelper::ReadFromTextFile(InFileName, FileContent))
 	{
-		const int32 ShadersNo = NE_ARRAY_COUNT(ShaderTypes);
+		const int32 ShadersNo = ARRAY_COUNT(ShaderTypes);
 		uint32 ShaderIDs[ShadersNo];
 		FMemory::Memzero(ShaderIDs, sizeof(ShaderIDs));
 
@@ -133,6 +133,13 @@ void FOpenGLShader::SetInt(const FString& InName, int32 val)
 	glUniform1i(UniformLocations[InName], val);
 }
 
+void FOpenGLShader::SetIntArray(const FString& InName, int32* values, uint32 count)
+{
+	NE_PROFILE_FUNCTION();
+
+	glUniform1iv(UniformLocations[InName], count, values);
+}
+
 void FOpenGLShader::SetBool(const FString& InName, bool val)
 {
 	NE_PROFILE_FUNCTION();
@@ -187,7 +194,7 @@ void FOpenGLShader::CreateAndLinkProgram(uint32* InShaders)
 
 	RendererID = glCreateProgram();
 
-	const int32 ShadersNo = NE_ARRAY_COUNT(ShaderTypes);
+	const int32 ShadersNo = ARRAY_COUNT(ShaderTypes);
 
 	for (int i = 0; i < ShadersNo; i++)
 		if (InShaders[i] != 0)
@@ -231,12 +238,15 @@ void FOpenGLShader::LoadUniformLocations()
 		GLint Results[4];
 		glGetProgramResourceiv(RendererID, GL_UNIFORM, UniformIndex, 4, properties, 4, NULL, Results);
 		if (Results[3] != -1) continue;  // Skip uniforms in blocks
+		NE_ASSERT_F((Results[0] + 1) <= UNIFORM_NAME_BUFFER_SIZE, "Uniform buffer is not large engough.");
 
-		GLint nameBufSize = Results[0] + 1;
+		glGetProgramResourceName(RendererID, GL_UNIFORM, UniformIndex, UNIFORM_NAME_BUFFER_SIZE, NULL, UniformName);
 
-		NE_ASSERT_F(nameBufSize <= UNIFORM_NAME_BUFFER_SIZE, "Uniform buffer is not large engough.");
-
-		glGetProgramResourceName(RendererID, GL_UNIFORM, UniformIndex, nameBufSize, NULL, UniformName);
+		const char* NamePtr =  FCString::Strstr(UniformName, "[0]\0");
+		if (NamePtr)
+		{
+			*(char*)NamePtr = 0;
+		}
 
 		UniformLocations.Add(UniformName, Results[2]);
 	}

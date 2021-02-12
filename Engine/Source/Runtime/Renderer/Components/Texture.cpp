@@ -14,7 +14,7 @@ ITexture2D* ITexture2D::Create(uint32 InWidth, uint32 InHeight)
 	return nullptr;
 }
 
-ITexture2D* ITexture2D::Create(const FString& InPath)
+ITexture2D* ITexture2D::Create(const char* InPath)
 {
 	switch (IRendererAPI::GetAPI())
 	{

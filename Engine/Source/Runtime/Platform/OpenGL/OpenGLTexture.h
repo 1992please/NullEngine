@@ -6,7 +6,7 @@ class FOpenGLTexture2D : public ITexture2D
 {
 public:
 	FOpenGLTexture2D(uint32 InWidth, uint32 InHeight);
-	FOpenGLTexture2D(const FString& InPath);
+	FOpenGLTexture2D(const char* InPath);
 	virtual ~FOpenGLTexture2D();
 
 	virtual uint32 GetWidth() const override { return Width; }

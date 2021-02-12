@@ -17,6 +17,7 @@ public:
 	virtual void SetMatrix(const FString& InName, const FMatrix& m) override;
 	virtual void SetFloat(const FString& InName, float val) override;
 	virtual void SetInt(const FString& InName, int32 val) override;
+	virtual void SetIntArray(const FString& InName, int32* values, uint32 count) override;
 	virtual void SetBool(const FString& InName, bool val) override;
 	virtual void SetUInt(const FString& InName, uint32 val) override;
 	virtual const FString& GetName() const override { return ShaderName; }

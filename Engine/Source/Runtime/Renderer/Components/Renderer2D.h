@@ -10,6 +10,7 @@ public:
     static void BeginScene(const class FOrthographicCamera& InCamera);
 	static void EndScene();
 	static void Flush();
+	static void FlushAndReset();
 	// Primitives
 	static void DrawQuad(const FVector& InPosition,
 		const FVector2& InSize,
@@ -23,4 +24,16 @@ public:
 		const FLinearColor& InColor = FLinearColor::White, 
 		const class ITexture2D* InTexture = nullptr, 
 		const FVector2& Tiling = FVector2(1.0f));
+
+	struct FStatistics
+	{
+		uint32 DrawCalls;
+		uint32 QuadCount;
+
+		uint32 VertexCount() { return QuadCount * 4; }
+		uint32 IndexCount() { return QuadCount * 6; }
+	};
+	
+	static FStatistics& GetStatistics();
+	static void ResetStatistics();
 };

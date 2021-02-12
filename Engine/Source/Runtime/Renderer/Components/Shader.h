@@ -18,6 +18,7 @@ public:
 	virtual void SetMatrix(const FString& InName, const FMatrix& m) = 0;
 	virtual void SetFloat(const FString& InName, float val) = 0;
 	virtual void SetInt(const FString& InName, int32 val) = 0;
+	virtual void SetIntArray(const FString& InName, int32* values, uint32 count) = 0;
 	virtual void SetBool(const FString& InName, bool val) = 0;
 	virtual void SetUInt(const FString& InName, uint32 val) = 0;
 

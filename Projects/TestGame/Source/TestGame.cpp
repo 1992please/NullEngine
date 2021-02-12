@@ -28,7 +28,7 @@ void TestGame::OnDettach()
 void TestGame::OnUpdate(float DeltaTime)
 {
 	NE_PROFILE_FUNCTION();
-		//NE_LOG("DeltaTime %f", DeltaTime);
+	//NE_LOG("DeltaTime %f", DeltaTime);
 	
 	{
 		NE_PROFILE_SCOPE("Camera Controller");
@@ -42,14 +42,25 @@ void TestGame::OnUpdate(float DeltaTime)
 		FRenderCommand::Clear();
 	}
 
-
+	FRenderer2D::ResetStatistics();
 	{
 		NE_PROFILE_SCOPE("Renderer");
 		FRenderer2D::BeginScene(CameraController.GetCamera());
 
 		for(int i = 0; i < 10; i++)
-			for(int j = 0; j < 10; j++)
-				FRenderer2D::DrawQuad({ i * 0.11f - 5 * 0.11f, j * 0.11f - 5 * 0.11f , 0.0f }, FVector2(0.1f), FLinearColor::Green);
+			for (int j = 0; j < 10; j++)
+			{
+				FLinearColor Color = ((i + j) % 2) ? FLinearColor::Black : FLinearColor::White;
+				Color.A = 0.3f;
+
+				FRenderer2D::DrawQuad({ i * 0.11f - 5 * 0.11f, j * 0.11f - 5 * 0.11f , 0.0f }, FVector2(0.1f), Color);
+			}
+
+		FRenderer2D::DrawQuad({ 0.0f, 0.0f, 0.1f }, FVector2(0.1f), FLinearColor::White, MarioTexture);
+		static float rotation = 0;
+		rotation += 50 * DeltaTime;
+		FRenderer2D::DrawRotatedQuad({ 0.0f, 0.2f, 0.1f }, FVector2(0.1f), rotation, FLinearColor::White, MarioTexture);
+		FRenderer2D::DrawRotatedQuad({ .5f, .5f, 0.1f }, FVector2(0.1f), rotation, FLinearColor::Yellow);
 
 		FRenderer2D::EndScene();
 	}
@@ -61,6 +72,11 @@ void TestGame::OnImGuiRender()
 {
 	NE_PROFILE_FUNCTION()
 	ImGui::Begin("Test");
+	ImGui::Text("Renderer2D Stats:");
+	ImGui::Text("Draw Calls: %d", FRenderer2D::GetStatistics().DrawCalls);
+	ImGui::Text("Quads: %d", FRenderer2D::GetStatistics().QuadCount);
+	ImGui::Text("Vertices: %d", FRenderer2D::GetStatistics().VertexCount());
+	ImGui::Text("Indices: %d", FRenderer2D::GetStatistics().IndexCount());
 	ImGui::ColorEdit4("Color", &SquareColor.R);
 	ImGui::End();
 }

@@ -12,4 +12,5 @@
 #include "Core/Containers/Map.h"
 #include "Core/Containers/String.h"
 #include "Core/Delegates/Delegate.h"
+#include "Core/Memory/NullMemory.h"
 #include "Core/Debug/DebugTools.h"

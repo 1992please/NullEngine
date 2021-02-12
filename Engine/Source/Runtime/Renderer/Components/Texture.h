@@ -17,5 +17,5 @@ class ITexture2D : public ITexture
 {
 public:
     static ITexture2D* Create(uint32 InWidth, uint32 InHeight);
-    static ITexture2D* Create(const FString& InPath);
+    static ITexture2D* Create(const char* InPath);
 };
