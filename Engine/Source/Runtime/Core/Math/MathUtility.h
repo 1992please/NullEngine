@@ -297,6 +297,11 @@ public:
 	{
 		return (T)(A + Alpha * (B - A));
 	}
+
+	// returns a number between 0 and RAND_MAX
+	static FORCEINLINE int32 Rand() { return rand(); }
+	static FORCEINLINE float FRand() { return (float)Rand() / (float)RAND_MAX; }
+	static FORCEINLINE void RandInit(int32 Seed) { srand(Seed); }
 };
 
 FORCEINLINE float FMath::InvSqrt(float F)

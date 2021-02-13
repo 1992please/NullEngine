@@ -17,9 +17,10 @@ public:
 private:
 	IShader* FlatShader;
 	class ITexture2D* MarioTexture;
+	class ITexture2D* SpriteSheet;
 
 	class IVertexArray* VertexArray;
-
+	class IFrameBuffer* FrameBuffer;
 	FVector CameraPosition;
 	float CameraRotation;
 

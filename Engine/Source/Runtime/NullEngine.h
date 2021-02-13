@@ -12,6 +12,7 @@
 #include "Renderer/Components/Buffers.h"
 #include "Renderer/Components/VertexArray.h"
 #include "Renderer/Components/Texture.h"
+#include "Renderer/Components/FrameBuffer.h"
 
 #include "Engine/CameraController.h"
 #include "Engine/RendererCamera.h"

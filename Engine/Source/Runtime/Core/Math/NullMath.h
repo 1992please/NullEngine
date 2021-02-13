@@ -16,3 +16,4 @@
 #include "Core/Math/ScaleMatrix.h"
 #include "Core/Math/InvRotationMatrix.h"
 #include "Core/Math/Color.h"
+#include "Core/Math/RandomStream.h"
