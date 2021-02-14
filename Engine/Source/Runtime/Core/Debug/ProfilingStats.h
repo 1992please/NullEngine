@@ -4,7 +4,7 @@
 #include "Core/Misc/CFile.h"
 #include "Core/Containers/String.h"
 
-#define NE_PROFILE 0
+
 
 #define PROFILER_CONTENT_SIZE		1048576
 #define PROFILER_FLUSH_THRESHOLD	1047552
@@ -130,7 +130,7 @@ namespace ProfilerUtils {
 	}
 }
 
-
+#define NE_PROFILE 0
 
 #if NE_PROFILE
 	#define NE_PROFILE_INIT() FProfiler::Init();

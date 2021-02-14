@@ -10,9 +10,7 @@
 
 FApplication* FApplication::Instance = nullptr;
 
-FGraphicLayer* GetExternalLayer();
-
-FApplication::FApplication()
+FApplication::FApplication(const char* AppName)
 	: bMinimized(false)
 	, bRunning(true)
 {
@@ -22,7 +20,7 @@ FApplication::FApplication()
 	NE_ASSERT_F(!Instance, "Application already exists!");
 	Instance = this;
 
-	pWindow = IApplicationWindow::Create();
+	pWindow = IApplicationWindow::Create(FWindowDetails(AppName));
 	pWindow->WindowEventCallback.BindRaw(this, &FApplication::OnEvent);
 	pWindow->SetVSync(false);
 
@@ -30,7 +28,6 @@ FApplication::FApplication()
 
 	ImGuiLayer = new FImGuiLayer();
 	GraphicLayerStack.PushOverlay(ImGuiLayer);
-	GraphicLayerStack.PushLayer(GetExternalLayer());
 }
 
 

@@ -1,11 +1,11 @@
 #include "NullEngine.h"
 
 
-class TestGame : public FGraphicLayer
+class FEditorLayer : public FGraphicLayer
 {
 public:
-	TestGame();
-	virtual ~TestGame() = default;
+	FEditorLayer();
+	virtual ~FEditorLayer() = default;
 
 	virtual void OnAttach() override;
 	virtual void OnDettach() override;
@@ -20,6 +20,7 @@ private:
 	class ITexture2D* SpriteSheet;
 
 	class IVertexArray* VertexArray;
+	class IFrameBuffer* FrameBuffer;
 	FVector CameraPosition;
 	float CameraRotation;
 

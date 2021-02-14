@@ -5,10 +5,12 @@
 class FApplication
 {
 public:
-	FApplication();
+	FApplication(const char* AppName = "Null Engine");
 	virtual ~FApplication();
 
 	virtual void Run();
+
+	void PushLayer(FGraphicLayer* InLayer) { GraphicLayerStack.PushLayer(InLayer); }
 
 	void OnEvent(class IEvent& InEvent);
 	bool OnWindowCloseEvent(class FWindowCloseEvent& InWindowEvent);

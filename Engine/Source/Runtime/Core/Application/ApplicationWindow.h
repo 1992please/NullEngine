@@ -10,7 +10,7 @@ struct FWindowDetails
 	uint32 Width;
 	uint32 Height;
 
-	FWindowDetails(const FString& InTitle = "Null Engine",
+	FWindowDetails(const FString& InTitle,
 		uint32 InWidth = 1600,
 		uint32 InHeight = 900)
 		: Title(InTitle), Width(InWidth), Height(InHeight)
@@ -35,7 +35,7 @@ public:
 	FORCEINLINE const FString& GetTitle() const { return Title; }
 	virtual void* GetNativeWindow() const = 0;
 
-	static IApplicationWindow* Create(const FWindowDetails& InDetails = FWindowDetails());
+	static IApplicationWindow* Create(const FWindowDetails& InDetails);
 
 	OnWindowEventCallback WindowEventCallback;
 
