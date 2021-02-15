@@ -1,4 +1,5 @@
 #pragma once
+#include "Core/CoreTypes.h"
 #include "Renderer/GraphicLayers/GraphicLayer.h"
 
 class FImGuiLayer :public FGraphicLayer
@@ -12,7 +13,9 @@ public:
 	virtual void OnImGuiRender() override;
 	void Begin();
 	void End();
+
+	FORCEINLINE void SetBlockingEvents(bool InBlockEvents) { bBlockEvents = InBlockEvents; }
 private:
-	bool bBlockEvents = true;
+	bool bBlockEvents;
 };
 

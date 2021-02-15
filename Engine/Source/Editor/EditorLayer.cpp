@@ -6,6 +6,9 @@ FEditorLayer::FEditorLayer()
 	, CameraPosition(FVector::ZeroVector)
 	, CameraRotation(0.0f)
 	, SquareColor(FLinearColor::Green)
+	, bIsViewportFocused(true)
+	, bIsViewportHovered(false)
+	, ViewPortSize(1.0f, 1.0f)
 {
 }
 
@@ -31,6 +34,7 @@ void FEditorLayer::OnUpdate(float DeltaTime)
 {
 	NE_PROFILE_FUNCTION();
 	//NE_LOG("DeltaTime %f", DeltaTime);
+	if(bIsViewportFocused)
 	{
 		NE_PROFILE_SCOPE("Camera Controller");
 		CameraController.OnUpdate(DeltaTime);
@@ -77,6 +81,7 @@ void FEditorLayer::OnUpdate(float DeltaTime)
 void FEditorLayer::OnImGuiRender()
 {
 	NE_PROFILE_FUNCTION()
+#if 0
 	static bool p_open = true;
 	// In 99% case you should be able to just call DockSpaceOverViewport() and ignore all the code below!
 	// In this specific demo, we are not using DockSpaceOverViewport() because:
@@ -164,6 +169,13 @@ void FEditorLayer::OnImGuiRender()
 
 		ImGui::EndMenuBar();
 	}
+
+#endif
+	ImGui::DockSpaceOverViewport();
+	//if (ImGui::BeginMenuBar())
+	//{
+	//	ImGui::EndMenuBar();
+	//}
 	ImGui::Begin("Test");
 	ImGui::Text("Renderer2D Stats:");
 	ImGui::Text("Draw Calls: %d", FRenderer2D::GetStatistics().DrawCalls);
@@ -171,12 +183,25 @@ void FEditorLayer::OnImGuiRender()
 	ImGui::Text("Vertices: %d", FRenderer2D::GetStatistics().VertexCount());
 	ImGui::Text("Indices: %d", FRenderer2D::GetStatistics().IndexCount());
 	ImGui::ColorEdit4("Color", &SquareColor.R);
-
-
-	ImGui::Image((void*)(size_t)FrameBuffer->GetColorAttachmentRendererID(), ImVec2(1280, 720), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	ImGui::Begin("Viewport");
+	bIsViewportFocused = ImGui::IsWindowFocused();
+	bIsViewportHovered = ImGui::IsWindowHovered();
+	FApplication::GetApplication()->SetImGUIBlockingEvents(!bIsViewportFocused || !bIsViewportHovered);
+	ImVec2 ViewportPanelSize = ImGui::GetContentRegionAvail();
+	if (ViewPortSize != *(FVector2*)&ViewportPanelSize)
+	{
+		FrameBuffer->Resize((uint32)ViewportPanelSize.x, (uint32)ViewportPanelSize.y);
+		CameraController.OnResize(ViewportPanelSize.x, ViewportPanelSize.y);
+		ViewPortSize = { ViewportPanelSize.x, ViewportPanelSize.y };
+	}
+
+	ImGui::Image((void*)(size_t)FrameBuffer->GetColorAttachmentRendererID(), ImVec2(ViewPortSize.X, ViewPortSize.Y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
+	ImGui::PopStyleVar();
+	//ImGui::End();
 
 }
 

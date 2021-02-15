@@ -22,22 +22,22 @@ void F2DCameraController::OnUpdate(float DeltaTime)
 	const float Delta = DeltaTime * CameraTranslationSpeed;
 
 
-	if (IApplicationInput::IsKeyPressed(NE_KEY_W))
+	if (FApplicationInput::IsKeyPressed(NE_KEY_W))
 	{
 		CameraDelta.Y += Delta;
 	}
 
-	if (IApplicationInput::IsKeyPressed(NE_KEY_S))
+	if (FApplicationInput::IsKeyPressed(NE_KEY_S))
 	{
 		CameraDelta.Y -= Delta;
 	}
 
-	if (IApplicationInput::IsKeyPressed(NE_KEY_D))
+	if (FApplicationInput::IsKeyPressed(NE_KEY_D))
 	{
 		CameraDelta.X += Delta;
 	}
 
-	if (IApplicationInput::IsKeyPressed(NE_KEY_A))
+	if (FApplicationInput::IsKeyPressed(NE_KEY_A))
 	{
 		CameraDelta.X -= Delta;
 	}
@@ -64,7 +64,7 @@ void F2DCameraController::OnResize(float InWidth, float InHeight)
 {
 	NE_PROFILE_FUNCTION();
 	AspectRatio = InWidth / InHeight;
-	Camera.SetProjection(ZoomLevel * AspectRatio, ZoomLevel);
+	Camera.SetProjection(2 * ZoomLevel * AspectRatio, 2 * ZoomLevel);
 }
 
 bool F2DCameraController::OnMouseScrolled(class FMouseScrolledEvent& InEvent)
@@ -72,7 +72,7 @@ bool F2DCameraController::OnMouseScrolled(class FMouseScrolledEvent& InEvent)
 	NE_PROFILE_FUNCTION();
 	ZoomLevel -= InEvent.GetYOffset() * .1f;
 	ZoomLevel = FMath::Max(ZoomLevel, .25f);
-	Camera.SetProjection(ZoomLevel * AspectRatio, ZoomLevel);
+	Camera.SetProjection(2 * ZoomLevel * AspectRatio, 2 * ZoomLevel);
 	return false;
 }
 

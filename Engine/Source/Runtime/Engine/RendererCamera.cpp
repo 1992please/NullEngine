@@ -17,9 +17,6 @@ void FOrthographicCamera::SetProjection(float InWidth, float InHeight)
 	NE_PROFILE_FUNCTION();
 
 	ProjectionMatrix = FOrthoMatrix(-InWidth * .5f, InWidth * .5f, InHeight * .5f, - InHeight * .5f);
-	FVector Result1 = ProjectionMatrix.TransformPosition(FVector(-0.1f, -0.1f, 0.5f));
-	FVector Result2 = ProjectionMatrix.TransformPosition(FVector(-0.1f, -0.1f, 0.0f));
-	FVector Result3 = ProjectionMatrix.TransformPosition(FVector(-0.1f, -0.1f, .99f));
 	ViewProjectionMatrix = ViewMatrix * ProjectionMatrix;
 }
 

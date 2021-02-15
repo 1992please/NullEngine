@@ -17,6 +17,7 @@ public:
 	bool OnWindowResizeEvent(class FWindowResizeEvent& InWindowResizeEvent);
 	FORCEINLINE class IApplicationWindow* GetWindow() const { return pWindow; }
 	FORCEINLINE static FApplication* GetApplication() { return Instance; }
+	void SetImGUIBlockingEvents(bool InBlocking);
 private:
 	bool bRunning;
 	bool bMinimized;

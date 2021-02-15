@@ -116,3 +116,8 @@ bool FApplication::OnWindowResizeEvent(class FWindowResizeEvent& InWindowResizeE
 
 	return false;
 }
+
+void FApplication::SetImGUIBlockingEvents(bool InBlocking)
+{
+	ImGuiLayer->SetBlockingEvents(InBlocking);
+}

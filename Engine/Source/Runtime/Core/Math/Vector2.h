@@ -19,7 +19,9 @@ public:
 	explicit FORCEINLINE FVector2(ENoInit) { }
 	FORCEINLINE bool IsNearlyZero(float Tolerance = KINDA_SMALL_NUMBER) const;
 
-	FORCEINLINE FVector operator+=(const FVector& V);
+	FORCEINLINE FVector2 operator+=(const FVector2& V);
+	FORCEINLINE bool operator!=(const FVector2& V) const;
+	FORCEINLINE bool operator==(const FVector2& V) const;
 
 	FORCEINLINE FString ToString() const
 	{
@@ -62,8 +64,18 @@ FORCEINLINE bool FVector2::IsNearlyZero(float Tolerance /*= KINDA_SMALL_NUMBER*/
 		&& FMath::Abs(Y) <= Tolerance;
 }
 
-FORCEINLINE FVector FVector2::operator+=(const FVector& V)
+FORCEINLINE FVector2 FVector2::operator+=(const FVector2& V)
 {
 	X += V.X; Y += V.Y;
 	return *this;
+}
+
+FORCEINLINE bool FVector2::operator!=(const FVector2& V) const
+{
+	return X != V.X || Y != V.Y;
+}
+
+FORCEINLINE bool FVector2::operator==(const FVector2& V) const
+{
+	return X == V.X && Y == V.Y;
 }

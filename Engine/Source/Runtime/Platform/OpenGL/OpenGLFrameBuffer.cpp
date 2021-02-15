@@ -94,6 +94,8 @@ FOpenGLFrameBuffer::FOpenGLFrameBuffer(const FFrameBufferInfo& InBufferInfo)
 FOpenGLFrameBuffer::~FOpenGLFrameBuffer()
 {
 	glDeleteFramebuffers(1, &RendererID);
+	glDeleteTextures(ColorAttachments.Num(), ColorAttachments.GetData());
+	glDeleteTextures(1, &DepthAttachment);
 }
 
 void FOpenGLFrameBuffer::Invalidate()
@@ -163,7 +165,7 @@ void FOpenGLFrameBuffer::Invalidate()
 void FOpenGLFrameBuffer::Bind()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, RendererID);
-	//glViewport(0, 0, BufferInfo.Width, BufferInfo.Height);
+	glViewport(0, 0, BufferInfo.Width, BufferInfo.Height);
 }
 
 void FOpenGLFrameBuffer::Unbind()
@@ -173,5 +175,7 @@ void FOpenGLFrameBuffer::Unbind()
 
 void FOpenGLFrameBuffer::Resize(uint32 InWidth, uint32 InHeight)
 {
-
+	BufferInfo.Width = InWidth;
+	BufferInfo.Height = InHeight;
+	Invalidate();
 }
