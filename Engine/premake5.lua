@@ -22,6 +22,7 @@ project "NullEngine"
         "%{IncludeDir.gl3w}",
         "%{IncludeDir.imgui}",
         "%{IncludeDir.stb_image}",
+        "%{IncludeDir.entt}"
     }
 
     links

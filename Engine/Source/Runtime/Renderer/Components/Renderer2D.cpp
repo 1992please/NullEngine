@@ -181,53 +181,22 @@ void FRenderer2D::FlushAndReset()
 void FRenderer2D::DrawQuad(const FVector& InPosition, const FVector2& InSize, const FLinearColor& InColor /*= FLinearColor::White*/, const class ITexture2D* InTexture /*= nullptr*/, const FVector2& Tiling /*= FVector2(1.0f)*/)
 {
 	NE_PROFILE_FUNCTION();
-
-	if (Storage.QuadIndexCount >= MaxIndeces || Storage.TextureSlotIndex >= MaxTextureSlots)
-	{
-		FlushAndReset();
-	}
-
-	uint32 TextureIndex = 0;
-
-	if (InTexture)
-	{
-		for (uint32 i = 1; i < Storage.TextureSlotIndex; i++)
-		{
-			if (*Storage.TextureSlots[i] == *InTexture)
-			{
-				TextureIndex = i;
-				break;
-			}
-		}
-
-		if (TextureIndex == 0)
-		{
-			TextureIndex = Storage.TextureSlotIndex++;
-			Storage.TextureSlots[TextureIndex] = InTexture;
-		}
-	}
-
 	const FMatrix Model = FScaleMatrix(InSize) * FTranslationMatrix(InPosition);
 
-	for (int32 i = 0; i < 4; i++)
-	{
-		Storage.QuadVertexBufferPtr->Position = Model.TransformFVector4(Storage.QuadVertexPositions[i]);
-		Storage.QuadVertexBufferPtr->Color = InColor;
-		Storage.QuadVertexBufferPtr->TexCoords = Storage.QuadTextureCoords[i];
-		Storage.QuadVertexBufferPtr->TexIndex = (float)TextureIndex;
-		Storage.QuadVertexBufferPtr->Tiling = Tiling;
-		Storage.QuadVertexBufferPtr++;
-	}
-
-	Storage.QuadIndexCount += 6;
-
-#if !NE_SHIPPING
-	Storage.Statistics.QuadCount++;
-#endif
+	DrawQuad(Model, InColor, InTexture, Tiling);
 }
 
 
+
+
 void FRenderer2D::DrawRotatedQuad(const FVector& InPosition, const FVector2& InSize, float Rotation, const FLinearColor& InColor, const ITexture2D* InTexture, const FVector2& Tiling)
+{
+	NE_PROFILE_FUNCTION();
+	const FMatrix Model = FScaleMatrix(InSize) * FRotationTranslationMatrix(FRotator(0.0f, 0.0f, Rotation), InPosition);
+	DrawQuad(Model, InColor, InTexture, Tiling);
+}
+
+void FRenderer2D::DrawQuad(const FMatrix& Model, const FLinearColor& InColor /*= FLinearColor::White*/, const class ITexture2D* InTexture /*= nullptr*/, const FVector2& Tiling /*= FVector2(1.0f)*/)
 {
 	NE_PROFILE_FUNCTION();
 
@@ -255,8 +224,6 @@ void FRenderer2D::DrawRotatedQuad(const FVector& InPosition, const FVector2& InS
 			Storage.TextureSlots[TextureIndex] = InTexture;
 		}
 	}
-
-	const FMatrix Model = FScaleMatrix(InSize) * FRotationTranslationMatrix(FRotator(0.0f, 0.0f, Rotation), InPosition);
 
 	for (int32 i = 0; i < 4; i++)
 	{

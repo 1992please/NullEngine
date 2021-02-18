@@ -25,6 +25,12 @@ public:
 		const class ITexture2D* InTexture = nullptr, 
 		const FVector2& Tiling = FVector2(1.0f));
 
+	static void DrawQuad(
+		const FMatrix& Model,
+		const FLinearColor& InColor = FLinearColor::White,
+		const class ITexture2D* InTexture = nullptr,
+		const FVector2& Tiling = FVector2(1.0f));
+
 	struct FStatistics
 	{
 		uint32 DrawCalls;

@@ -16,4 +16,7 @@
 
 #include "Engine/CameraController.h"
 #include "Engine/RendererCamera.h"
-
+#include "Engine/Scene/Scene.h"
+#include "Engine/Scene/Entity.h"
+#include "Engine/Components/SpriteComponent.h"
+#include "Engine/Components/TransformComponent.h"

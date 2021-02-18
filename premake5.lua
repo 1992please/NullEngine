@@ -17,6 +17,7 @@ IncludeDir["glfw"] = "%{wks.location}/Engine/Source/ThirdParty/glfw/include"
 IncludeDir["gl3w"] = "%{wks.location}/Engine/Source/ThirdParty/gl3w/include"
 IncludeDir["imgui"] = "%{wks.location}/Engine/Source/ThirdParty/imgui"
 IncludeDir["stb_image"] = "%{wks.location}/Engine/Source/ThirdParty/stb_image"
+IncludeDir["entt"] = "%{wks.location}/Engine/Source/ThirdParty/entt/include"
 
 
 

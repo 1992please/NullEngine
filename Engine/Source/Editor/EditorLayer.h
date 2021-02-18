@@ -15,8 +15,7 @@ public:
 	void OnEvent(IEvent& InEvent) override;
 
 private:
-	bool bIsViewportFocused;
-	bool bIsViewportHovered;
+
 
 	IShader* FlatShader;
 	class ITexture2D* MarioTexture;
@@ -29,7 +28,12 @@ private:
 
 
 	FLinearColor SquareColor;
+
+	FScene* Scene;
+
 	F2DCameraController CameraController;
 
+	bool bIsViewportFocused;
+	bool bIsViewportHovered;
 	FVector2 ViewPortSize;
 };

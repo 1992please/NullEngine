@@ -1,5 +1,6 @@
 #include "EditorLayer.h"
 #include "imgui/imgui.h"
+FEntity Entity;
 
 FEditorLayer::FEditorLayer()
 	: CameraController(16.f / 9.f)
@@ -17,12 +18,21 @@ void FEditorLayer::OnAttach()
 	NE_PROFILE_FUNCTION();
 	MarioTexture = ITexture2D::Create("../../Projects/TestGame/Content/mario_logo.png");
 	SpriteSheet = ITexture2D::Create("../../Projects/TestGame/Content/RPGpack_sheet_2X.png");
-	FFrameBufferInfo FrameBufferInfo;
-	FrameBufferInfo.Width = 1280;
-	FrameBufferInfo.Height = 720;
-	FrameBufferInfo.Attachments.Add(EFramebufferTextureFormat::RGBA8);
-	FrameBufferInfo.Attachments.Add(EFramebufferTextureFormat::Depth);
-	FrameBuffer = IFrameBuffer::Create(FrameBufferInfo);
+
+	{
+		FFrameBufferInfo FrameBufferInfo;
+		FrameBufferInfo.Width = 1280;
+		FrameBufferInfo.Height = 720;
+		FrameBufferInfo.Attachments.Add(EFramebufferTextureFormat::RGBA8);
+		FrameBufferInfo.Attachments.Add(EFramebufferTextureFormat::Depth);
+		FrameBuffer = IFrameBuffer::Create(FrameBufferInfo);
+	}
+
+	Scene = new FScene();
+	Entity = Scene->CreateEntity();
+	Entity.AddComponent<FTransformComponent>();
+	FSpriteComponent* Comp = Entity.AddComponent<FSpriteComponent>();
+	Comp->Color = FLinearColor::Green;
 }
 
 void FEditorLayer::OnDettach()
@@ -40,6 +50,8 @@ void FEditorLayer::OnUpdate(float DeltaTime)
 		CameraController.OnUpdate(DeltaTime);
 	}
 
+	Scene->OnUpdate(DeltaTime);
+
 	FRenderer2D::ResetStatistics();
 	{
 		NE_PROFILE_SCOPE("Renderer Start");
@@ -54,22 +66,7 @@ void FEditorLayer::OnUpdate(float DeltaTime)
 
 
 		FRenderer2D::BeginScene(CameraController.GetCamera());
-
-		for (int i = 0; i < 10; i++)
-			for (int j = 0; j < 10; j++)
-			{
-				FLinearColor Color = ((i + j) % 2) ? FLinearColor::Black : FLinearColor::White;
-				Color.A = 0.3f;
-
-				FRenderer2D::DrawQuad({ i * 0.11f - 5 * 0.11f, j * 0.11f - 5 * 0.11f , 0.0f }, FVector2(0.1f), Color);
-			}
-
-		FRenderer2D::DrawQuad({ 0.0f, 0.0f, 0.1f }, FVector2(0.1f), FLinearColor::White, MarioTexture);
-		static float rotation = 0;
-		rotation += 50 * DeltaTime;
-		FRenderer2D::DrawRotatedQuad({ 0.0f, 0.2f, 0.1f }, FVector2(0.1f), rotation, FLinearColor::White, MarioTexture);
-		FRenderer2D::DrawRotatedQuad({ .5f, .5f, 0.1f }, FVector2(0.1f), rotation, FLinearColor::Yellow);
-
+		Scene->OnUpdate(DeltaTime);
 		FRenderer2D::EndScene();
 		FrameBuffer->Unbind();
 
@@ -183,6 +180,7 @@ void FEditorLayer::OnImGuiRender()
 	ImGui::Text("Vertices: %d", FRenderer2D::GetStatistics().VertexCount());
 	ImGui::Text("Indices: %d", FRenderer2D::GetStatistics().IndexCount());
 	ImGui::ColorEdit4("Color", &SquareColor.R);
+	Entity.GetComponent<FSpriteComponent>()->Color = SquareColor;
 	ImGui::End();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
