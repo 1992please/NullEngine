@@ -196,6 +196,11 @@ public:
 		return OutMatrix;
 	}
 
+	FORCEINLINE FMatrix ToInvMatrixNoScale() const
+	{
+		return InverseFastNoScale().ToMatrixNoScale();
+	}
+
 	void SetFromMatrix(const FMatrix& InMatrix)
 	{
 		FMatrix M = InMatrix;
@@ -286,6 +291,8 @@ public:
 	}
 
 	FORCEINLINE FTransform InverseFast() const;
+
+	FORCEINLINE FTransform InverseFastNoScale() const;
 
 	FORCEINLINE void  Translate(const FVector& DeltaTranslation)
 	{
@@ -634,6 +641,35 @@ FORCEINLINE FTransform FTransform::InverseFast() const
 	const VectorRegister InvTranslation = VectorSet_W0(VectorNegate(t2));
 
 	return FTransform(InvRotation, InvTranslation, InvScale);
+}
+
+FORCEINLINE FTransform FTransform::InverseFastNoScale() const
+{
+	// Inverse QST (A) = QST (~A)
+	// Since A*~A = Identity, 
+	// A(P) = Q(A)*S(A)*P*-Q(A) + T(A)
+	// ~A(A(P)) = Q(~A)*S(~A)*(Q(A)*S(A)*P*-Q(A) + T(A))*-Q(~A) + T(~A) = Identity
+	// Q(~A)*Q(A)*S(~A)*S(A)*P*-Q(A)*-Q(~A) + Q(~A)*S(~A)*T(A)*-Q(~A) + T(~A) = Identity
+	// [Q(~A)*Q(A)]*[S(~A)*S(A)]*P*-[Q(~A)*Q(A)] + [Q(~A)*S(~A)*T(A)*-Q(~A) + T(~A)] = I
+
+	// Identity Q = (0, 0, 0, 1) = Q(~A)*Q(A)
+	// Identity Scale = 1 = S(~A)*S(A)
+	// Identity Translation = (0, 0, 0) = [Q(~A)*S(~A)*T(A)*-Q(~A) + T(~A)]
+
+	//	Q(~A) = Q(~A)
+	//	S(~A) = 1.f/S(A)
+	//	T(~A) = - (Q(~A)*S(~A)*T(A)*Q(A))	
+	NE_ASSERT(IsRotationNormalized());
+	NE_ASSERT(VectorAnyGreaterThan(VectorAbs(Scale3D), GlobalVectorConstants::SmallNumber));
+
+	// Invert the rotation
+	const VectorRegister InvRotation = VectorQuaternionInverse(Rotation);
+
+	// Invert the translation
+	const VectorRegister t2 = VectorQuaternionRotateVector(InvRotation, Translation);
+	const VectorRegister InvTranslation = VectorSet_W0(VectorNegate(t2));
+
+	return FTransform(InvRotation, InvTranslation, Scale3D);
 }
 
 FORCEINLINE FTransform FTransform::GetScaled(float InScale) const

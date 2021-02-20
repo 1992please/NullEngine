@@ -1,8 +1,8 @@
 #include "NullPCH.h"
 #include "Renderer.h"
-#include "Engine/RendererCamera.h"
 #include "Renderer/Components/Shader.h"
 #include "Renderer/Components/Renderer2D.h"
+#include "Engine/Scene/SceneView.h"
 
 // TODO: replace with memory stack push
 FRenderer::FSceneData* FRenderer::SceneData = new FRenderer::FSceneData;
@@ -18,9 +18,9 @@ void FRenderer::OnWindowResize(uint32 InWidth, uint32 InHeight)
 	FRenderCommand::SetViewport(0, 0, InWidth, InHeight);
 }
 
-void FRenderer::BeginScene(FOrthographicCamera& Camera)
+void FRenderer::BeginScene(const FSceneView& InSceneView)
 {
-	SceneData->ViewProjectionMatrix = Camera.GetViewProjectionMatrix();
+	SceneData->ViewProjectionMatrix = InSceneView.ViewMatrix * InSceneView.ProjectionMatrix;
 }
 
 void FRenderer::EndScene()

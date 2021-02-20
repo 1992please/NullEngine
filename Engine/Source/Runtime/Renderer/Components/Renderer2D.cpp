@@ -3,13 +3,14 @@
 #include "Renderer/Components/VertexArray.h"
 #include "Renderer/Components/Shader.h"
 #include "Renderer/Components/RenderCommand.h"
-#include "Engine/RendererCamera.h"
 #include "Renderer/Components/Texture.h"
 #include "Core/Math/TranslationMatrix.h"
 #include "Core/Math/ScaleMatrix.h"
 #include "Core/Math/Color.h"
 #include "Core/Math/Vector.h"
 #include "Core/Math/Vector2.h"
+#include "Engine/Scene/SceneView.h"
+
 
 const uint32 MaxQuads = 10000;
 const uint32 MaxVerteces = MaxQuads * 4;
@@ -126,12 +127,14 @@ void FRenderer2D::Shutdown()
 	delete Storage.TextureShader;
 }
 
-void FRenderer2D::BeginScene(const FOrthographicCamera& InCamera)
+void FRenderer2D::BeginScene(const FSceneView& InSceneView)
 {
 	NE_PROFILE_FUNCTION();
 
+	const FMatrix ViewProjectionMat = InSceneView.ViewMatrix * InSceneView.ProjectionMatrix;
+
 	Storage.TextureShader->Bind();
-	Storage.TextureShader->SetMatrix("u_ViewProjection", InCamera.GetViewProjectionMatrix());
+	Storage.TextureShader->SetMatrix("u_ViewProjection", ViewProjectionMat);
 
 	Storage.QuadVertexBufferPtr = Storage.QuadVertexBufferBase;
 	Storage.QuadIndexCount = 0;

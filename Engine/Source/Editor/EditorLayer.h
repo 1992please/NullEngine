@@ -1,5 +1,5 @@
 #include "NullEngine.h"
-
+#include "EditorViewport/EditorCamera.h"
 
 class FEditorLayer : public FGraphicLayer
 {
@@ -30,10 +30,12 @@ private:
 	FLinearColor SquareColor;
 
 	FScene* Scene;
+	FEntity Entity;
+	FEntity CameraEntity;
 
-	F2DCameraController CameraController;
+	FEditorCamera EditorCamera;
 
 	bool bIsViewportFocused;
 	bool bIsViewportHovered;
-	FVector2 ViewPortSize;
+	FVector2 ViewportSize;
 };

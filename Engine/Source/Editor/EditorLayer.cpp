@@ -1,15 +1,14 @@
 #include "EditorLayer.h"
 #include "imgui/imgui.h"
-FEntity Entity;
 
 FEditorLayer::FEditorLayer()
-	: CameraController(16.f / 9.f)
+	: EditorCamera(16.f / 9.f)
 	, CameraPosition(FVector::ZeroVector)
 	, CameraRotation(0.0f)
 	, SquareColor(FLinearColor::Green)
 	, bIsViewportFocused(true)
 	, bIsViewportHovered(false)
-	, ViewPortSize(1.0f, 1.0f)
+	, ViewportSize(1.0f, 1.0f)
 {
 }
 
@@ -29,10 +28,16 @@ void FEditorLayer::OnAttach()
 	}
 
 	Scene = new FScene();
-	Entity = Scene->CreateEntity();
-	Entity.AddComponent<FTransformComponent>();
-	FSpriteComponent* Comp = Entity.AddComponent<FSpriteComponent>();
-	Comp->Color = FLinearColor::Green;
+	{
+		Entity = Scene->CreateEntity();
+		FSpriteComponent* Comp = Entity.AddComponent<FSpriteComponent>();
+		Comp->Color = FLinearColor::Green;
+	}
+	{
+		CameraEntity = Scene->CreateEntity();
+		Entity.AddComponent<FCameraComponent>();
+	}
+
 }
 
 void FEditorLayer::OnDettach()
@@ -43,36 +48,29 @@ void FEditorLayer::OnDettach()
 void FEditorLayer::OnUpdate(float DeltaTime)
 {
 	NE_PROFILE_FUNCTION();
-	//NE_LOG("DeltaTime %f", DeltaTime);
-	if(bIsViewportFocused)
+	const FFrameBufferInfo& FrameBufferInfo = FrameBuffer->GetInfo();
+	if (!ViewportSize.IsNearlyZero() && 
+		(ViewportSize.X != FrameBufferInfo.Width || ViewportSize.Y != FrameBufferInfo.Height))
 	{
-		NE_PROFILE_SCOPE("Camera Controller");
-		CameraController.OnUpdate(DeltaTime);
+		FrameBuffer->Resize((uint32)ViewportSize.X, (uint32)ViewportSize.Y);
+		EditorCamera.OnResize(ViewportSize.X, ViewportSize.Y);
+		Scene->OnViewportResize((uint32)ViewportSize.X, (uint32)ViewportSize.Y);
 	}
 
-	Scene->OnUpdate(DeltaTime);
+	if(bIsViewportFocused)
+		EditorCamera.OnUpdate(DeltaTime);
 
 	FRenderer2D::ResetStatistics();
 	{
-		NE_PROFILE_SCOPE("Renderer Start");
+		NE_PROFILE_SCOPE("Renderer Draw");
 		FrameBuffer->Bind();
 		FRenderCommand::SetClearColor(FLinearColor(0.1f, 0.1f, 0.1f, 1));
 		FRenderCommand::Clear();
-	}
 
 
-	{
-		NE_PROFILE_SCOPE("Renderer Draw");
-
-
-		FRenderer2D::BeginScene(CameraController.GetCamera());
-		Scene->OnUpdate(DeltaTime);
-		FRenderer2D::EndScene();
+		Scene->OnUpdateEditor(DeltaTime, FSceneView{EditorCamera.GetProjectionMatrix(), EditorCamera.GetViewMatrix()});
 		FrameBuffer->Unbind();
-
 	}
-	/*FlatShader->Bind();
-	FlatShader->SetVector4("u_Color", SquareColor);*/
 }
 
 void FEditorLayer::OnImGuiRender()
@@ -189,14 +187,9 @@ void FEditorLayer::OnImGuiRender()
 	bIsViewportHovered = ImGui::IsWindowHovered();
 	FApplication::GetApplication()->SetImGUIBlockingEvents(!bIsViewportFocused || !bIsViewportHovered);
 	ImVec2 ViewportPanelSize = ImGui::GetContentRegionAvail();
-	if (ViewPortSize != *(FVector2*)&ViewportPanelSize)
-	{
-		FrameBuffer->Resize((uint32)ViewportPanelSize.x, (uint32)ViewportPanelSize.y);
-		CameraController.OnResize(ViewportPanelSize.x, ViewportPanelSize.y);
-		ViewPortSize = { ViewportPanelSize.x, ViewportPanelSize.y };
-	}
+	ViewportSize = { ViewportPanelSize.x, ViewportPanelSize.y };
 
-	ImGui::Image((void*)(size_t)FrameBuffer->GetColorAttachmentRendererID(), ImVec2(ViewPortSize.X, ViewPortSize.Y), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((void*)(size_t)FrameBuffer->GetColorAttachmentRendererID(), ImVec2(ViewportSize.X, ViewportSize.Y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 	ImGui::PopStyleVar();
 	//ImGui::End();
@@ -205,5 +198,5 @@ void FEditorLayer::OnImGuiRender()
 
 void FEditorLayer::OnEvent(IEvent& InEvent)
 {
-	CameraController.OnEvent(InEvent);
+	EditorCamera.OnEvent(InEvent);
 }

@@ -1,26 +1,29 @@
 #pragma once
 #include "Engine/Scene/Scene.h"
+
 class FEntity
 {
 public:
-	FEntity(){}
+	FEntity()
+		: Scene(nullptr), EntityID(0)
+	{}
 
 	FEntity(uint32 InEntityID, FScene* InScene)
 		: EntityID(InEntityID), Scene(InScene)
 	{ }
 
 	template<typename T>
-	FORCEINLINE T* AddComponent()
+	FORCEINLINE T* AddComponent() const
 	{
 		NE_ASSERT_F(!HasComponent<T>(), "Entity already not have component!");
 		return Scene->AddComponent<T>(this);
 	}
 
 	template<typename T>
-	FORCEINLINE void RemoveComponent()
+	FORCEINLINE void RemoveComponent() const
 	{
 		NE_ASSERT_F(HasComponent<T>(), "Entity does not have component!");
-		return Scene->AddComponent<T>(this);
+		Scene->RemoveComponent<T>(this);
 	}
 
 	template<typename T>
@@ -30,7 +33,7 @@ public:
 	}
 
 	template<typename T>
-	FORCEINLINE T* GetComponent()
+	FORCEINLINE T* GetComponent() const
 	{
 		NE_ASSERT_F(HasComponent<T>(), "Entity does not have component!");
 		return Scene->GetComponent<T>(this);
@@ -39,6 +42,7 @@ public:
 	FORCEINLINE uint32 GetID() const { return EntityID; }
 
 private:
+
     uint32 EntityID;
 	FScene* Scene;
 };

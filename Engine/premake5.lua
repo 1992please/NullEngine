@@ -80,6 +80,7 @@ project "NullEditor"
 
     includedirs 
     {
+        "%{wks.location}/Engine/Source/Editor",
         "%{wks.location}/Engine/Source/Runtime",
         "%{wks.location}/Engine/Source/ThirdParty"
     }

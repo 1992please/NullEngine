@@ -24,5 +24,5 @@ private:
 	float CameraRotation;
 
 	FLinearColor SquareColor;
-	F2DCameraController CameraController;
+	//F2DCameraController CameraController;
 };

@@ -7,7 +7,7 @@ class FRenderer2D
 public:
 	static void Init();
 	static void Shutdown();
-    static void BeginScene(const class FOrthographicCamera& InCamera);
+    static void BeginScene(const struct FSceneView& InSceneView);
 	static void EndScene();
 	static void Flush();
 	static void FlushAndReset();

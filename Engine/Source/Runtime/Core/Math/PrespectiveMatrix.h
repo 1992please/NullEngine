@@ -6,43 +6,36 @@ class FPerspectiveMatrix
 {
 public:
 
-	/**
-	 * Constructor
-	 *
-	 * @param HalfFOVX Half FOV in the X axis
-	 * @param HalfFOVY Half FOV in the Y axis
-	 * @param MultFOVX multiplier on the X axis
-	 * @param MultFOVY multiplier on the y axis
-	 * @param MinZ distance to the near Z plane
-	 * @param MaxZ distance to the far Z plane
-	 */
-	FORCEINLINE FPerspectiveMatrix(float HalfFOVX, float HalfFOVY, float MultFOVX, float MultFOVY, float MinZ, float MaxZ)
-		: FMatrix(
-			FPlane(MultFOVX / FMath::Tan(HalfFOVX), 0.0f, 0.0f, 0.0f),
-			FPlane(0.0f, MultFOVY / FMath::Tan(HalfFOVY), 0.0f, 0.0f),
-			FPlane(0.0f, 0.0f, (-MinZ - MaxZ) / (MinZ - MaxZ), 1.0f),
-			FPlane(0.0f, 0.0f, 2 * MinZ * MaxZ / (MinZ - MaxZ), 0.0f)
-		)
-	{ }
+	// Far is infinite
+	FORCEINLINE FPerspectiveMatrix(float Fovy, float Aspect, float Near)
+	{ 
+		const float Range = FMath::Tan(Fovy / 2.0f) * Near;
+		const float Left = -Range * Aspect;
+		const float Right = Range * Aspect;
+		const float Bottom = -Range;
+		const float Top = Range;
 
-	/**
-	 * Constructor
-	 *
-	 * @param HalfFOV half Field of View in the Y direction
-	 * @param Width view space width
-	 * @param Height view space height
-	 * @param MinZ distance to the near Z plane
-	 * @param MaxZ distance to the far Z plane
-	 * @note that the FOV you pass in is actually half the FOV, unlike most perspective matrix functions (D3DXMatrixPerspectiveFovLH).
-	 */
-	FORCEINLINE FPerspectiveMatrix::FPerspectiveMatrix(float HalfFOV, float Width, float Height, float MinZ, float MaxZ)
-		: FMatrix(
-			FPlane(Height / (FMath::Tan(HalfFOV) * Width), 0.0f, 0.0f, 0.0f),
-			FPlane(0.0f, 1.0F / FMath::Tan(HalfFOV), 0.0f, 0.0f),
-			FPlane(0.0f, 0.0f, (-MinZ - MaxZ) / (MinZ - MaxZ), 1.0f),
-			FPlane(0.0f, 0.0f, 2 * MinZ * MaxZ / (MinZ - MaxZ), 0.0f)
-		)
-	{ }
+
+		FMatrix(
+			FPlane((2.0f * Near) / (Right - Left), 0.0f, 0.0f, 0.0f),
+			FPlane(0.0f, (2.0f * Near) / (Top - Bottom), 0.0f, 0.0f),
+			FPlane(0.0f, 0.0f, 1.0f, 1.0f),
+			FPlane(0.0f, 0.0f, -2 * Near, 0.0f)
+		);
+	}
+
+	FORCEINLINE FPerspectiveMatrix::FPerspectiveMatrix(float Fovy, float Aspect, float Near, float Far)
+	{ 
+		const float TanHalfFovy = FMath::Tan(Fovy / 2.0f);
+
+		FMatrix(
+			FPlane(1.0f / (TanHalfFovy * Aspect), 0.0f, 0.0f, 0.0f),
+			FPlane(0.0f, 1.0f / TanHalfFovy, 0.0f, 0.0f),
+			FPlane(0.0f, 0.0f, (Far + Near) / (Far - Near), 1.0f),
+			FPlane(0.0f, 0.0f, -2.0f * Near * Far / (Far - Near), 0.0f)
+		);
+	
+	}
 };
 
 

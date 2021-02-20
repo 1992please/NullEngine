@@ -2,8 +2,7 @@
 #include "imgui/imgui.h"
 
 TestGame::TestGame()
-	: CameraController(16.f / 9.f)
-	, CameraPosition(FVector::ZeroVector)
+	: CameraPosition(FVector::ZeroVector)
 	, CameraRotation(0.0f)
 	, SquareColor(FLinearColor::Green)
 {
@@ -29,11 +28,6 @@ void TestGame::OnDettach()
 void TestGame::OnUpdate(float DeltaTime)
 {
 	NE_PROFILE_FUNCTION();
-	//NE_LOG("DeltaTime %f", DeltaTime);
-	{
-		NE_PROFILE_SCOPE("Camera Controller");
-		CameraController.OnUpdate(DeltaTime);
-	}
 
 	FRenderer2D::ResetStatistics();
 	{
@@ -41,34 +35,6 @@ void TestGame::OnUpdate(float DeltaTime)
 		FRenderCommand::SetClearColor(FLinearColor(0.1f, 0.1f, 0.1f, 1));
 		FRenderCommand::Clear();
 	}
-
-
-	{
-		NE_PROFILE_SCOPE("Renderer Draw");
-
-
-		FRenderer2D::BeginScene(CameraController.GetCamera());
-
-		for (int i = 0; i < 10; i++)
-			for (int j = 0; j < 10; j++)
-			{
-				FLinearColor Color = ((i + j) % 2) ? FLinearColor::Black : FLinearColor::White;
-				Color.A = 0.3f;
-
-				FRenderer2D::DrawQuad({ i * 0.11f - 5 * 0.11f, j * 0.11f - 5 * 0.11f , 0.0f }, FVector2(0.1f), Color);
-			}
-
-		FRenderer2D::DrawQuad({ 0.0f, 0.0f, 0.1f }, FVector2(0.1f), FLinearColor::White, MarioTexture);
-		static float rotation = 0;
-		rotation += 50 * DeltaTime;
-		FRenderer2D::DrawRotatedQuad({ 0.0f, 0.2f, 0.1f }, FVector2(0.1f), rotation, FLinearColor::White, MarioTexture);
-		FRenderer2D::DrawRotatedQuad({ .5f, .5f, 0.1f }, FVector2(0.1f), rotation, FLinearColor::Yellow);
-
-		FRenderer2D::EndScene();
-
-	}
-	/*FlatShader->Bind();
-	FlatShader->SetVector4("u_Color", SquareColor);*/
 }
 
 void TestGame::OnImGuiRender()
@@ -93,5 +59,5 @@ void TestGame::OnImGuiRender()
 
 void TestGame::OnEvent(IEvent& InEvent)
 {
-	CameraController.OnEvent(InEvent);
+
 }
