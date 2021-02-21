@@ -5,17 +5,19 @@
 class FScript
 {
 public:
+
 	template<typename T>
-	T* GetComponent() { return Entity.GetComponent<T>(); }
+	FORCEINLINE T* GetComponent() { return Entity.GetComponent<T>(); }
 protected:
     virtual void OnInitialize() {}
     virtual void Start() {}
     virtual void Update(float DeltaTime) {}
     virtual void OnDestroy() {}
 private:
+
 	FEntity Entity;
 
-	friend class FNativeScriptComponent;
+	friend class FEntity;
 	friend class FScene;
 };
 
@@ -52,13 +54,15 @@ public:
 			Script = nullptr;
 		}
     }
-
-	template<typename T>
-	FORCEINLINE static T* CreateScript(const FEntity* Entity)
-	{
-		FNativeScriptComponent* ScriptComponent = Entity->AddComponent<FNativeScriptComponent>();
-		ScriptComponent->Entity = *Entity;
-		return ScriptComponent->Create<T>():
-	}
-
 };
+
+template<typename T>
+FORCEINLINE T* FEntity::AddScript() const
+{
+	FNativeScriptComponent* ScriptComponent = AddComponent<FNativeScriptComponent>();
+	if (T* Script = ScriptComponent->Create<T>())
+	{
+		Script->Entity = *this;
+	}
+	return nullptr;
+}

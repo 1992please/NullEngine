@@ -19,3 +19,4 @@
 #include "Engine/Components/SpriteComponent.h"
 #include "Engine/Components/TransformComponent.h"
 #include "Engine/Components/CameraComponent.h"
+#include "Engine/Components/NativeScriptComponent.h"

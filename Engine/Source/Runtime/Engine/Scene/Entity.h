@@ -20,6 +20,9 @@ public:
 	}
 
 	template<typename T>
+	FORCEINLINE T* AddScript() const;
+
+	template<typename T>
 	FORCEINLINE void RemoveComponent() const
 	{
 		NE_ASSERT_F(HasComponent<T>(), "Entity does not have component!");

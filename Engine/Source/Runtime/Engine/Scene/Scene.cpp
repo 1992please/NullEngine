@@ -37,20 +37,12 @@ FScene::~FScene()
 void FScene::OnUpdateRuntime(float DeltaTime)
 {
 	// Update scripts
-	//{
-	//	REGISTRY(SceneData)->view<FNativeScriptComponent>().each([=](auto& nsc)
-	//	{
-	//		// TODO: Move to Scene::OnScenePlay
-	//		if (!nsc.Instance)
-	//		{
-	//			nsc.Instance = nsc.InstantiateScript();
-	//			nsc.Instance->m_Entity = Entity{ entity, this };
-	//			nsc.Instance->OnCreate();
-	//		}
-
-	//		nsc.Instance->OnUpdate(ts);
-	//	});
-	//}
+	{
+		REGISTRY(SceneData)->view<FNativeScriptComponent>().each([=](FNativeScriptComponent& NativeScriptComponent)
+		{
+			NativeScriptComponent.Script->Update(DeltaTime);
+		});
+	}
 
 	// Renderer 2D
 	FCameraComponent* MainCamera = nullptr;

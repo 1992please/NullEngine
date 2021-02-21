@@ -1,6 +1,33 @@
 #include "EditorLayer.h"
 #include "imgui/imgui.h"
 
+struct FMovemntClass : FScript
+{
+	bool bPositiveDirection;
+	FMovemntClass()
+		: bPositiveDirection(false)
+	{
+
+	}
+	virtual void Start() {}
+	virtual void Update(float DeltaTime) override
+	{
+		FTransform& Transform = GetComponent<FTransformComponent>()->Transform;
+		FVector Position = Transform.GetPosition();
+		if (Position.X > 3)
+		{
+			bPositiveDirection = false;
+		}
+		else if(Position.X < -3)
+		{
+			bPositiveDirection = true;
+		}
+
+		Transform.Translate(FVector((bPositiveDirection? 1.0f : -1.0f) * DeltaTime, 0.0f, 0.0f));
+	}
+	virtual void OnDestroy() {}
+};
+
 FEditorLayer::FEditorLayer()
 	: EditorCamera(16.f / 9.f)
 	, CameraPosition(FVector::ZeroVector)
@@ -9,6 +36,7 @@ FEditorLayer::FEditorLayer()
 	, bIsViewportFocused(true)
 	, bIsViewportHovered(false)
 	, ViewportSize(1.0f, 1.0f)
+	, SceneHierarchyPanel(Scene)
 {
 }
 
@@ -17,6 +45,8 @@ void FEditorLayer::OnAttach()
 	NE_PROFILE_FUNCTION();
 	MarioTexture = ITexture2D::Create("../../Projects/TestGame/Content/mario_logo.png");
 	SpriteSheet = ITexture2D::Create("../../Projects/TestGame/Content/RPGpack_sheet_2X.png");
+
+
 
 	{
 		FFrameBufferInfo FrameBufferInfo;
@@ -27,15 +57,16 @@ void FEditorLayer::OnAttach()
 		FrameBuffer = IFrameBuffer::Create(FrameBufferInfo);
 	}
 
-	Scene = new FScene();
 	{
-		Entity = Scene->CreateEntity();
+		Entity = Scene.CreateEntity();
 		FSpriteComponent* Comp = Entity.AddComponent<FSpriteComponent>();
 		Comp->Color = FLinearColor::Green;
+		FMovemntClass* Movement = Entity.AddScript<FMovemntClass>();
 	}
 	{
-		CameraEntity = Scene->CreateEntity();
-		Entity.AddComponent<FCameraComponent>();
+		CameraEntity = Scene.CreateEntity();
+		CameraEntity.AddComponent<FCameraComponent>();
+		//CameraEntity.AddScript<FMovemntClass>();
 	}
 
 }
@@ -54,7 +85,7 @@ void FEditorLayer::OnUpdate(float DeltaTime)
 	{
 		FrameBuffer->Resize((uint32)ViewportSize.X, (uint32)ViewportSize.Y);
 		EditorCamera.OnResize(ViewportSize.X, ViewportSize.Y);
-		Scene->OnViewportResize((uint32)ViewportSize.X, (uint32)ViewportSize.Y);
+		Scene.OnViewportResize((uint32)ViewportSize.X, (uint32)ViewportSize.Y);
 	}
 
 	if(bIsViewportFocused)
@@ -67,8 +98,8 @@ void FEditorLayer::OnUpdate(float DeltaTime)
 		FRenderCommand::SetClearColor(FLinearColor(0.1f, 0.1f, 0.1f, 1));
 		FRenderCommand::Clear();
 
-
-		Scene->OnUpdateEditor(DeltaTime, FSceneView{EditorCamera.GetProjectionMatrix(), EditorCamera.GetViewMatrix()});
+		Scene.OnUpdateRuntime(DeltaTime);
+		//Scene->OnUpdateEditor(DeltaTime, FSceneView{EditorCamera.GetProjectionMatrix(), EditorCamera.GetViewMatrix()});
 		FrameBuffer->Unbind();
 	}
 }
@@ -166,34 +197,40 @@ void FEditorLayer::OnImGuiRender()
 	}
 
 #endif
-	ImGui::DockSpaceOverViewport();
+	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 	//if (ImGui::BeginMenuBar())
 	//{
 	//	ImGui::EndMenuBar();
 	//}
-	ImGui::Begin("Test");
-	ImGui::Text("Renderer2D Stats:");
-	ImGui::Text("Draw Calls: %d", FRenderer2D::GetStatistics().DrawCalls);
-	ImGui::Text("Quads: %d", FRenderer2D::GetStatistics().QuadCount);
-	ImGui::Text("Vertices: %d", FRenderer2D::GetStatistics().VertexCount());
-	ImGui::Text("Indices: %d", FRenderer2D::GetStatistics().IndexCount());
-	ImGui::ColorEdit4("Color", &SquareColor.R);
-	Entity.GetComponent<FSpriteComponent>()->Color = SquareColor;
+	ImGui::Begin("Inspector");
+	{
+		ImGui::Text("Renderer2D Stats:");
+		ImGui::Text("Draw Calls: %d", FRenderer2D::GetStatistics().DrawCalls);
+		ImGui::Text("Quads: %d", FRenderer2D::GetStatistics().QuadCount);
+		ImGui::Text("Vertices: %d", FRenderer2D::GetStatistics().VertexCount());
+		ImGui::Text("Indices: %d", FRenderer2D::GetStatistics().IndexCount());
+		ImGui::ColorEdit4("Color", &SquareColor.R);
+		Entity.GetComponent<FSpriteComponent>()->Color = SquareColor;
+	}
 	ImGui::End();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-	ImGui::Begin("Viewport");
-	bIsViewportFocused = ImGui::IsWindowFocused();
-	bIsViewportHovered = ImGui::IsWindowHovered();
-	FApplication::GetApplication()->SetImGUIBlockingEvents(!bIsViewportFocused || !bIsViewportHovered);
-	ImVec2 ViewportPanelSize = ImGui::GetContentRegionAvail();
-	ViewportSize = { ViewportPanelSize.x, ViewportPanelSize.y };
+	{
+		ImGui::Begin("Viewport");
+		{
+			bIsViewportFocused = ImGui::IsWindowFocused();
+			bIsViewportHovered = ImGui::IsWindowHovered();
+			FApplication::GetApplication()->SetImGUIBlockingEvents(!bIsViewportFocused || !bIsViewportHovered);
+			ImVec2 ViewportPanelSize = ImGui::GetContentRegionAvail();
+			ViewportSize = { ViewportPanelSize.x, ViewportPanelSize.y };
 
-	ImGui::Image((void*)(size_t)FrameBuffer->GetColorAttachmentRendererID(), ImVec2(ViewportSize.X, ViewportSize.Y), ImVec2(0, 1), ImVec2(1, 0));
-	ImGui::End();
+			ImGui::Image((void*)(size_t)FrameBuffer->GetColorAttachmentRendererID(), ImVec2(ViewportSize.X, ViewportSize.Y), ImVec2(0, 1), ImVec2(1, 0));
+		}
+		ImGui::End();
+	}
 	ImGui::PopStyleVar();
-	//ImGui::End();
 
+	SceneHierarchyPanel.OnImGUIRender();
 }
 
 void FEditorLayer::OnEvent(IEvent& InEvent)

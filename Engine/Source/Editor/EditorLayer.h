@@ -1,5 +1,6 @@
 #include "NullEngine.h"
 #include "EditorViewport/EditorCamera.h"
+#include "Panels/SceneHierarchyPanel.h"
 
 class FEditorLayer : public FGraphicLayer
 {
@@ -15,8 +16,6 @@ public:
 	void OnEvent(IEvent& InEvent) override;
 
 private:
-
-
 	IShader* FlatShader;
 	class ITexture2D* MarioTexture;
 	class ITexture2D* SpriteSheet;
@@ -29,12 +28,14 @@ private:
 
 	FLinearColor SquareColor;
 
-	FScene* Scene;
+	FScene Scene;
 	FEntity Entity;
 	FEntity CameraEntity;
 
-	FEditorCamera EditorCamera;
+	FSceneHierarchyPanel SceneHierarchyPanel;
 
+	FEditorCamera EditorCamera;
+	
 	bool bIsViewportFocused;
 	bool bIsViewportHovered;
 	FVector2 ViewportSize;
