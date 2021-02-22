@@ -1,5 +1,7 @@
 #pragma once
 #include "Engine/Scene/SceneView.h"
+#include "SceneStorage.h"
+
 class FEntity;
 
 class FScene
@@ -13,18 +15,19 @@ public:
 	void OnViewportResize(uint32 InWidth, uint32 InHeight);
 
 	FEntity CreateEntity(const FString& InName = "Entity");
+	void DestructEntity(uint32 EntityID);
 
 	template<typename T>
-	bool HasComponent(const FEntity* InEntity) const;
+	bool HasComponent(uint32 EntityID) const;
 
 	template<typename T>
-	T* GetComponent(const FEntity* InEntity);
+	T* GetComponent(uint32 EntityID);
 
 	template<typename T>
-	T* AddComponent(const FEntity* InEntity);
+	T* AddComponent(uint32 EntityID);
 
 	template<typename T>
-	void RemoveComponent(const FEntity* InEntity);
+	void RemoveComponent(uint32 EntityID);
 
 
 private:

@@ -42,6 +42,20 @@ FEditorLayer::FEditorLayer()
 
 void FEditorLayer::OnAttach()
 {
+	NE_LOG("ComponentID FTransformComponent: %d", TComponentTypeSequence<FTransformComponent>::Value());
+	NE_LOG("ComponentID FCameraComponent: %d", TComponentTypeSequence<FCameraComponent>::Value());
+	NE_LOG("ComponentID FNativeScriptComponent: %d", TComponentTypeSequence<FNativeScriptComponent>::Value());
+	NE_LOG("ComponentID FNativeScriptComponent: %d", TComponentTypeSequence<FNativeScriptComponent>::Value());
+	NE_LOG("ComponentID FTagComponent: %d", TComponentTypeSequence<FTagComponent>::Value());
+	NE_LOG("ComponentID FTransformComponent: %d", TComponentTypeSequence<FTransformComponent>::Value());
+	NE_LOG("ComponentID FNativeScriptComponent: %d", TComponentTypeSequence<FNativeScriptComponent>::Value());
+	NE_LOG("ComponentID FTagComponent: %d", TComponentTypeSequence<FTagComponent>::Value());
+	NE_LOG("ComponentID FNativeScriptComponent: %d", TComponentTypeSequence<FNativeScriptComponent>::Value());
+	NE_LOG("ComponentID FNativeScriptComponent: %d", TComponentTypeSequence<FNativeScriptComponent>::Value());
+	NE_LOG("ComponentID FSpriteComponent: %d", TComponentTypeSequence<FSpriteComponent>::Value());
+	NE_LOG("ComponentID FSpriteComponent: %d", TComponentTypeSequence<FSpriteComponent>::Value());
+	NE_LOG("ComponentID FTagComponent: %d", TComponentTypeSequence<FTagComponent>::Value());
+	NE_LOG("ComponentID FSpriteComponent: %d", TComponentTypeSequence<FSpriteComponent>::Value());
 	NE_PROFILE_FUNCTION();
 	MarioTexture = ITexture2D::Create("../../Projects/TestGame/Content/mario_logo.png");
 	SpriteSheet = ITexture2D::Create("../../Projects/TestGame/Content/RPGpack_sheet_2X.png");

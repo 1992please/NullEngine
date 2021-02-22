@@ -3,6 +3,6 @@
 class FTagComponent
 {
 public:
-	FString Name;
+	char Name[32];
 	uint32 Tag;
 };

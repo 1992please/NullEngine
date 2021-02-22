@@ -16,7 +16,8 @@
 
 #include "Engine/Scene/Scene.h"
 #include "Engine/Scene/Entity.h"
-#include "Engine/Components/SpriteComponent.h"
+#include "Engine/Components/TagComponent.h"
 #include "Engine/Components/TransformComponent.h"
+#include "Engine/Components/SpriteComponent.h"
 #include "Engine/Components/CameraComponent.h"
 #include "Engine/Components/NativeScriptComponent.h"

@@ -34,17 +34,21 @@ enum ENoInit { NoInit };
 
 
 #ifndef NE_DEBUG
-#define NE_DEBUG 0
+	#define NE_DEBUG 0
 #endif
 
 #ifndef NE_RELEASE
-#define NE_RELEASE 0
+	#define NE_RELEASE 0
 #endif
 
 #ifndef NE_SHIPPING
-#define NE_SHIPPING 0
+	#define NE_SHIPPING 0
 #endif
 
 #ifndef NE_WINDOWS
-#define NE_WINDOWS 0
+	#define NE_WINDOWS 0
+#endif
+
+#if NE_WINDOWS
+	#pragma warning(disable: 4291) //4307 using new without delete
 #endif
