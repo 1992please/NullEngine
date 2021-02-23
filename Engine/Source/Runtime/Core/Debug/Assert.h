@@ -4,7 +4,7 @@
 
 #if NE_DEBUG
 // check the expression and fail if it is false
-#define NE_ASSERT(expr) \
+#define NE_CHECK(expr) \
 	if (expr) { } \
 	else \
 	{ \
@@ -12,7 +12,7 @@
 		__debugbreak(); \
 	}
 
-#define NE_ASSERT_F(expr, format, ...) \
+#define NE_CHECK_F(expr, format, ...) \
 	if (expr) {} \
 	else \
 	{ \
@@ -22,6 +22,6 @@
 		NE_DEBUGBREAK(); \
 	}
 #else
-	#define NE_ASSERT(expr) // evaluates to nothing
-	#define NE_ASSERT_F(expr, format, ...) // evaluates to nothing
+	#define NE_CHECK(expr) // evaluates to nothing
+	#define NE_CHECK_F(expr, format, ...) // evaluates to nothing
 #endif

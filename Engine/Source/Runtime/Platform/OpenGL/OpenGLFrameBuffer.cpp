@@ -147,7 +147,7 @@ void FOpenGLFrameBuffer::Invalidate()
 
 	if (ColorAttachments.Num() > 1)
 	{
-		NE_ASSERT(ColorAttachments.Num() <= 4);
+		NE_CHECK(ColorAttachments.Num() <= 4);
 		GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
 		glDrawBuffers(ColorAttachments.Num(), buffers);
 	}
@@ -157,7 +157,7 @@ void FOpenGLFrameBuffer::Invalidate()
 		glDrawBuffer(GL_NONE);
 	}
 
-	NE_ASSERT_F(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
+	NE_CHECK_F(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

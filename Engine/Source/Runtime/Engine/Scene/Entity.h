@@ -15,7 +15,7 @@ public:
 	template<typename T>
 	FORCEINLINE T* AddComponent() const
 	{
-		NE_ASSERT_F(!HasComponent<T>(), "Entity already not have component!");
+		NE_CHECK_F(!HasComponent<T>(), "Entity already not have component!");
 		return Scene->AddComponent<T>(EntityID);
 	}
 
@@ -25,7 +25,7 @@ public:
 	template<typename T>
 	FORCEINLINE void RemoveComponent() const
 	{
-		NE_ASSERT_F(HasComponent<T>(), "Entity does not have component!");
+		NE_CHECK_F(HasComponent<T>(), "Entity does not have component!");
 		Scene->RemoveComponent<T>(EntityID);
 	}
 
@@ -38,7 +38,7 @@ public:
 	template<typename T>
 	FORCEINLINE T* GetComponent() const
 	{
-		NE_ASSERT_F(HasComponent<T>(), "Entity does not have component!");
+		NE_CHECK_F(HasComponent<T>(), "Entity does not have component!");
 		return Scene->GetComponent<T>(EntityID);
 	}
 

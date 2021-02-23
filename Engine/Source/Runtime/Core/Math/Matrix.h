@@ -329,7 +329,7 @@ inline float FMatrix::Determinant() const
 
 inline void FMatrix::SetAxis(int32 i, const FVector& Axis)
 {
-	NE_ASSERT(i >= 0 && i <= 2);
+	NE_CHECK(i >= 0 && i <= 2);
 	M[i][0] = Axis.X;
 	M[i][1] = Axis.Y;
 	M[i][2] = Axis.Z;

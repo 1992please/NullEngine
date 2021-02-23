@@ -43,7 +43,7 @@ struct FBufferElement
 			case EShaderDataType::Int4:		return 4 * 4;
 			case EShaderDataType::Bool:		return 4;
 		}
-		NE_ASSERT_F(false, "Unknown Element Type");
+		NE_CHECK_F(false, "Unknown Element Type");
 		return 0;
 	}
 
@@ -63,7 +63,7 @@ struct FBufferElement
 			case EShaderDataType::Int4:		return 4;
 			case EShaderDataType::Bool:		return 1;
 		}
-		NE_ASSERT_F(false, "Unknown Element Type");
+		NE_CHECK_F(false, "Unknown Element Type");
 		return 0;
 	}
 

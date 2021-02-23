@@ -255,7 +255,7 @@ public:
 
 	int32 AddUninitialized(int32 NumBitsToAdd)
 	{
-		NE_ASSERT(NumBitsToAdd >= 0);
+		NE_CHECK(NumBitsToAdd >= 0);
 		int32 AddedIndex = NumBits;
 		if (NumBitsToAdd > 0)
 		{
@@ -313,7 +313,7 @@ public:
 
 	FORCENOINLINE void SetRange(int32 Index, int32 NumBitsToSet, bool Value)
 	{
-		NE_ASSERT(Index >= 0 && NumBitsToSet >= 0 && Index + NumBitsToSet <= NumBits);
+		NE_CHECK(Index >= 0 && NumBitsToSet >= 0 && Index + NumBitsToSet <= NumBits);
 
 		if (NumBitsToSet == 0)
 		{
@@ -402,7 +402,7 @@ public:
 
 	FORCEINLINE FBitReference operator[](int32 Index)
 	{
-		NE_ASSERT(Index >= 0 && Index < NumBits);
+		NE_CHECK(Index >= 0 && Index < NumBits);
 		return FBitReference(
 			GetData()[Index / NumBitsPerDWORD],
 			1 << (Index & (NumBitsPerDWORD - 1))
@@ -412,7 +412,7 @@ public:
 	void CheckInvariants() const
 	{
 #if NE_DEBUG
-		NE_ASSERT(NumBits <= MaxBits && NumBits >= 0 && MaxBits >= 0);
+		NE_CHECK(NumBits <= MaxBits && NumBits >= 0 && MaxBits >= 0);
 
 		// Verify the ClearPartialSlackBits invariant
 		const int32 UsedBits = (NumBits % NumBitsPerDWORD);
@@ -422,7 +422,7 @@ public:
 			const uint32 SlackMask = FullWordMask << UsedBits;
 
 			const uint32 LastDWORD = *(GetData() + LastDWORDIndex);
-			NE_ASSERT((LastDWORD & SlackMask) == 0);
+			NE_CHECK((LastDWORD & SlackMask) == 0);
 		}
 #endif
 	}
@@ -580,7 +580,7 @@ public:
 
 	void RemoveAt(int32 BaseIndex, int32 NumBitsToRemove = 1)
 	{
-		NE_ASSERT(BaseIndex >= 0 && NumBitsToRemove >= 0 && BaseIndex + NumBitsToRemove <= NumBits);
+		NE_CHECK(BaseIndex >= 0 && NumBitsToRemove >= 0 && BaseIndex + NumBitsToRemove <= NumBits);
 
 		if (BaseIndex + NumBitsToRemove != NumBits)
 		{
@@ -636,7 +636,7 @@ private:
 
 	static FORCEINLINE void Move(FBitArray& ToArray, FBitArray& FromArray)
 	{
-		NE_ASSERT(&ToArray != &FromArray);
+		NE_CHECK(&ToArray != &FromArray);
 
 		if (ToArray.Data)
 		{
@@ -687,7 +687,7 @@ private:
 
 	FORCEINLINE static uint32 CalculateNumWords(int32 NumBits)
 	{
-		NE_ASSERT(NumBits >= 0);
+		NE_CHECK(NumBits >= 0);
 		return FMath::DivideAndRoundUp(static_cast<uint32>(NumBits), NumBitsPerDWORD);
 	}
 
@@ -735,7 +735,7 @@ public:
 		, CurrentBitIndex(StartIndex)
 		, BaseBitIndex(StartIndex & ~(NumBitsPerDWORD - 1))
 	{
-		NE_ASSERT(StartIndex >= 0 && StartIndex <= Array.Num());
+		NE_CHECK(StartIndex >= 0 && StartIndex <= Array.Num());
 		if (StartIndex != Array.Num())
 		{
 			FindFirstSetBit();

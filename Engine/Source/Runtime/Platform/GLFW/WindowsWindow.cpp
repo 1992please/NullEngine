@@ -70,7 +70,7 @@ void FWindowsWindow::Init(const FWindowDetails& InDetails)
 	{
 		glfwSetErrorCallback(GLFWErrorCallback);
 		int success = glfwInit();
-		NE_ASSERT_F(success, "Could not initialize GLFW!");
+		NE_CHECK_F(success, "Could not initialize GLFW!");
 		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // required on mac
 	}
 

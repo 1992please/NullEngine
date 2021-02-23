@@ -36,7 +36,7 @@ inline FVector FMatrix::GetScaledAxis(EAxis::Type InAxis) const
 			return FVector(M[2][0], M[2][1], M[2][2]);
 
 		default:
-			NE_ASSERT(0)
+			NE_CHECK(0)
 			return FVector::ZeroVector;
 	}
 }

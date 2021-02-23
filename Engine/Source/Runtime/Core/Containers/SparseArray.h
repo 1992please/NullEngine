@@ -139,40 +139,12 @@ public:
 		Empty();
 	}
 
-	/**
-	 * Allocates space for an element in the array.  The element is not initialized, and you must use the corresponding placement new operator
-	 * to construct the element in the allocated memory.
-	 */
-	FSparseArrayAllocationInfo AddUninitialized()
-	{
-		int32 Index;
-		if (NumFreeIndices)
-		{
-			// Remove and use the first index from the list of free elements.
-			Index = FirstFreeIndex;
-			FirstFreeIndex = GetData(FirstFreeIndex).NextFreeIndex;
-			--NumFreeIndices;
-			if (NumFreeIndices)
-			{
-				GetData(FirstFreeIndex).PrevFreeIndex = -1;
-			}
-		}
-		else
-		{
-			// Add a new element.
-			Index = Data.AddUninitialized(1);
-			AllocationFlags.Add(false);
-		}
-
-		return AllocateIndex(Index);
-	}
-
 	/** Marks an index as allocated, and returns information about the allocation. */
 	FSparseArrayAllocationInfo AllocateIndex(int32 Index)
 	{
-		NE_ASSERT(Index >= 0);
-		NE_ASSERT(Index < GetMaxIndex());
-		NE_ASSERT(!AllocationFlags[Index]);
+		NE_CHECK(Index >= 0);
+		NE_CHECK(Index < GetMaxIndex());
+		NE_CHECK(!AllocationFlags[Index]);
 
 		// Flag the element as allocated.
 		AllocationFlags[Index] = true;
@@ -199,6 +171,34 @@ public:
 		FSparseArrayAllocationInfo Allocation = AddUninitialized();
 		new(Allocation) ElementType(MoveTemp(Element));
 		return Allocation.Index;
+	}
+
+	/**
+	 * Allocates space for an element in the array.  The element is not initialized, and you must use the corresponding placement new operator
+	 * to construct the element in the allocated memory.
+	 */
+	FSparseArrayAllocationInfo AddUninitialized()
+	{
+		int32 Index;
+		if (NumFreeIndices)
+		{
+			// Remove and use the first index from the list of free elements.
+			Index = FirstFreeIndex;
+			FirstFreeIndex = GetData(FirstFreeIndex).NextFreeIndex;
+			--NumFreeIndices;
+			if (NumFreeIndices)
+			{
+				GetData(FirstFreeIndex).PrevFreeIndex = -1;
+			}
+		}
+		else
+		{
+			// Add a new element.
+			Index = Data.AddUninitialized(1);
+			AllocationFlags.Add(false);
+		}
+
+		return AllocateIndex(Index);
 	}
 
 	FSparseArrayAllocationInfo AddUninitializedAtLowestFreeIndex(int32& LowestFreeIndexSearchStart)
@@ -251,6 +251,9 @@ public:
 		return Allocation.Index;
 	}
 
+	// emplace at the lowest free index
+	// care this will be slower than the normal emplace
+	// providing LowestFreeIndexSearchStart will accelerate the proecess
 	template <typename... ArgsType>
 	FORCEINLINE int32 EmplaceAtLowestFreeIndex(int32& LowestFreeIndexSearchStart, ArgsType&&... Args)
 	{
@@ -297,13 +300,13 @@ public:
 	// Accessors.
 	ElementType& operator[](int32 Index)
 	{
-		NE_ASSERT(Index >= 0 && Index < Data.Num() && Index < AllocationFlags.Num());
+		NE_CHECK(Index >= 0 && Index < Data.Num() && Index < AllocationFlags.Num());
 		//checkSlow(AllocationFlags[Index]); // Disabled to improve loading times -BZ
 		return *(ElementType*)&GetData(Index).ElementData;
 	}
 	const ElementType& operator[](int32 Index) const
 	{
-		NE_ASSERT(Index >= 0 && Index < Data.Num() && Index < AllocationFlags.Num());
+		NE_CHECK(Index >= 0 && Index < Data.Num() && Index < AllocationFlags.Num());
 		//checkSlow(AllocationFlags[Index]); // Disabled to improve loading times -BZ
 		return *(ElementType*)&GetData(Index).ElementData;
 	}
@@ -352,7 +355,7 @@ public:
 	{
 		for (; Count; --Count)
 		{
-			NE_ASSERT(AllocationFlags[Index]);
+			NE_CHECK(AllocationFlags[Index]);
 
 			// Mark the element as free and add it to the free element list.
 			if (NumFreeIndices)

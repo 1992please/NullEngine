@@ -32,7 +32,7 @@ public:
 
 	~FNativeScriptComponent()
 	{
-		NE_ASSERT(!Script);
+		NE_CHECK(!Script);
 	}
 
 	template<typename T>

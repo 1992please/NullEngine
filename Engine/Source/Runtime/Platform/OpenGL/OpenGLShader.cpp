@@ -210,7 +210,7 @@ void FOpenGLShader::CreateAndLinkProgram(uint32* InShaders)
 		glGetProgramiv(RendererID, GL_INFO_LOG_LENGTH, &infoLogLength);
 		TArray<char> infoLog(infoLogLength);
 		glGetProgramInfoLog(RendererID, infoLogLength, NULL, infoLog.GetData());
-		NE_ASSERT_F(false, "Link log:\n%s", infoLog.GetData());
+		NE_CHECK_F(false, "Link log:\n%s", infoLog.GetData());
 	}
 	else
 	{
@@ -238,7 +238,7 @@ void FOpenGLShader::LoadUniformLocations()
 		GLint Results[4];
 		glGetProgramResourceiv(RendererID, GL_UNIFORM, UniformIndex, 4, properties, 4, NULL, Results);
 		if (Results[3] != -1) continue;  // Skip uniforms in blocks
-		NE_ASSERT_F((Results[0] + 1) <= UNIFORM_NAME_BUFFER_SIZE, "Uniform buffer is not large engough.");
+		NE_CHECK_F((Results[0] + 1) <= UNIFORM_NAME_BUFFER_SIZE, "Uniform buffer is not large engough.");
 
 		glGetProgramResourceName(RendererID, GL_UNIFORM, UniformIndex, UNIFORM_NAME_BUFFER_SIZE, NULL, UniformName);
 

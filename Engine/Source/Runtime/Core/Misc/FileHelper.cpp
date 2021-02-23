@@ -6,7 +6,7 @@ bool FFileHelper::ReadFromTextFile(const FString& FileName, FString& OutFileCont
 {
 	bool Result = false;
 
-	NE_ASSERT(!FileName.IsEmpty())
+	NE_CHECK(!FileName.IsEmpty())
 
 	HANDLE FileHandle = CreateFileA(*FileName,				 // file to open
 		GENERIC_READ,									 // open for reading
@@ -21,7 +21,7 @@ bool FFileHelper::ReadFromTextFile(const FString& FileName, FString& OutFileCont
 		LARGE_INTEGER FileSize;
 		if (GetFileSizeEx(FileHandle, &FileSize))
 		{
-			NE_ASSERT(FileSize.QuadPart <= MAX_int32);
+			NE_CHECK(FileSize.QuadPart <= MAX_int32);
 			int32 FileSize32 = int32(FileSize.QuadPart);
 			OutFileContent.Reset();
 			OutFileContent.GetCharArray().AddUninitialized(FileSize32 + 1);
@@ -42,7 +42,7 @@ bool FFileHelper::WriteToTextFile(const FString& FileName, const FString& InFile
 {
 	bool Result = false;
 
-	NE_ASSERT(!InFileContent.IsEmpty() && !FileName.IsEmpty())
+	NE_CHECK(!InFileContent.IsEmpty() && !FileName.IsEmpty())
 
 	HANDLE FileHandle = CreateFileA(*FileName,                // name of the write
 		GENERIC_WRITE,          // open for writing

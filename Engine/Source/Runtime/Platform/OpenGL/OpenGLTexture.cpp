@@ -30,7 +30,7 @@ FOpenGLTexture2D::FOpenGLTexture2D(const char* InPath)
 	stbi_set_flip_vertically_on_load(1);
 	stbi_uc* ImageData = stbi_load(*Path, &width, &height, &channels, 0);
 
-	NE_ASSERT(ImageData);
+	NE_CHECK(ImageData);
 
 	Width = width;
 	Height = height;
@@ -46,7 +46,7 @@ FOpenGLTexture2D::FOpenGLTexture2D(const char* InPath)
 		DataFormat = GL_RGB;
 	}
 
-	NE_ASSERT(InternalFormat & DataFormat);
+	NE_CHECK(InternalFormat & DataFormat);
 
 
 	glCreateTextures(GL_TEXTURE_2D, 1, &RendererID);
@@ -75,7 +75,7 @@ void FOpenGLTexture2D::SetData(const void* InData, uint32 InSize)
 	NE_PROFILE_FUNCTION();
 
 	uint32 nChannels = DataFormat == GL_RGBA ? 4 : 3;
-	NE_ASSERT_F(InSize == Width * Height * nChannels, "Data must be entire texture!");
+	NE_CHECK_F(InSize == Width * Height * nChannels, "Data must be entire texture!");
 	glTextureSubImage2D(RendererID, 0, 0, 0, Width, Height, DataFormat, GL_UNSIGNED_BYTE, InData);
 }
 

@@ -7,16 +7,16 @@ IShader* IShader::Create(const FString& InFileName, const FString& InName /*= FS
 {
 	switch (IRendererAPI::GetAPI())
 	{
-		case IRendererAPI::Type_None: NE_ASSERT_F(false, "None Renderer API is not implemented yet."); return nullptr;
+		case IRendererAPI::Type_None: NE_CHECK_F(false, "None Renderer API is not implemented yet."); return nullptr;
 		case IRendererAPI::Type_OpenGL: return new FOpenGLShader(InFileName, InName);
 	}
-	NE_ASSERT_F(false, "Unknown Renderer API!!");
+	NE_CHECK_F(false, "Unknown Renderer API!!");
 	return nullptr;
 }
 
 void FShaderLibrary::Add(const FString& InName, IShader* InShader)
 {
-	NE_ASSERT_F(!Exists(InName), "Shader already exits");
+	NE_CHECK_F(!Exists(InName), "Shader already exits");
 	Shaders.Add(InName, InShader);
 }
 

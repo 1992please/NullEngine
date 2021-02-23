@@ -406,7 +406,7 @@ int32 FString::ParseIntoArrayLines(TArray<FString>& OutArray, bool InCullEmpty /
 int32 FString::ParseIntoArray(TArray<FString>& OutArray, const char*const* DelimArray, int32 NumDelims, bool InCullEmpty /*= true*/) const
 {
 	// Make sure the delimit string is not null or empty
-	NE_ASSERT(DelimArray);
+	NE_CHECK(DelimArray);
 	OutArray.Reset();
 	const char *Start = Data.GetData();
 	const int32 Length = Len();

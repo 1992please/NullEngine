@@ -20,8 +20,8 @@ void FOpenGlContext::Init()
 
 	bool gl3wInitError = gl3wInit() != 0;
 	bool gl3wOpenGlSupported = gl3wIsSupported(4, 6) != 0;
-	NE_ASSERT_F(!gl3wInitError, "failed to initialize OpenGL\n");
-	NE_ASSERT_F(gl3wOpenGlSupported, "OpenGL 4.6 not supported\n");
+	NE_CHECK_F(!gl3wInitError, "failed to initialize OpenGL\n");
+	NE_CHECK_F(gl3wOpenGlSupported, "OpenGL 4.6 not supported\n");
 	NE_CORE_LOG("VENDOR: %s", glGetString(GL_VENDOR));
 	NE_CORE_LOG("VERSION: %s", glGetString(GL_VERSION));
 	NE_CORE_LOG("RENDERER: %s", glGetString(GL_RENDERER));

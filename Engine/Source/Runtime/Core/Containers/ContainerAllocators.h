@@ -32,7 +32,7 @@
 //		template <typename OtherAllocator>
 //		FORCEINLINE void MoveToEmptyFromOtherAllocator(typename OtherAllocator::ForAnyElementType& Other)
 //		{
-//			NE_ASSERT((void*)this != (void*)&Other);
+//			NE_CHECK((void*)this != (void*)&Other);
 //
 //			if (Data)
 //			{

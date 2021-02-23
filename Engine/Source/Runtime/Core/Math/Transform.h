@@ -422,7 +422,7 @@ private:
 FORCEINLINE FVector4 FTransform::TransformFVector4NoScale(const FVector4& V) const
 {
 	// if not, this won't work
-	NE_ASSERT(V.W == 0.f || V.W == 1.f);
+	NE_CHECK(V.W == 0.f || V.W == 1.f);
 
 	const VectorRegister InputVector = VectorLoadAligned(&V);
 
@@ -446,7 +446,7 @@ FORCEINLINE FVector4 FTransform::TransformFVector4NoScale(const FVector4& V) con
 FORCEINLINE FVector4 FTransform::TransformFVector4(const FVector4& V) const
 {
 	// if not, this won't work
-	NE_ASSERT(V.W == 0.f || V.W == 1.f);
+	NE_CHECK(V.W == 0.f || V.W == 1.f);
 
 	const VectorRegister InputVector = VectorLoadAligned(&V);
 
@@ -626,8 +626,8 @@ FORCEINLINE FTransform FTransform::InverseFast() const
 	//	Q(~A) = Q(~A)
 	//	S(~A) = 1.f/S(A)
 	//	T(~A) = - (Q(~A)*S(~A)*T(A)*Q(A))	
-	NE_ASSERT(IsRotationNormalized());
-	NE_ASSERT(VectorAnyGreaterThan(VectorAbs(Scale3D), GlobalVectorConstants::SmallNumber));
+	NE_CHECK(IsRotationNormalized());
+	NE_CHECK(VectorAnyGreaterThan(VectorAbs(Scale3D), GlobalVectorConstants::SmallNumber));
 
 	// Invert the scale
 	const VectorRegister InvScale = VectorSet_W0(GetSafeScaleReciprocal(VectorSet_W1(Scale3D), ScalarRegister(GlobalVectorConstants::SmallNumber)));
@@ -659,8 +659,8 @@ FORCEINLINE FTransform FTransform::InverseFastNoScale() const
 	//	Q(~A) = Q(~A)
 	//	S(~A) = 1.f/S(A)
 	//	T(~A) = - (Q(~A)*S(~A)*T(A)*Q(A))	
-	NE_ASSERT(IsRotationNormalized());
-	NE_ASSERT(VectorAnyGreaterThan(VectorAbs(Scale3D), GlobalVectorConstants::SmallNumber));
+	NE_CHECK(IsRotationNormalized());
+	NE_CHECK(VectorAnyGreaterThan(VectorAbs(Scale3D), GlobalVectorConstants::SmallNumber));
 
 	// Invert the rotation
 	const VectorRegister InvRotation = VectorQuaternionInverse(Rotation);

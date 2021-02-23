@@ -69,7 +69,7 @@ public:
 private:
 	FORCEINLINE void MoveToEmpty(FDelegateBase& Other)
 	{
-		NE_ASSERT(this != &Other);
+		NE_CHECK(this != &Other);
 
 		if (DelegateData)
 		{
@@ -304,7 +304,7 @@ public:
 
 		// If this assert goes off, Execute() was called before a function was bound to the delegate.
 		// Consider using ExecuteIfSafe() instead.
-		NE_ASSERT(LocalDelegateInstance != nullptr);
+		NE_CHECK(LocalDelegateInstance != nullptr);
 
 		return LocalDelegateInstance->Execute(Params...);
 	}

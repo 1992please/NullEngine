@@ -15,7 +15,7 @@
 #pragma warning(push)
 #pragma warning(disable: 4307) //4307 integral constant overflow
 
-#define ENTT_ASSERT NE_ASSERT
+#define ENTT_ASSERT NE_CHECK
 #include "entt.hpp"
 
 #pragma warning(pop)
@@ -111,7 +111,7 @@ void FScene::DestructEntity(uint32 EntityID)
 template<typename T>
 bool FScene::HasComponent(uint32 EntityID) const
 {
-	NE_ASSERT(false);
+	NE_CHECK(false);
 	return false;
 }
 
@@ -150,7 +150,7 @@ bool FScene::HasComponent<FNativeScriptComponent>(uint32 EntityID) const
 template<typename T>
 T* FScene::GetComponent(uint32 EntityID)
 {
-	NE_ASSERT(false);
+	NE_CHECK(false);
 	return nullptr;
 }
 
@@ -189,7 +189,7 @@ FNativeScriptComponent* FScene::GetComponent<FNativeScriptComponent>(uint32 Enti
 template<typename T>
 T* FScene::AddComponent(uint32 EntityID)
 {
-	NE_ASSERT(false);
+	NE_CHECK(false);
 	return nullptr;
 }
 
@@ -237,7 +237,7 @@ FNativeScriptComponent* FScene::AddComponent<FNativeScriptComponent>(uint32 Enti
 template<typename T>
 void FScene::RemoveComponent(uint32 EntityID)
 {
-	NE_ASSERT(false);
+	NE_CHECK(false);
 }
 
 template<>

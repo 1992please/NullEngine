@@ -19,7 +19,7 @@ static GLenum ShaderDataTypeToOpenGLBaseType(EShaderDataType InType)
 		case  EShaderDataType::Bool:	return GL_BOOL;
 
 	}
-	NE_ASSERT_F(false, "Unknown Element Type");
+	NE_CHECK_F(false, "Unknown Element Type");
 	return 0;
 }
 
@@ -72,7 +72,7 @@ void FOpenGLVertexArray::SetVertexBuffer(IVertexBuffer* InVertexBuffer)
 	InVertexBuffer->Bind();
 	uint32 EleIndex = 0;
 	const FBufferLayout& Layout = InVertexBuffer->GetLayout();
-	NE_ASSERT_F(Layout.GetElements().Num() > 0, "Vertex buffer layout is empty.");
+	NE_CHECK_F(Layout.GetElements().Num() > 0, "Vertex buffer layout is empty.");
 	for (const FBufferElement& Ele : Layout)
 	{
 		glEnableVertexAttribArray(EleIndex);

@@ -30,7 +30,7 @@ public:
 		, MethodPtr(InMethodPtr)
 	{
 		// Non-expirable delegates must always have a non-null object pointer on creation (otherwise they could never execute.)
-		NE_ASSERT(InUserObject != nullptr && MethodPtr != nullptr);
+		NE_CHECK(InUserObject != nullptr && MethodPtr != nullptr);
 	}
 
 	RetValType Execute(ParamTypes... Params) const final
@@ -42,7 +42,7 @@ public:
 		// all cases where this code is actually invoked, the UserClass will already be a const pointer.
 		MutableUserClass* MutableUserObject = const_cast<MutableUserClass*>(UserObject);
 
-		NE_ASSERT(MethodPtr != nullptr);
+		NE_CHECK(MethodPtr != nullptr);
 
 		return (MutableUserObject->*MethodPtr)(Params...);
 	}
@@ -92,12 +92,12 @@ public:
 	TBaseStaticDelegateInstance(FFuncPtr InStaticFuncPtr)
 		: StaticFuncPtr(InStaticFuncPtr)
 	{
-		NE_ASSERT(StaticFuncPtr != nullptr);
+		NE_CHECK(StaticFuncPtr != nullptr);
 	}
 
 	RetValType Execute(ParamTypes... Params) const final
 	{
-		NE_ASSERT(StaticFuncPtr != nullptr);
+		NE_CHECK(StaticFuncPtr != nullptr);
 
 		return (*StaticFuncPtr)(Params...);
 	}

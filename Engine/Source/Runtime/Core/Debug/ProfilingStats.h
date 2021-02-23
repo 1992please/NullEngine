@@ -15,7 +15,7 @@ public:
 
 	static void Init()
 	{
-		NE_ASSERT(!Instance);
+		NE_CHECK(!Instance);
 		// TODO: replace with memory stack push
 		Instance = new FProfiler();
 		Instance->WriteHeader();
@@ -23,7 +23,7 @@ public:
 
 	static void Destruct()
 	{
-		NE_ASSERT(Instance);
+		NE_CHECK(Instance);
 		Instance->WriteFooter();
 		// TODO: replace with memory stack pop
 		delete Instance;

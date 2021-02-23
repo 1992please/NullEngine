@@ -17,7 +17,7 @@ FApplication::FApplication(const char* AppName)
 	NE_PROFILE_FUNCTION();
 
 
-	NE_ASSERT_F(!Instance, "Application already exists!");
+	NE_CHECK_F(!Instance, "Application already exists!");
 	Instance = this;
 
 	pWindow = IApplicationWindow::Create(FWindowDetails(AppName));
