@@ -5,47 +5,47 @@ class FEntity
 {
 public:
 	FEntity()
-		: Scene(nullptr), EntityID(0)
+		: Scene(nullptr), EntityID(INDEX_NONE)
 	{}
 
-	FEntity(uint32 InEntityID, FScene* InScene)
+	FEntity(int32 InEntityID, FScene* InScene)
 		: EntityID(InEntityID), Scene(InScene)
 	{ }
 
-	template<typename T>
-	FORCEINLINE T* AddComponent() const
+	template<typename T, typename... ArgsType>
+	FORCEINLINE T& AddComponent(ArgsType&&... Args)
 	{
-		NE_CHECK_F(!HasComponent<T>(), "Entity already not have component!");
-		return Scene->AddComponent<T>(EntityID);
+		T& NewComponent = Scene->SceneStorage.AddComponent<T>(EntityID, Forward<ArgsType>(Args)...);
+		Scene->OnComponentAdded(NewComponent, EntityID);
+		return NewComponent;
 	}
 
 	template<typename T>
-	FORCEINLINE T* AddScript() const;
+	FORCEINLINE T* AddScript();
 
 	template<typename T>
 	FORCEINLINE void RemoveComponent() const
 	{
-		NE_CHECK_F(HasComponent<T>(), "Entity does not have component!");
-		Scene->RemoveComponent<T>(EntityID);
+		Scene->OnRemoveComponent(GetComponent<T>(), EntityID);
+		Scene->SceneStorage.RemoveComponent<T>(EntityID);
 	}
 
 	template<typename T>
 	FORCEINLINE bool HasComponent() const
 	{
-		return Scene->HasComponent<T>(EntityID);
+		return Scene->SceneStorage.HasComponent<T>(EntityID);
 	}
 
 	template<typename T>
-	FORCEINLINE T* GetComponent() const
+	FORCEINLINE T& GetComponent() const
 	{
-		NE_CHECK_F(HasComponent<T>(), "Entity does not have component!");
-		return Scene->GetComponent<T>(EntityID);
+		return Scene->SceneStorage.GetComponent<T>(EntityID);
 	}
 
-	FORCEINLINE uint32 GetID() const { return EntityID; }
+	FORCEINLINE int32 GetID() const { return EntityID; }
 
 private:
 
-    uint32 EntityID;
+    int32 EntityID;
 	FScene* Scene;
 };

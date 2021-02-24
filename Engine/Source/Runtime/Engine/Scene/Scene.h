@@ -1,6 +1,6 @@
 #pragma once
 #include "Engine/Scene/SceneView.h"
-#include "SceneStorage.h"
+#include "Engine/Scene/SceneStorage.h"
 
 class FEntity;
 
@@ -18,21 +18,19 @@ public:
 	void DestructEntity(uint32 EntityID);
 
 	template<typename T>
-	bool HasComponent(uint32 EntityID) const;
+	void OnComponentAdded(T& InComponent, int32 EntityID);
 
 	template<typename T>
-	T* GetComponent(uint32 EntityID);
+	void OnRemoveComponent(T& InComponent, int32 EntityID);
 
-	template<typename T>
-	T* AddComponent(uint32 EntityID);
-
-	template<typename T>
-	void RemoveComponent(uint32 EntityID);
-
-
+	const FSceneStorage& GetSceneStorage();
 private:
+	FSceneStorage SceneStorage;
+
 	void* SceneData;
 
 	uint32 ViewportWidth;
 	uint32 ViewportHeight;
+
+	friend class FEntity;
 };

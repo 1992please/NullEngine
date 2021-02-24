@@ -7,7 +7,7 @@ class FScript
 public:
 
 	template<typename T>
-	FORCEINLINE T* GetComponent() { return Entity.GetComponent<T>(); }
+	FORCEINLINE T& GetComponent() { return Entity.GetComponent<T>(); }
 protected:
     virtual void OnInitialize() {}
     virtual void Start() {}
@@ -57,12 +57,10 @@ public:
 };
 
 template<typename T>
-FORCEINLINE T* FEntity::AddScript() const
+FORCEINLINE T* FEntity::AddScript()
 {
-	FNativeScriptComponent* ScriptComponent = AddComponent<FNativeScriptComponent>();
-	if (T* Script = ScriptComponent->Create<T>())
-	{
-		Script->Entity = *this;
-	}
-	return nullptr;
+	FNativeScriptComponent& ScriptComponent = Scene->SceneStorage.AddComponent<FNativeScriptComponent>(EntityID);
+	T* Script = ScriptComponent.Create<T>();
+	Scene->OnComponentAdded(ScriptComponent, EntityID);
+	return Script;
 }

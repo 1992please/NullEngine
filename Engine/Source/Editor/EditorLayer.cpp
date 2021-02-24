@@ -12,7 +12,7 @@ struct FMovemntClass : FScript
 	virtual void Start() {}
 	virtual void Update(float DeltaTime) override
 	{
-		FTransform& Transform = GetComponent<FTransformComponent>()->Transform;
+		FTransform& Transform = GetComponent<FTransformComponent>().Transform;
 		FVector Position = Transform.GetPosition();
 		if (Position.X > 3)
 		{
@@ -73,8 +73,8 @@ void FEditorLayer::OnAttach()
 
 	{
 		Entity = Scene.CreateEntity();
-		FSpriteComponent* Comp = Entity.AddComponent<FSpriteComponent>();
-		Comp->Color = FLinearColor::Green;
+		FSpriteComponent& Comp = Entity.AddComponent<FSpriteComponent>();
+		Comp.Color = FLinearColor::Green;
 		FMovemntClass* Movement = Entity.AddScript<FMovemntClass>();
 	}
 	{
@@ -224,7 +224,7 @@ void FEditorLayer::OnImGuiRender()
 		ImGui::Text("Vertices: %d", FRenderer2D::GetStatistics().VertexCount());
 		ImGui::Text("Indices: %d", FRenderer2D::GetStatistics().IndexCount());
 		ImGui::ColorEdit4("Color", &SquareColor.R);
-		Entity.GetComponent<FSpriteComponent>()->Color = SquareColor;
+		Entity.GetComponent<FSpriteComponent>().Color = SquareColor;
 	}
 	ImGui::End();
 

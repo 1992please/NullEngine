@@ -24,9 +24,8 @@
 #define ENTITY(data) (entt::entity)data
 
 FScene::FScene()
+	:SceneStorage(20, 100)
 {
-	SceneData = new entt::registry;
-
 }
 
 FScene::~FScene()
@@ -39,31 +38,32 @@ void FScene::OnUpdateRuntime(float DeltaTime)
 
 	// Update scripts
 	{
-		REGISTRY(SceneData)->view<FNativeScriptComponent>().each([=](FNativeScriptComponent& NativeScriptComponent)
+		for (FNativeScriptComponent& NativeScriptComponent : SceneStorage.GetPool<FNativeScriptComponent>())
 		{
 			NativeScriptComponent.Script->Update(DeltaTime);
-		});
+		}
 	}
 
 	// Renderer 2D
 	FCameraComponent* MainCamera = nullptr;
 	FTransformComponent* CameraTransform = nullptr;
+	for (int32 Entity : SceneStorage.GetEntities<FCameraComponent>())
 	{
-		auto view = REGISTRY(SceneData)->view<FCameraComponent>();
-		for (entt::entity entity : view)
-		{
-			MainCamera = &view.get<FCameraComponent>(entity);
-			CameraTransform = &REGISTRY(SceneData)->get<FTransformComponent>(entity);
-			break;
-		}
+		MainCamera = &SceneStorage.GetComponent<FCameraComponent>(Entity);
+		CameraTransform = &SceneStorage.GetComponent<FTransformComponent>(Entity);
 	}
+
 	if (MainCamera)
 	{
 		const FSceneView SceneView = { MainCamera->GetProjectionMatrix(), CameraTransform->Transform.ToInvMatrixNoScale() };
 		FRenderer2D::BeginScene(SceneView);
-		REGISTRY(SceneData)->group<FTransformComponent>(entt::get<FSpriteComponent>).each([](FTransformComponent& TransComp, FSpriteComponent& SpriteComp) {
+		for (int32 Entity : SceneStorage.GetEntities<FSpriteComponent>())
+		{
+			const FSpriteComponent& SpriteComp = SceneStorage.GetComponent<FSpriteComponent>(Entity);
+			const FTransformComponent& TransComp = SceneStorage.GetComponent<FTransformComponent>(Entity);
 			FRenderer2D::DrawQuad(TransComp.Transform.ToMatrixWithScale(), SpriteComp.Color);
-		});
+		}
+
 		FRenderer2D::EndScene();
 	}
 }
@@ -71,9 +71,12 @@ void FScene::OnUpdateRuntime(float DeltaTime)
 void FScene::OnUpdateEditor(float DeltaTime, const FSceneView& InSceneView)
 {
 	FRenderer2D::BeginScene(InSceneView);
-	REGISTRY(SceneData)->group<FTransformComponent>(entt::get<FSpriteComponent>).each([](FTransformComponent& TransComp, FSpriteComponent& SpriteComp) {
+	for (int32 Entity : SceneStorage.GetEntities<FSpriteComponent>())
+	{
+		const FSpriteComponent& SpriteComp = SceneStorage.GetComponent<FSpriteComponent>(Entity);
+		const FTransformComponent& TransComp = SceneStorage.GetComponent<FTransformComponent>(Entity);
 		FRenderer2D::DrawQuad(TransComp.Transform.ToMatrixWithScale(), SpriteComp.Color);
-	});
+	}
 	FRenderer2D::EndScene();
 }
 
@@ -82,190 +85,98 @@ void FScene::OnViewportResize(uint32 InWidth, uint32 InHeight)
 	ViewportWidth = InWidth;
 	ViewportHeight = InHeight;
 
-	REGISTRY(SceneData)->view<FCameraComponent>().each([InWidth, InHeight](FCameraComponent& CameraComp){
+	for (FCameraComponent& CameraComp : SceneStorage.GetPool<FCameraComponent>())
+	{
 		if (!CameraComp.bFixedAspectRatio)
 		{
 			CameraComp.SetViewportSize(InWidth, InHeight);
 		}
-	});
+	}
 }
 
 FEntity FScene::CreateEntity(const FString& InName)
 {
-	FEntity OutEntity = { (uint32)REGISTRY(SceneData)->create(), this };
+	FEntity OutEntity = { SceneStorage.CreateEntity(), this };
 	OutEntity.AddComponent<FTransformComponent>();
-	FTagComponent* TagComp = OutEntity.AddComponent<FTagComponent>();
-	FCString::Strcpy(TagComp->Name, InName.GetCharArray().GetData());
-	TagComp->Tag = 0;
+	FTagComponent& TagComp = OutEntity.AddComponent<FTagComponent>();
+	FCString::Strcpy(TagComp.Name, InName.GetCharArray().GetData());
+	TagComp.Tag = 0;
 	return OutEntity;
 }
 
 void FScene::DestructEntity(uint32 EntityID)
 {
-	REGISTRY(SceneData)->destroy(ENTITY(EntityID));
+	SceneStorage.DestroyEntity(EntityID);
 }
-
-//*******************************HasComponent*************************************************************************************************************/
-
 
 template<typename T>
-bool FScene::HasComponent(uint32 EntityID) const
+void FScene::OnComponentAdded(T& InComponent, int32 EntityID)
 {
 	NE_CHECK(false);
-	return false;
 }
 
 template<>
-bool FScene::HasComponent<FTagComponent>(uint32 EntityID) const
+void FScene::OnComponentAdded(FTagComponent& InComponent, int32 EntityID)
 {
-	return REGISTRY(SceneData)->has<FTagComponent>(ENTITY(EntityID));
+
 }
 
 template<>
-bool FScene::HasComponent<FTransformComponent>(uint32 EntityID) const
+void FScene::OnComponentAdded(FTransformComponent& InComponent, int32 EntityID)
 {
-	return REGISTRY(SceneData)->has<FTransformComponent>(ENTITY(EntityID));
+
 }
 
 template<>
-bool FScene::HasComponent<FSpriteComponent>(uint32 EntityID) const
+void FScene::OnComponentAdded(FSpriteComponent& InComponent, int32 EntityID)
 {
-	return REGISTRY(SceneData)->has<FSpriteComponent>(ENTITY(EntityID));
+
 }
 
 template<>
-bool FScene::HasComponent<FCameraComponent>(uint32 EntityID) const
+void FScene::OnComponentAdded(FCameraComponent& InComponent, int32 EntityID)
 {
-	return REGISTRY(SceneData)->has<FCameraComponent>(ENTITY(EntityID));
+	InComponent.SetViewportSize(ViewportWidth, ViewportHeight);
 }
 
 template<>
-bool FScene::HasComponent<FNativeScriptComponent>(uint32 EntityID) const
+void FScene::OnComponentAdded(FNativeScriptComponent& InComponent, int32 EntityID)
 {
-	return REGISTRY(SceneData)->has<FNativeScriptComponent>(ENTITY(EntityID));
-}
-
-//*******************************GetComponent*************************************************************************************************************/
-
-template<typename T>
-T* FScene::GetComponent(uint32 EntityID)
-{
-	NE_CHECK(false);
-	return nullptr;
-}
-
-template<>
-FTagComponent* FScene::GetComponent<FTagComponent>(uint32 EntityID)
-{
-	return &REGISTRY(SceneData)->get<FTagComponent>(ENTITY(EntityID));
-}
-
-template<>
-FTransformComponent* FScene::GetComponent<FTransformComponent>(uint32 EntityID)
-{
-	return &REGISTRY(SceneData)->get<FTransformComponent>(ENTITY(EntityID));
-}
-
-template<>
-FSpriteComponent* FScene::GetComponent<FSpriteComponent>(uint32 EntityID)
-{
-	return &REGISTRY(SceneData)->get<FSpriteComponent>(ENTITY(EntityID));
-}
-
-template<>
-FCameraComponent* FScene::GetComponent<FCameraComponent>(uint32 EntityID)
-{
-	return &REGISTRY(SceneData)->get<FCameraComponent>(ENTITY(EntityID));
-}
-
-template<>
-FNativeScriptComponent* FScene::GetComponent<FNativeScriptComponent>(uint32 EntityID)
-{
-	return &REGISTRY(SceneData)->get<FNativeScriptComponent>(ENTITY(EntityID));
-}
-
-//*******************************AddComponent*************************************************************************************************************/
-
-template<typename T>
-T* FScene::AddComponent(uint32 EntityID)
-{
-	NE_CHECK(false);
-	return nullptr;
-}
-
-template<>
-FTagComponent* FScene::AddComponent<FTagComponent>(uint32 EntityID)
-{
-	FTagComponent* Out = &REGISTRY(SceneData)->emplace<FTagComponent>(ENTITY(EntityID));
-
-	return Out;
-}
-
-template<>
-FTransformComponent* FScene::AddComponent<FTransformComponent>(uint32 EntityID)
-{
-	FTransformComponent* Out = &REGISTRY(SceneData)->emplace<FTransformComponent>(ENTITY(EntityID));
-
-	return Out;
-}
-
-template<>
-FSpriteComponent* FScene::AddComponent<FSpriteComponent>(uint32 EntityID)
-{
-	FSpriteComponent* Out = &REGISTRY(SceneData)->emplace<FSpriteComponent>(ENTITY(EntityID));
-
-	return Out;
-}
-
-template<>
-FCameraComponent* FScene::AddComponent<FCameraComponent>(uint32 EntityID)
-{
-	FCameraComponent* Out = &REGISTRY(SceneData)->emplace<FCameraComponent>(ENTITY(EntityID));
-	Out->SetViewportSize(ViewportWidth, ViewportHeight);
-	return Out;
-}
-
-template<>
-FNativeScriptComponent* FScene::AddComponent<FNativeScriptComponent>(uint32 EntityID)
-{
-	FNativeScriptComponent* Out = &REGISTRY(SceneData)->emplace<FNativeScriptComponent>(ENTITY(EntityID));
-
-	return Out;
+	if (InComponent.Script)
+	{
+		InComponent.Script->Entity = { EntityID, this };
+	}
 }
 //*******************************RemoveComponent*************************************************************************************************************/
 
 template<typename T>
-void FScene::RemoveComponent(uint32 EntityID)
+void FScene::OnRemoveComponent(T& InComponent, int32 EntityID)
 {
 	NE_CHECK(false);
 }
 
 template<>
-void FScene::RemoveComponent<FTagComponent>(uint32 EntityID)
+void FScene::OnRemoveComponent(FTagComponent& InComponent, int32 EntityID)
 {
-	REGISTRY(SceneData)->remove<FTagComponent>(ENTITY(EntityID));
 }
 
 template<>
-void FScene::RemoveComponent<FTransformComponent>(uint32 EntityID)
+void FScene::OnRemoveComponent(FTransformComponent& InComponent, int32 EntityID)
 {
-	REGISTRY(SceneData)->remove<FTransformComponent>(ENTITY(EntityID));
 }
 
 template<>
-void FScene::RemoveComponent<FSpriteComponent>(uint32 EntityID)
+void FScene::OnRemoveComponent(FSpriteComponent& InComponent, int32 EntityID)
 {
-	REGISTRY(SceneData)->remove<FSpriteComponent>(ENTITY(EntityID));
 }
 
 template<>
-void FScene::RemoveComponent<FCameraComponent>(uint32 EntityID)
+void FScene::OnRemoveComponent(FCameraComponent& InComponent, int32 EntityID)
 {
-	REGISTRY(SceneData)->remove<FCameraComponent>(ENTITY(EntityID));
 }
 
 template<>
-void FScene::RemoveComponent<FNativeScriptComponent>(uint32 EntityID)
+void FScene::OnRemoveComponent(FNativeScriptComponent& InComponent, int32 EntityID)
 {
 	FNativeScriptComponent* ScriptComponent =  &REGISTRY(SceneData)->get<FNativeScriptComponent>(ENTITY(EntityID));
 	if (ScriptComponent->Script)
@@ -274,5 +185,4 @@ void FScene::RemoveComponent<FNativeScriptComponent>(uint32 EntityID)
 		ScriptComponent->Destroy();
 	}
 
-	REGISTRY(SceneData)->remove<FNativeScriptComponent>(ENTITY(EntityID));
 }
