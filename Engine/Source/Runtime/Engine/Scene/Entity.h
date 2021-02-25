@@ -44,6 +44,11 @@ public:
 
 	FORCEINLINE int32 GetID() const { return EntityID; }
 
+	FORCEINLINE bool operator==(const FEntity& InEntity)
+	{
+		return EntityID == InEntity.EntityID;
+	}
+
 private:
 
     int32 EntityID;

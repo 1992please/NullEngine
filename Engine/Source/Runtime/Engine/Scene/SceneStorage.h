@@ -2,11 +2,14 @@
 
 namespace internal
 {
-	static int32 GetNextComponentIDType()
+	struct FInternalComponentID
 	{
-		static int32 ComponentTypeID = 0;
-		return ComponentTypeID++;
-	}
+		static int32 GetNextComponentIDType()
+		{
+			static int32 ComponentTypeID = 0;
+			return ComponentTypeID++;
+		}
+	};
 }
 
 template<typename ComponentType>
@@ -14,7 +17,7 @@ struct TComponentTypeSequence
 {
 	static int32 Value()
 	{
-		static const int32 TypeValue = internal::GetNextComponentIDType();
+		static const int32 TypeValue = internal::FInternalComponentID::GetNextComponentIDType();
 		return TypeValue;
 	}
 };
@@ -22,8 +25,9 @@ struct TComponentTypeSequence
 class FComponentPoolBase
 {
 public:
-	virtual void Remove(int32 Entity) = 0;
+	virtual ~FComponentPoolBase() = default;
 
+	virtual void Remove(int32 Entity) = 0;
 	TSet<int32> OwnerEntities;
 	TArray<int32> EntitiesArray;
 };
@@ -118,6 +122,14 @@ public:
 	{
 		ReserveComponentPools(InExpectedNumComponentTypes);
 		ReserveEntities(InExpectedNumOfEntities);
+	}
+
+	~FSceneStorage()
+	{
+		for (FComponentPoolBase* ComponentPoolBase : Pools)
+		{
+			delete ComponentPoolBase;
+		}
 	}
 
 	FORCEINLINE void ReserveComponentPools(int32 InExpectedNumComponentTypes)
@@ -229,6 +241,52 @@ public:
 			return (TComponentPool<ComponentType>*) Pools[ComponentTypeID];
 		}
 	}
+public:
+	template<bool bConst>
+	class TIterator
+	{
+		typedef typename TChooseClass<bConst, const TArray<int32>, TArray<int32>>::Result ArrayType;
+		typedef typename TChooseClass<bConst, const int32*, const int32*>::Result ItElementType;
+	public:
+		explicit TIterator(ArrayType& InArray, int32 Index)
+			: Array(InArray)
+			, Current(InArray.GetData() + Index)
+		{
+		}
+
+		FORCEINLINE TIterator& operator++()
+		{
+			// Iterate to the next set allocation flag.
+			while (*(++Current) != INDEX_NONE && *this){}
+			return *this;
+		}
+
+		/** conversion to "bool" returning true if the iterator is valid. */
+		FORCEINLINE explicit operator bool() const
+		{
+			return Current && (Current - Array.GetData()) < Array.Num();
+		}
+
+		/** inverse of the "bool" operator */
+		FORCEINLINE bool operator !() const
+		{
+			return !(bool)*this;
+		}
+
+		FORCEINLINE int32 operator*() const { return *Current; }
+
+		FORCEINLINE friend bool operator==(const TIterator& Lhs, const TIterator& Rhs) { return Lhs.Current == Rhs.Current && &Lhs.Array == &Rhs.Array; }
+		FORCEINLINE friend bool operator!=(const TIterator& Lhs, const TIterator& Rhs) { return Lhs.Current != Rhs.Current || &Lhs.Array != &Rhs.Array; }
+	private:
+		ArrayType& Array;
+		ItElementType Current;
+	};
+
+
+	FORCEINLINE TIterator<false> begin() { return TIterator<false>(Entities, 0); }
+	FORCEINLINE TIterator<true> begin() const { return TIterator<true>(Entities, 0); }
+	FORCEINLINE TIterator<false> end() { return TIterator<false>(Entities, Entities.Num() ); }
+	FORCEINLINE TIterator<true> end()   const { return TIterator<true>(Entities, Entities.Num()); }
 private:
 	int32 AvailableEntity;
 	TArray<int32> Entities;

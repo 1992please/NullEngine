@@ -32,7 +32,7 @@ public:
 
 	~FNativeScriptComponent()
 	{
-		NE_CHECK(!Script);
+		Destroy();
 	}
 
 	template<typename T>

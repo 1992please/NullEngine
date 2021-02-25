@@ -10,15 +10,16 @@ struct FMovemntClass : FScript
 
 	}
 	virtual void Start() {}
+
 	virtual void Update(float DeltaTime) override
 	{
 		FTransform& Transform = GetComponent<FTransformComponent>().Transform;
 		FVector Position = Transform.GetPosition();
-		if (Position.X > 3)
+		if (FApplicationInput::IsKeyPressed(NE_KEY_0))
 		{
 			bPositiveDirection = false;
 		}
-		else if(Position.X < -3)
+		else
 		{
 			bPositiveDirection = true;
 		}
@@ -42,20 +43,6 @@ FEditorLayer::FEditorLayer()
 
 void FEditorLayer::OnAttach()
 {
-	NE_LOG("ComponentID FTransformComponent: %d", TComponentTypeSequence<FTransformComponent>::Value());
-	NE_LOG("ComponentID FCameraComponent: %d", TComponentTypeSequence<FCameraComponent>::Value());
-	NE_LOG("ComponentID FNativeScriptComponent: %d", TComponentTypeSequence<FNativeScriptComponent>::Value());
-	NE_LOG("ComponentID FNativeScriptComponent: %d", TComponentTypeSequence<FNativeScriptComponent>::Value());
-	NE_LOG("ComponentID FTagComponent: %d", TComponentTypeSequence<FTagComponent>::Value());
-	NE_LOG("ComponentID FTransformComponent: %d", TComponentTypeSequence<FTransformComponent>::Value());
-	NE_LOG("ComponentID FNativeScriptComponent: %d", TComponentTypeSequence<FNativeScriptComponent>::Value());
-	NE_LOG("ComponentID FTagComponent: %d", TComponentTypeSequence<FTagComponent>::Value());
-	NE_LOG("ComponentID FNativeScriptComponent: %d", TComponentTypeSequence<FNativeScriptComponent>::Value());
-	NE_LOG("ComponentID FNativeScriptComponent: %d", TComponentTypeSequence<FNativeScriptComponent>::Value());
-	NE_LOG("ComponentID FSpriteComponent: %d", TComponentTypeSequence<FSpriteComponent>::Value());
-	NE_LOG("ComponentID FSpriteComponent: %d", TComponentTypeSequence<FSpriteComponent>::Value());
-	NE_LOG("ComponentID FTagComponent: %d", TComponentTypeSequence<FTagComponent>::Value());
-	NE_LOG("ComponentID FSpriteComponent: %d", TComponentTypeSequence<FSpriteComponent>::Value());
 	NE_PROFILE_FUNCTION();
 	MarioTexture = ITexture2D::Create("../../Projects/TestGame/Content/mario_logo.png");
 	SpriteSheet = ITexture2D::Create("../../Projects/TestGame/Content/RPGpack_sheet_2X.png");

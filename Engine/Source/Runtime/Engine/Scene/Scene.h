@@ -23,7 +23,7 @@ public:
 	template<typename T>
 	void OnRemoveComponent(T& InComponent, int32 EntityID);
 
-	const FSceneStorage& GetSceneStorage();
+	const FSceneStorage& GetSceneStorage() { return SceneStorage; }
 private:
 	FSceneStorage SceneStorage;
 

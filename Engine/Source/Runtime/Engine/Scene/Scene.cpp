@@ -11,18 +11,6 @@
 #include "Engine/Components/NativeScriptComponent.h"
 
 
-
-#pragma warning(push)
-#pragma warning(disable: 4307) //4307 integral constant overflow
-
-#define ENTT_ASSERT NE_CHECK
-#include "entt.hpp"
-
-#pragma warning(pop)
-
-#define REGISTRY(data) ((entt::registry*)data)
-#define ENTITY(data) (entt::entity)data
-
 FScene::FScene()
 	:SceneStorage(20, 100)
 {
@@ -178,11 +166,10 @@ void FScene::OnRemoveComponent(FCameraComponent& InComponent, int32 EntityID)
 template<>
 void FScene::OnRemoveComponent(FNativeScriptComponent& InComponent, int32 EntityID)
 {
-	FNativeScriptComponent* ScriptComponent =  &REGISTRY(SceneData)->get<FNativeScriptComponent>(ENTITY(EntityID));
-	if (ScriptComponent->Script)
+	if (InComponent.Script)
 	{
-		ScriptComponent->Script->OnDestroy();
-		ScriptComponent->Destroy();
+		InComponent.Script->OnDestroy();
+		InComponent.Destroy();
 	}
 
 }
