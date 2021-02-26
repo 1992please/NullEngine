@@ -14,6 +14,11 @@
 FScene::FScene()
 	:SceneStorage(20, 100)
 {
+	SceneStorage.ReservePool<FTagComponent>(200);
+	SceneStorage.ReservePool<FTransformComponent>(200);
+	SceneStorage.ReservePool<FCameraComponent>(5);
+	SceneStorage.ReservePool<FSpriteComponent>(150);
+	SceneStorage.ReservePool<FNativeScriptComponent>(100);
 }
 
 FScene::~FScene()

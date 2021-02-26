@@ -1,8 +1,9 @@
 #include "SceneHierarchyPanel.h"
 #include "imgui/imgui.h"
 
-FSceneHierarchyPanel::FSceneHierarchyPanel(FScene& InScene)
+FSceneHierarchyPanel::FSceneHierarchyPanel(FScene& InScene, FEntity& InSelectedEntity)
 	: Scene(InScene)
+	, SelectedEntity(InSelectedEntity)
 {
 
 }
@@ -15,16 +16,23 @@ void FSceneHierarchyPanel::OnImGUIRender()
 		DrawEntityNode(FEntity(EntityID, &Scene));
 	}
 
-	ImGui::End();
+	if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(0))
+		SelectedEntity = {};
 
-	ImGui::ShowDemoWindow();
+	ImGui::End();
 }
 
 void FSceneHierarchyPanel::DrawEntityNode(FEntity Entity)
 {
 	FTagComponent& TagComponent = Entity.GetComponent<FTagComponent>();
 	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ((SelectedEntity == Entity) ? ImGuiTreeNodeFlags_Selected : 0);
-	if (ImGui::TreeNodeEx((void*)(size_t)Entity.GetID(), Flags, TagComponent.Name))
+	bool bOpened = (ImGui::TreeNodeEx((void*)(size_t)Entity.GetID(), Flags, TagComponent.Name));
+	if (ImGui::IsItemClicked())
+	{
+		SelectedEntity = Entity;
+	}
+
+	if(bOpened)
 	{
 		ImGui::TreePop();
 	}

@@ -9,6 +9,7 @@ struct FMovemntClass : FScript
 	{
 
 	}
+
 	virtual void Start() {}
 
 	virtual void Update(float DeltaTime) override
@@ -24,7 +25,7 @@ struct FMovemntClass : FScript
 			bPositiveDirection = true;
 		}
 
-		Transform.Translate(FVector((bPositiveDirection? 1.0f : -1.0f) * DeltaTime, 0.0f, 0.0f));
+		//Transform.Translate(FVector((bPositiveDirection? 1.0f : -1.0f) * DeltaTime, 0.0f, 0.0f));
 	}
 	virtual void OnDestroy() {}
 };
@@ -33,11 +34,11 @@ FEditorLayer::FEditorLayer()
 	: EditorCamera(16.f / 9.f)
 	, CameraPosition(FVector::ZeroVector)
 	, CameraRotation(0.0f)
-	, SquareColor(FLinearColor::Green)
 	, bIsViewportFocused(true)
 	, bIsViewportHovered(false)
 	, ViewportSize(1.0f, 1.0f)
-	, SceneHierarchyPanel(Scene)
+	, SceneHierarchyPanel(Scene, SelectedEntity)
+	, EntityPropertiesPanel(Scene, SelectedEntity)
 {
 }
 
@@ -59,17 +60,24 @@ void FEditorLayer::OnAttach()
 	}
 
 	{
-		Entity = Scene.CreateEntity();
+		FEntity Entity = Scene.CreateEntity("Green Square");
 		FSpriteComponent& Comp = Entity.AddComponent<FSpriteComponent>();
 		Comp.Color = FLinearColor::Green;
 		FMovemntClass* Movement = Entity.AddScript<FMovemntClass>();
 	}
+
 	{
-		CameraEntity = Scene.CreateEntity();
+		CameraEntity = Scene.CreateEntity("Camera Entity");
 		CameraEntity.AddComponent<FCameraComponent>();
 		//CameraEntity.AddScript<FMovemntClass>();
 	}
 
+	{
+		FEntity RedEntity = Scene.CreateEntity("Red Square");
+		RedEntity.AddComponent<FSpriteComponent>();
+	}
+
+	Scene.CreateEntity("Empty Entity");
 }
 
 void FEditorLayer::OnDettach()
@@ -210,8 +218,6 @@ void FEditorLayer::OnImGuiRender()
 		ImGui::Text("Quads: %d", FRenderer2D::GetStatistics().QuadCount);
 		ImGui::Text("Vertices: %d", FRenderer2D::GetStatistics().VertexCount());
 		ImGui::Text("Indices: %d", FRenderer2D::GetStatistics().IndexCount());
-		ImGui::ColorEdit4("Color", &SquareColor.R);
-		Entity.GetComponent<FSpriteComponent>().Color = SquareColor;
 	}
 	ImGui::End();
 
@@ -232,6 +238,7 @@ void FEditorLayer::OnImGuiRender()
 	ImGui::PopStyleVar();
 
 	SceneHierarchyPanel.OnImGUIRender();
+	EntityPropertiesPanel.OnImGUIRender();
 }
 
 void FEditorLayer::OnEvent(IEvent& InEvent)

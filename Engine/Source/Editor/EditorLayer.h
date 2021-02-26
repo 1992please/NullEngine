@@ -1,6 +1,7 @@
 #include "NullEngine.h"
 #include "EditorViewport/EditorCamera.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/EntityPropertiesPanel.h"
 
 class FEditorLayer : public FGraphicLayer
 {
@@ -25,15 +26,12 @@ private:
 	FVector CameraPosition;
 	float CameraRotation;
 
-
-	FLinearColor SquareColor;
-
 	FScene Scene;
-	FEntity Entity;
 	FEntity CameraEntity;
 
+	FEntity SelectedEntity;
 	FSceneHierarchyPanel SceneHierarchyPanel;
-
+	FEntityPropertiesPanel EntityPropertiesPanel;
 	FEditorCamera EditorCamera;
 	
 	bool bIsViewportFocused;

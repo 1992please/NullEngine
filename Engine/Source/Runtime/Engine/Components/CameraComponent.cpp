@@ -46,7 +46,7 @@ void FCameraComponent::RecalculateProjection()
 {
 	if (ProjectionType == EProjectionType::PROJ_Perspective)
 	{
-		ProjectionMatrix = FPerspectiveMatrix(PerspectiveFOV, AspectRatio, PerspectiveNear, PerspectiveFar);
+		ProjectionMatrix = FPerspectiveMatrix(FMath::DegreesToRadian(PerspectiveFOV), AspectRatio, PerspectiveNear, PerspectiveFar);
 	}
 	else
 	{

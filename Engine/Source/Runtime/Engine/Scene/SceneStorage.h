@@ -183,25 +183,25 @@ public:
 	template<typename ComponentType, typename... ArgsType>
 	FORCEINLINE ComponentType& AddComponent(int32 InEntity, ArgsType&&... Args)
 	{
-		return GetOrCreateComponentPool<ComponentType>()->Emplace(InEntity, Forward<ArgsType>(Args)...);
+		return GetComponentPool<ComponentType>()->Emplace(InEntity, Forward<ArgsType>(Args)...);
 	}
 
 	template<typename ComponentType>
 	FORCEINLINE void RemoveComponent(int32 InEntity)
 	{
-		return GetOrCreateComponentPool<ComponentType>()->Remove(InEntity);
+		return GetComponentPool<ComponentType>()->Remove(InEntity);
 	}
 
 	template<typename ComponentType>
 	FORCEINLINE bool HasComponent(int32 InEntity) const
 	{
-		return GetOrCreateComponentPool<ComponentType>()->Has(InEntity);
+		return GetComponentPool<ComponentType>()->Has(InEntity);
 	}
 
 	template<typename ComponentType>
 	FORCEINLINE ComponentType& GetComponent(int32 InEntity)
 	{
-		return GetOrCreateComponentPool<ComponentType>()->Get(InEntity);
+		return GetComponentPool<ComponentType>()->Get(InEntity);
 	}
 
 	FORCEINLINE bool IsValid(int32 InEntity)
@@ -227,13 +227,19 @@ public:
 	}
 
 	template<typename ComponentType>
-	FORCEINLINE TComponentPool<ComponentType>* GetOrCreateComponentPool()
+	FORCEINLINE TComponentPool<ComponentType>* GetComponentPool() const
+	{
+		return (TComponentPool<ComponentType>*) Pools[TComponentTypeSequence<ComponentType>::Value()];
+	}
+
+	template<typename ComponentType>
+	FORCEINLINE TComponentPool<ComponentType>* GetOrCreateComponentPool() const
 	{
 		const int32 ComponentTypeID = TComponentTypeSequence<ComponentType>::Value();
 		if (ComponentTypeID >= Pools.Num())
 		{
 			TComponentPool<ComponentType>* NewComponentPool = new TComponentPool<ComponentType>(Entities.Num());
-			Pools.Add(NewComponentPool);
+			const_cast<FSceneStorage*>(this)->Pools.Add(NewComponentPool);
 			return NewComponentPool;
 		}
 		else
@@ -257,14 +263,14 @@ public:
 		FORCEINLINE TIterator& operator++()
 		{
 			// Iterate to the next set allocation flag.
-			while (*(++Current) != INDEX_NONE && *this){}
+			while (*(++Current) == INDEX_NONE && Current != (Array.GetData() + Array.Num())){}
 			return *this;
 		}
 
 		/** conversion to "bool" returning true if the iterator is valid. */
 		FORCEINLINE explicit operator bool() const
 		{
-			return Current && (Current - Array.GetData()) < Array.Num();
+			return Current;
 		}
 
 		/** inverse of the "bool" operator */
@@ -275,8 +281,8 @@ public:
 
 		FORCEINLINE int32 operator*() const { return *Current; }
 
-		FORCEINLINE friend bool operator==(const TIterator& Lhs, const TIterator& Rhs) { return Lhs.Current == Rhs.Current && &Lhs.Array == &Rhs.Array; }
-		FORCEINLINE friend bool operator!=(const TIterator& Lhs, const TIterator& Rhs) { return Lhs.Current != Rhs.Current || &Lhs.Array != &Rhs.Array; }
+		FORCEINLINE friend bool operator==(const TIterator& Lhs, const TIterator& Rhs) { return Lhs.Current == Rhs.Current; }
+		FORCEINLINE friend bool operator!=(const TIterator& Lhs, const TIterator& Rhs) { return Lhs.Current != Rhs.Current; }
 	private:
 		ArrayType& Array;
 		ItElementType Current;

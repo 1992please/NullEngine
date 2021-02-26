@@ -275,7 +275,7 @@ public:
 		return OutScale3D.X * OutScale3D.Y * OutScale3D.Z;
 	}
 
-	FORCEINLINE void SetTranslation(const FVector& Origin)
+	FORCEINLINE void SetPosition(const FVector& Origin)
 	{
 		Translation = VectorLoadFloat3_W0(&Origin);
 	}

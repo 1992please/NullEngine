@@ -49,6 +49,15 @@ public:
 		return EntityID == InEntity.EntityID;
 	}
 
+	FORCEINLINE bool operator!=(const FEntity& InEntity) const
+	{
+		return EntityID != InEntity.EntityID;
+	}
+
+	FORCEINLINE operator bool() const
+	{
+		return Scene && EntityID != INDEX_NONE;
+	}
 private:
 
     int32 EntityID;
