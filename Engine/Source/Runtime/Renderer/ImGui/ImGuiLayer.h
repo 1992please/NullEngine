@@ -15,6 +15,7 @@ public:
 	void End();
 
 	FORCEINLINE void SetBlockingEvents(bool InBlockEvents) { bBlockEvents = InBlockEvents; }
+	void SetDarkThemedColor();
 private:
 	bool bBlockEvents;
 };

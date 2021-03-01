@@ -97,7 +97,7 @@ FEntity FScene::CreateEntity(const FString& InName)
 	return OutEntity;
 }
 
-void FScene::DestructEntity(uint32 EntityID)
+void FScene::DestroyEntity(uint32 EntityID)
 {
 	SceneStorage.DestroyEntity(EntityID);
 }

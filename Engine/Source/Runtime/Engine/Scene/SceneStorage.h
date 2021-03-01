@@ -27,7 +27,7 @@ class FComponentPoolBase
 public:
 	virtual ~FComponentPoolBase() = default;
 
-	virtual void Remove(int32 Entity) = 0;
+	virtual void RemoveIfExist(int32 Entity) = 0;
 	TSet<int32> OwnerEntities;
 	TArray<int32> EntitiesArray;
 };
@@ -55,13 +55,24 @@ public:
 		return Pool[Index];
 	}
 
-	virtual void Remove(int32 Entity) override
+	void Remove(int32 Entity)
 	{
 		NE_CHECK(Has(Entity));
 		Pool.RemoveAt(EntitiesArray[Entity]);
 
 		EntitiesArray[Entity] = INDEX_NONE;
 		OwnerEntities.Remove(Entity);
+	}
+
+	virtual void RemoveIfExist(int32 Entity) override
+	{
+		if (Has(Entity))
+		{
+			Pool.RemoveAt(EntitiesArray[Entity]);
+
+			EntitiesArray[Entity] = INDEX_NONE;
+			OwnerEntities.Remove(Entity);
+		}
 	}
 
 	FORCEINLINE ComponentType& Get(int32 Entity)
@@ -174,7 +185,7 @@ public:
 		NE_CHECK(IsValid(InEntity));
 		for (FComponentPoolBase* Pool : Pools)
 		{
-			Pool->Remove(InEntity);
+			Pool->RemoveIfExist(InEntity);
 		}
 		Entities[InEntity] = AvailableEntity;
 		AvailableEntity = InEntity;
@@ -227,6 +238,12 @@ public:
 	}
 
 	template<typename ComponentType>
+	FORCEINLINE static int32 GetComponentStaticID()
+	{
+		return TComponentTypeSequence<ComponentType>::Value();
+	}
+
+	template<typename ComponentType>
 	FORCEINLINE TComponentPool<ComponentType>* GetComponentPool() const
 	{
 		return (TComponentPool<ComponentType>*) Pools[TComponentTypeSequence<ComponentType>::Value()];
@@ -257,13 +274,16 @@ public:
 		explicit TIterator(ArrayType& InArray, int32 Index)
 			: Array(InArray)
 			, Current(InArray.GetData() + Index)
+			, ArrayIndex(Index)
 		{
+			if (*(Current) != ArrayIndex && Current < (Array.GetData() + Array.Num()))
+				operator++();
 		}
 
 		FORCEINLINE TIterator& operator++()
 		{
 			// Iterate to the next set allocation flag.
-			while (*(++Current) == INDEX_NONE && Current != (Array.GetData() + Array.Num())){}
+			while (*(++Current) != ++ArrayIndex && Current < (Array.GetData() + Array.Num())){}
 			return *this;
 		}
 
@@ -286,6 +306,7 @@ public:
 	private:
 		ArrayType& Array;
 		ItElementType Current;
+		int32 ArrayIndex;
 	};
 
 

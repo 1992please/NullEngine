@@ -15,7 +15,7 @@ public:
 	void OnViewportResize(uint32 InWidth, uint32 InHeight);
 
 	FEntity CreateEntity(const FString& InName = "Entity");
-	void DestructEntity(uint32 EntityID);
+	void DestroyEntity(uint32 EntityID);
 
 	template<typename T>
 	void OnComponentAdded(T& InComponent, int32 EntityID);
@@ -24,6 +24,7 @@ public:
 	void OnRemoveComponent(T& InComponent, int32 EntityID);
 
 	const FSceneStorage& GetSceneStorage() { return SceneStorage; }
+
 private:
 	FSceneStorage SceneStorage;
 
