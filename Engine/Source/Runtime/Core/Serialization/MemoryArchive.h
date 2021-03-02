@@ -5,7 +5,19 @@
 class FMemoryArchive
 {
 public:
-	virtual void Serialize(void* V, int64 Length) { }
+	virtual void Serialize(void* V, int32 Length) { }
+
+	virtual int32 TotalSize()
+	{
+		return 0;
+	}
+
+	template<typename T>
+	FORCEINLINE friend FMemoryArchive& operator<<(FMemoryArchive& Ar, T& Value)
+	{
+		Ar.Serialize(&Value, sizeof(T));
+		return Ar;
+	}
 
 	FORCEINLINE friend FMemoryArchive& operator<<(FMemoryArchive& Ar, bool& D)
 	{
@@ -15,28 +27,24 @@ public:
 		return Ar;
 	}
 
-	FORCEINLINE friend FMemoryArchive& operator<<(FMemoryArchive& Ar, int32& Value)
-	{
-		Ar.Serialize(reinterpret_cast<uint32&>(Value), sizeof(uint32));
-	}
-
-	FORCEINLINE friend FMemoryArchive& operator<<(FMemoryArchive& Ar, float& Value)
-	{
-		Ar.Serialize(reinterpret_cast<uint32&>(Value), sizeof(uint32));
-	}
-
 	FORCEINLINE bool IsLoading() const
 	{
 		return ArIsLoading;
 	}
 
+	FORCEINLINE bool IsError() const
+	{
+		return ArIsError;
+	}
+
 protected:
 	FMemoryArchive()
 		: Offset(0)
+		, ArIsError(0)
 	{
 	}
 
-	uint8 ArIsLoading : 1;
-	uint8 ArIsError : 0;
-	int64 Offset;
+	uint8 ArIsLoading;
+	uint8 ArIsError;
+	int32 Offset;
 };

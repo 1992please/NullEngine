@@ -10,11 +10,18 @@
 #include "Core/Algo/IntroSort.h"
 #include "Core/Algo/HeapSort.h"
 
+#include "Core/Serialization/MemoryArchive.h"
+
 #include "Core/Debug/Assert.h"
 
 #include "Core/Memory/NullMemory.h"
 #include <initializer_list>
 
+
+template <typename T> struct TCanBulkSerialize { enum { Value = false }; };
+template<> struct TCanBulkSerialize<unsigned int> { enum { Value = true }; };
+template<> struct TCanBulkSerialize<unsigned short> { enum { Value = true }; };
+template<> struct TCanBulkSerialize<int> { enum { Value = true }; };
 
 template<typename InElementType>
 class TArray
@@ -744,6 +751,59 @@ public:
 		new(GetData() + Index) ElementType(Item);
 	}
 
+	friend FMemoryArchive& operator<<(FMemoryArchive& Ar, TArray& A)
+	{
+		int32 SerializeNum = Ar.IsLoading() ? 0 : A.ArrayNum;
+
+		Ar << SerializeNum;
+
+		if (SerializeNum <= 0)
+		{
+			// if we are loading, then we have to reset the size to 0, in case it isn't currently 0
+			if (Ar.IsLoading())
+			{
+				A.Empty();
+			}
+			return Ar;
+		}
+		else if (!Ar.IsError())
+		{
+			if (sizeof(ElementType) == 1 || TCanBulkSerialize<ElementType>::Value)
+			{
+				A.ArrayNum = SerializeNum;
+
+				// Serialize simple bytes which require no construction or destruction.
+				if ((A.ArrayNum || A.ArrayMax) && Ar.IsLoading())
+				{
+					A.ResizeForCopy(A.ArrayNum, A.ArrayMax);
+				}
+
+				Ar.Serialize(A.GetData(), A.Num() * sizeof(ElementType));
+			}
+			else if (Ar.IsLoading())
+			{
+				// Required for resetting ArrayNum
+				A.Empty(SerializeNum);
+				A.SetNum(SerializeNum);
+
+				for (int32 i = 0; i < SerializeNum; i++)
+				{
+					Ar << A[i];
+				}
+			}
+			else
+			{
+				for (int32 i = 0; i < A.ArrayNum; i++)
+				{
+					Ar << A[i];
+				}
+			}
+		}
+
+		return Ar;
+	}
+
+public:
 	/**
 	* DO NOT USE DIRECTLY
 	* STL-like iterators to enable range-based for loop support.

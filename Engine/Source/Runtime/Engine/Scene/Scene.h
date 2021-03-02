@@ -25,10 +25,9 @@ public:
 
 	const FSceneStorage& GetSceneStorage() { return SceneStorage; }
 
+	friend FMemoryArchive& operator<<(FMemoryArchive& Ar, FScene& S);
 private:
 	FSceneStorage SceneStorage;
-
-	void* SceneData;
 
 	uint32 ViewportWidth;
 	uint32 ViewportHeight;

@@ -13,4 +13,6 @@
 #include "Core/Containers/String.h"
 #include "Core/Delegates/Delegate.h"
 #include "Core/Memory/NullMemory.h"
+#include "Core/Serialization/MemoryReader.h"
+#include "Core/Serialization/MemoryWriter.h"
 #include "Core/Debug/DebugTools.h"

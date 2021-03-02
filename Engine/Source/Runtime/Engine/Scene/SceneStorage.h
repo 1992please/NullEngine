@@ -28,6 +28,17 @@ public:
 	virtual ~FComponentPoolBase() = default;
 
 	virtual void RemoveIfExist(int32 Entity) = 0;
+
+	FORCEINLINE bool Has(int32 Entity) const
+	{
+		return EntitiesArray[Entity] != INDEX_NONE;
+	}
+
+	virtual void Serialize(int32 EntityID, FMemoryArchive& Ar) = 0;
+
+	virtual void ResetPool() = 0;
+
+
 	TSet<int32> OwnerEntities;
 	TArray<int32> EntitiesArray;
 };
@@ -64,14 +75,15 @@ public:
 		OwnerEntities.Remove(Entity);
 	}
 
-	virtual void RemoveIfExist(int32 Entity) override
+	FORCEINLINE ComponentType& GetOrAdd(int32 Entity)
 	{
 		if (Has(Entity))
 		{
-			Pool.RemoveAt(EntitiesArray[Entity]);
-
-			EntitiesArray[Entity] = INDEX_NONE;
-			OwnerEntities.Remove(Entity);
+			return Pool[EntitiesArray[Entity]];
+		}
+		else
+		{
+			return Emplace(Entity);
 		}
 	}
 
@@ -79,11 +91,6 @@ public:
 	{
 		NE_CHECK(Has(Entity));
 		return Pool[EntitiesArray[Entity]];
-	}
-
-	FORCEINLINE bool Has(int32 Entity) const
-	{
-		return EntitiesArray[Entity] != INDEX_NONE;
 	}
 
 	FORCEINLINE void Reserve(int32 ExpectedNumElements)
@@ -114,6 +121,26 @@ public:
 		return Pool.GetMaxIndex();
 	}
 
+	virtual void RemoveIfExist(int32 Entity) override
+	{
+		if (Has(Entity))
+		{
+			Pool.RemoveAt(EntitiesArray[Entity]);
+
+			EntitiesArray[Entity] = INDEX_NONE;
+			OwnerEntities.Remove(Entity);
+		}
+	}
+
+	virtual void Serialize(int32 EntityID, FMemoryArchive& Ar) override
+	{
+		Ar << GetOrAdd(EntityID);
+	}
+
+	virtual void ResetPool() override
+	{
+		Pool.Reset();
+	}
 
 public:
 	FORCEINLINE typename ComponentSparseArray::TIterator      begin() { return Pool.begin(); }
@@ -191,6 +218,18 @@ public:
 		AvailableEntity = InEntity;
 	}
 
+	FORCEINLINE void Reset()
+	{
+		AvailableEntity = INDEX_NONE;
+		Entities.Reset();
+		for (FComponentPoolBase* Pool : Pools)
+		{
+			Pool->EntitiesArray.Reset();
+			Pool->OwnerEntities.Reset();
+			Pool->ResetPool();
+		}
+	}
+
 	template<typename ComponentType, typename... ArgsType>
 	FORCEINLINE ComponentType& AddComponent(int32 InEntity, ArgsType&&... Args)
 	{
@@ -213,6 +252,19 @@ public:
 	FORCEINLINE ComponentType& GetComponent(int32 InEntity)
 	{
 		return GetComponentPool<ComponentType>()->Get(InEntity);
+	}
+
+	FORCEINLINE void GetComponentIDs(int32 InEntity, TArray<int32>& OutComponentIDs)
+	{
+		OutComponentIDs.Reset(Pools.Num());
+
+		int32 ComponentID = 0;
+		for (FComponentPoolBase* Pool : Pools)
+		{
+			if(Pool->Has(InEntity))
+				OutComponentIDs.Add(ComponentID);
+			ComponentID++;
+		}
 	}
 
 	FORCEINLINE bool IsValid(int32 InEntity)
@@ -264,6 +316,33 @@ public:
 			return (TComponentPool<ComponentType>*) Pools[ComponentTypeID];
 		}
 	}
+
+	int32 GetNum() const
+	{
+		int32 Out = Entities.Num();
+		int32 curr = AvailableEntity;
+		for (; curr != INDEX_NONE; --Out)
+			curr = Entities[curr];
+
+		return Out;
+	}
+
+	void Serialize(int32 EntityID, FMemoryArchive& Ar)
+	{
+		TArray<int32> ComponentIDs;
+		if (!Ar.IsLoading())
+		{
+			GetComponentIDs(EntityID, ComponentIDs);
+		}
+		Ar << ComponentIDs;
+
+		for (int32 ComponentID : ComponentIDs)
+		{
+			FComponentPoolBase* Pool = Pools[ComponentID];
+			Pool->Serialize(EntityID, Ar);
+		}
+	}
+
 public:
 	template<bool bConst>
 	class TIterator
@@ -310,6 +389,30 @@ public:
 	};
 
 
+	friend FMemoryArchive& operator<<(FMemoryArchive& Ar, FSceneStorage& SceneStorage)
+	{
+		int32 EntitiesNum = Ar.IsLoading() ? 0 : SceneStorage.GetNum();
+		Ar << EntitiesNum;
+
+		if (Ar.IsLoading())
+		{
+			SceneStorage.Reset();
+			for (int32 EntityIndex = 0; EntityIndex < EntitiesNum; EntityIndex++)
+			{
+				SceneStorage.CreateEntity();
+			}
+		}
+
+		const TArray<int32>& Entities = SceneStorage.Entities;
+		for (int32 EntityID : SceneStorage)
+		{
+			SceneStorage.Serialize(EntityID, Ar);
+		}
+
+		return Ar;
+	}
+
+public:
 	FORCEINLINE TIterator<false> begin() { return TIterator<false>(Entities, 0); }
 	FORCEINLINE TIterator<true> begin() const { return TIterator<true>(Entities, 0); }
 	FORCEINLINE TIterator<false> end() { return TIterator<false>(Entities, Entities.Num() ); }

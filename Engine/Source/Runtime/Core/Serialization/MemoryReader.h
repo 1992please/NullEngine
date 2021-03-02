@@ -1,22 +1,22 @@
 #pragma once
 #include "Core/CoreTypes.h"
-#include "Core/Serialization/MemoryReader.h"
+#include "Core/Serialization/MemoryArchive.h"
 
 class FMemoryReader : public FMemoryArchive
 {
-	explicit FMemoryReader(const TArray<uint8>& InBytes, bool bIsPersistent = false)
+public:
+	explicit FMemoryReader(const TArray<uint8>& InBytes)
 		: Bytes(InBytes)
-		, ArIsLoading(1)
 	{
-
+		ArIsLoading = 1;
 	}
 
-	virtual int64 TotalSize() override
+	virtual int32 TotalSize() override
 	{
-		return (int64)Bytes.Num();
+		return Bytes.Num();
 	}
 
-	void Serialize(void* Data, int64 Num)
+	void Serialize(void* Data, int32 Num)
 	{
 		if (Num && !ArIsError)
 		{

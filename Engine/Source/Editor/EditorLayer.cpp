@@ -63,7 +63,7 @@ void FEditorLayer::OnAttach()
 		FEntity Entity = Scene.CreateEntity("Green Square");
 		FSpriteComponent& Comp = Entity.AddComponent<FSpriteComponent>();
 		Comp.Color = FLinearColor::Green;
-		FMovemntClass* Movement = Entity.AddScript<FMovemntClass>();
+		//FMovemntClass* Movement = Entity.AddScript<FMovemntClass>();
 	}
 
 	{
@@ -76,6 +76,10 @@ void FEditorLayer::OnAttach()
 		FEntity RedEntity = Scene.CreateEntity("Red Square");
 		RedEntity.AddComponent<FSpriteComponent>();
 	}
+	TArray<FString> Words;
+	Words.Add("One");
+	Words.Add("Two");
+	Words.Add("Three");
 
 	Scene.CreateEntity("Empty Entity");
 }
@@ -128,7 +132,18 @@ void FEditorLayer::OnImGuiRender()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			//ShowExampleMenuFile();
+			if (ImGui::MenuItem("Save", "CTRL+S"))
+			{
+				FMemoryWriter Ar(SceneSerializationData);
+				Ar << Scene;
+			}
+
+			if (ImGui::MenuItem("Open", "CTRL+O"))
+			{
+				FMemoryReader Ar(SceneSerializationData);
+				Ar << Scene;
+			}
+
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Edit"))

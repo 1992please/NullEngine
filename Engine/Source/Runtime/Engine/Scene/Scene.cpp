@@ -10,6 +10,7 @@
 #include "Engine/Components/CameraComponent.h"
 #include "Engine/Components/NativeScriptComponent.h"
 
+#include "entt.hpp"
 
 FScene::FScene()
 	:SceneStorage(20, 100)
@@ -177,4 +178,11 @@ void FScene::OnRemoveComponent(FNativeScriptComponent& InComponent, int32 Entity
 		InComponent.Destroy();
 	}
 
+}
+
+FMemoryArchive& operator<<(FMemoryArchive& Ar, FScene& S)
+{
+	Ar << S.SceneStorage;
+
+	return Ar;
 }

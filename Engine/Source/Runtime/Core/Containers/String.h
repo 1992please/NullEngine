@@ -447,6 +447,12 @@ public:
 	int32 ParseIntoArrayLines(TArray<FString>& OutArray, bool InCullEmpty = true) const;
 	int32 ParseIntoArray(TArray<FString>& OutArray, const char*const* DelimArray, int32 NumDelims, bool InCullEmpty = true) const;
 
+
+	FORCEINLINE friend FMemoryArchive& operator<<(FMemoryArchive& Ar, FString& S)
+	{
+		Ar << S.Data;
+		return Ar;
+	}
 public:
 	/**
 	 * DO NOT USE DIRECTLY
@@ -466,4 +472,3 @@ FORCEINLINE uint32 GetTypeHash(const FString& S)
 	// This must match the GetTypeHash behavior of FStringView
 	return FCrc::StrCrc32(*S);
 }
-

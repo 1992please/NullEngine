@@ -54,6 +54,12 @@ public:
 			Script = nullptr;
 		}
     }
+
+	friend FMemoryArchive& operator<<(FMemoryArchive& Ar, FNativeScriptComponent& S)
+	{
+		return Ar;
+	}
+
 };
 
 template<typename T>

@@ -6,7 +6,7 @@ class FMemoryWriter : public FMemoryArchive
 {
 public:
 	FMemoryWriter(TArray<uint8>& InBytes, bool bSetOffset = false)
-		, Bytes(InBytes)
+		: Bytes(InBytes)
 	{
 		ArIsLoading = 0;
 		if (bSetOffset)
@@ -15,12 +15,12 @@ public:
 		}
 	}
 
-	virtual void Serialize(void* Data, int64 Num) override
+	virtual void Serialize(void* Data, int32 Num) override
 	{
-		const int64 NumBytesToAdd = Offset + Num - Bytes.Num();
+		const int32 NumBytesToAdd = Offset + Num - Bytes.Num();
 		if (NumBytesToAdd > 0)
 		{
-			const int64 NewArrayCount = Bytes.Num() + NumBytesToAdd;
+			const int32 NewArrayCount = Bytes.Num() + NumBytesToAdd;
 			NE_CHECK(NewArrayCount < MAX_int32);
 
 			Bytes.AddUninitialized((int32)NumBytesToAdd);
@@ -35,7 +35,7 @@ public:
 		}
 	}
 
-	int64 TotalSize() override
+	int32 TotalSize() override
 	{
 		return Bytes.Num();
 	}

@@ -37,4 +37,6 @@ private:
 	bool bIsViewportFocused;
 	bool bIsViewportHovered;
 	FVector2 ViewportSize;
+
+	TArray<uint8> SceneSerializationData;
 };
