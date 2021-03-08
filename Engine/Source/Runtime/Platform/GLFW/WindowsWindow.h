@@ -12,7 +12,8 @@ public:
 	// Window attributes
 	void SetVSync(bool enabled) override;
 
-	virtual void* GetNativeWindow() const { return glfwWindow; }
+	virtual void* GetNativeWindow() const override { return glfwWindow; }
+	virtual void* GetOSWindow() const override;
 private:
 	virtual void Init(const FWindowDetails& InDetails);
 	virtual void Shutdown();

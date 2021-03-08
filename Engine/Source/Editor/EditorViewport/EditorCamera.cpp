@@ -15,7 +15,9 @@ FEditorCamera::FEditorCamera(float InAspectRatio)
 	, NearClip(0.01f)
 	, FarClip(1000.0f)
 	, OrthographicSize(10.0f)
-	, ProjectionType(PROJ_Orthographic)
+	, ProjectionType(PROJ_Perspective)
+	, FocalPoint(FVector::ZeroVector)
+	, MousePosition(FVector::ZeroVector)
 {
 	RecalculateProjection();
 }
@@ -25,28 +27,56 @@ void FEditorCamera::OnUpdate(float DeltaTime)
 	NE_PROFILE_FUNCTION();
 
 	FVector2 CameraDelta(ForceInit);
-	const float Delta = DeltaTime * CameraTranslationSpeed;
+	FVector CurrentMousePosition = FApplicationInput::GetMousePos();
+	const FVector DeltaMouse = CurrentMousePosition - MousePosition;
+	MousePosition = CurrentMousePosition;
+	const bool LAlt = FApplicationInput::IsKeyPressed(EKeyCode::NE_KEY_LEFT_ALT);
 
-
-	if (FApplicationInput::IsKeyPressed(NE_KEY_W))
+	if (FApplicationInput::IsMouseButtonPressed(EKeyCode::NE_MOUSE_BUTTON_MIDDLE))
 	{
-		CameraDelta.Y += Delta;
+		// Pan the camera based on the focal length
+	}
+	else if (FApplicationInput::IsMouseButtonPressed(EKeyCode::NE_MOUSE_BUTTON_LEFT))
+	{
+		if (LAlt)
+		{
+			// Rotate around focal
+
+		}
+	}
+	else if (FApplicationInput::IsMouseButtonPressed(EKeyCode::NE_MOUSE_BUTTON_RIGHT))
+	{
+		if (LAlt)
+		{
+			// Move Camera forward
+		}
+		else
+		{
+			// First Person Camera Movement
+
+			//if (FApplicationInput::IsKeyPressed(NE_KEY_W))
+			//{
+			//	CameraDelta.Y += Delta;
+			//}
+
+			//if (FApplicationInput::IsKeyPressed(NE_KEY_S))
+			//{
+			//	CameraDelta.Y -= Delta;
+			//}
+
+			//if (FApplicationInput::IsKeyPressed(NE_KEY_D))
+			//{
+			//	CameraDelta.X += Delta;
+			//}
+
+			//if (FApplicationInput::IsKeyPressed(NE_KEY_A))
+			//{
+			//	CameraDelta.X -= Delta;
+			//}
+		}
 	}
 
-	if (FApplicationInput::IsKeyPressed(NE_KEY_S))
-	{
-		CameraDelta.Y -= Delta;
-	}
 
-	if (FApplicationInput::IsKeyPressed(NE_KEY_D))
-	{
-		CameraDelta.X += Delta;
-	}
-
-	if (FApplicationInput::IsKeyPressed(NE_KEY_A))
-	{
-		CameraDelta.X -= Delta;
-	}
 
 	if (!CameraDelta.IsNearlyZero())
 	{
@@ -60,7 +90,7 @@ void FEditorCamera::OnEvent(IEvent& InEvent)
 
 	switch (InEvent.GetEventType())
 	{
-		case EventType::WindowResize:	InEvent.bHandled |= OnWindowResized(static_cast<FWindowResizeEvent&>(InEvent)); break;
+		//case EventType::WindowResize:	InEvent.bHandled |= OnWindowResized(static_cast<FWindowResizeEvent&>(InEvent)); break;
 		case EventType::MouseScrolled:	InEvent.bHandled |= OnMouseScrolled(static_cast<FMouseScrolledEvent&>(InEvent)); break;
 	}
 }

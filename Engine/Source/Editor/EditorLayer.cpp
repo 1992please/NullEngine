@@ -1,4 +1,6 @@
 #include "EditorLayer.h"
+#include "Core/FileSystem/FileUtils.h"
+#include "Core/FileSystem/CFile.h"
 #include "imgui/imgui.h"
 
 struct FMovemntClass : FScript
@@ -41,6 +43,35 @@ FEditorLayer::FEditorLayer()
 	, EntityPropertiesPanel(Scene, SelectedEntity)
 {
 }
+struct TestClass
+{
+	enum EProjectionType : uint8
+	{
+		PROJ_Perspective = 0,
+		PROJ_Orthographic = 1
+	};
+
+	FMatrix ProjectionMatrix;
+
+	float AspectRatio;
+
+	// in case of perespective
+	float PerspectiveFOV;
+	float PerspectiveNear;
+	float PerspectiveFar;
+
+	// in case of orthogonal
+	float OrthographicSize;
+	float OrthographicNear;
+	float OrthographicFar;
+
+
+
+	EProjectionType ProjectionType;
+
+	bool bPrimaryCamera;
+	bool bFixedAspectRatio;
+};
 
 void FEditorLayer::OnAttach()
 {
@@ -58,30 +89,33 @@ void FEditorLayer::OnAttach()
 		FrameBufferInfo.Attachments.Add(EFramebufferTextureFormat::Depth);
 		FrameBuffer = IFrameBuffer::Create(FrameBufferInfo);
 	}
+	TestClass Camera = { 0 };
+	//Camera.AspectRatio = 1.33f;
+	//Camera.OrthographicFar = 1.33f;
+	//TestClass Camera;
+	//Camera.DoSomeCalculations();
+	TArray<uint8> Data;
+	FMemoryWriter Writer(Data);
+	Writer << Camera;
 
-	{
-		FEntity Entity = Scene.CreateEntity("Green Square");
-		FSpriteComponent& Comp = Entity.AddComponent<FSpriteComponent>();
-		Comp.Color = FLinearColor::Green;
-		//FMovemntClass* Movement = Entity.AddScript<FMovemntClass>();
-	}
+	//{
+	//	FEntity Entity = Scene.CreateEntity("Green Square");
+	//	FSpriteComponent& Comp = Entity.AddComponent<FSpriteComponent>();
+	//	Comp.Color = FLinearColor::Green;
+	//	//FMovemntClass* Movement = Entity.AddScript<FMovemntClass>();
+	//}
 
-	{
-		CameraEntity = Scene.CreateEntity("Camera Entity");
-		CameraEntity.AddComponent<FCameraComponent>();
-		//CameraEntity.AddScript<FMovemntClass>();
-	}
+	//{
+	//	CameraEntity = Scene.CreateEntity("Camera Entity");
+	//	CameraEntity.AddComponent<FCameraComponent>();
+	//	//CameraEntity.AddScript<FMovemntClass>();
+	//}
 
-	{
-		FEntity RedEntity = Scene.CreateEntity("Red Square");
-		RedEntity.AddComponent<FSpriteComponent>();
-	}
-	TArray<FString> Words;
-	Words.Add("One");
-	Words.Add("Two");
-	Words.Add("Three");
-
-	Scene.CreateEntity("Empty Entity");
+	//{
+	//	FEntity RedEntity = Scene.CreateEntity("Red Square");
+	//	RedEntity.AddComponent<FSpriteComponent>();
+	//}
+	//Scene.CreateEntity("Empty Entity");
 }
 
 void FEditorLayer::OnDettach()
@@ -111,8 +145,8 @@ void FEditorLayer::OnUpdate(float DeltaTime)
 		FRenderCommand::SetClearColor(FLinearColor(0.1f, 0.1f, 0.1f, 1));
 		FRenderCommand::Clear();
 
-		Scene.OnUpdateRuntime(DeltaTime);
-		//Scene->OnUpdateEditor(DeltaTime, FSceneView{EditorCamera.GetProjectionMatrix(), EditorCamera.GetViewMatrix()});
+		//Scene.OnUpdateRuntime(DeltaTime);
+		Scene.OnUpdateEditor(DeltaTime, FSceneView{EditorCamera.GetProjectionMatrix(), EditorCamera.GetViewMatrix()});
 		FrameBuffer->Unbind();
 	}
 }
@@ -120,6 +154,7 @@ void FEditorLayer::OnUpdate(float DeltaTime)
 void FEditorLayer::OnImGuiRender()
 {
 	NE_PROFILE_FUNCTION();
+
 	ImGuiStyle& Style = ImGui::GetStyle();
 	float MinWinSizeX = Style.WindowMinSize.x;
 	Style.WindowMinSize.x = 300;
@@ -134,14 +169,23 @@ void FEditorLayer::OnImGuiRender()
 		{
 			if (ImGui::MenuItem("Save", "CTRL+S"))
 			{
-				FMemoryWriter Ar(SceneSerializationData);
-				Ar << Scene;
+				//FMemoryWriter Ar(SceneSerializationData);
+				//Ar << Scene;
+				SaveScene();
 			}
 
 			if (ImGui::MenuItem("Open", "CTRL+O"))
 			{
-				FMemoryReader Ar(SceneSerializationData);
-				Ar << Scene;
+				/*FMemoryReader Ar(SceneSerializationData);
+				Ar << Scene;*/
+				OpenScene();
+			}
+
+			if (ImGui::MenuItem("Save As", "CTRL+SHIFT+S"))
+			{
+				//FMemoryWriter Ar(SceneSerializationData);
+				//Ar << Scene;
+				SaveSceneAs();
 			}
 
 			ImGui::EndMenu();
@@ -167,6 +211,7 @@ void FEditorLayer::OnImGuiRender()
 	}
 	ImGui::End();
 
+
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	{
 		ImGui::Begin("Viewport");
@@ -190,4 +235,70 @@ void FEditorLayer::OnImGuiRender()
 void FEditorLayer::OnEvent(IEvent& InEvent)
 {
 	EditorCamera.OnEvent(InEvent);
+}
+
+void FEditorLayer::NewScene()
+{
+	CurrentScenePath.Reset();
+	Scene.Reset();
+}
+
+void FEditorLayer::OpenScene()
+{
+	FString SceneFilePath;
+
+	if (FFileUtils::OpenFileDialog("", "SceneFiles\0*.scene\0", SceneFilePath))
+	{
+		bool ReadSuccess = false;
+		TArray<uint8> FileData;
+		{
+			FCFile SceneFile(*SceneFilePath, false);
+			ReadSuccess = SceneFile.ReadData(FileData);
+		}
+
+		if (ReadSuccess)
+		{
+			FMemoryReader Ar(FileData);
+			Ar << Scene;
+			CurrentScenePath = SceneFilePath;
+		}
+	}
+}
+
+void FEditorLayer::SaveScene()
+{
+	if (CurrentScenePath.IsEmpty())
+	{
+		SaveSceneAs();
+	}
+	else
+	{
+		TArray<uint8> FileData;
+		FMemoryWriter Ar(FileData);
+		Ar << Scene;
+
+		{
+			FCFile SceneFile(*CurrentScenePath, true);
+			SceneFile.WriteData(FileData);
+		}
+	}
+}
+
+void FEditorLayer::SaveSceneAs()
+{
+	FString SceneFilePath;
+	if (FFileUtils::SaveFileDialog("", "SceneFiles\0*.scene\0", SceneFilePath))
+	{
+		TArray<uint8> FileData;
+		FMemoryWriter Ar(FileData);
+		Ar << Scene;
+
+		{
+			FCFile SceneFile(*SceneFilePath, true);
+			if (SceneFile.WriteData(FileData))
+			{
+				CurrentScenePath = SceneFilePath;
+			}
+		}
+	}
 }

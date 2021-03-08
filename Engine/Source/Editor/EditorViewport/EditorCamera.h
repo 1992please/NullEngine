@@ -14,6 +14,7 @@ public:
 	FEditorCamera(float InAspectRatio);
 
 	void OnUpdate(float DeltaTime);
+
 	void OnEvent(class IEvent& InEvent);
 
 	void OnResize(float InWidth, float InHeight);
@@ -25,6 +26,8 @@ private:
 
 	void RecalculateProjection();
 private:
+	FMatrix ProjectionMatrix;
+
 	EProjectionType ProjectionType;
 
 	float AspectRatio;
@@ -40,7 +43,10 @@ private:
 
 	float CameraTranslationSpeed;
 	float CameraRotationSpeed;
-
+	
 	FTransform CameraTransform;
-	FMatrix ProjectionMatrix;
+
+	FVector FocalPoint;
+
+	FVector MousePosition;
 };

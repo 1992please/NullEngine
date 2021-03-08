@@ -33,7 +33,9 @@ public:
 	FORCEINLINE uint32 GetHeight() const { return Height; }
 	FORCEINLINE bool IsVSync() const { return bVSync; }
 	FORCEINLINE const FString& GetTitle() const { return Title; }
+
 	virtual void* GetNativeWindow() const = 0;
+	virtual void* GetOSWindow() const = 0;
 
 	static IApplicationWindow* Create(const FWindowDetails& InDetails);
 

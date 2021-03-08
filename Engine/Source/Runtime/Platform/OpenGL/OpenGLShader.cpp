@@ -2,7 +2,7 @@
 #include "OpenGLShader.h"
 #include "Core/Templates/NullTemplate.h"
 #include "GL/gl3w.h"
-#include "Core/Misc/FileHelper.h"
+#include "Core/FileSystem/FileHelper.h"
 #include "Core/Misc/Paths.h"
 
 #define UNIFORM_NAME_BUFFER_SIZE 128

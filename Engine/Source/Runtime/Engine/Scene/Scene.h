@@ -25,6 +25,8 @@ public:
 
 	const FSceneStorage& GetSceneStorage() { return SceneStorage; }
 
+	FORCEINLINE void Reset() { SceneStorage.Reset(); }
+
 	friend FMemoryArchive& operator<<(FMemoryArchive& Ar, FScene& S);
 private:
 	FSceneStorage SceneStorage;

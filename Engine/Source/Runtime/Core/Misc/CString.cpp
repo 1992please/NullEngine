@@ -161,6 +161,11 @@ const char* FCString::Strstr(const char* String, const char* Find)
 	return strstr(String, Find);
 }
 
+const char* FCString::StrChar(const char* String, const char Find)
+{
+	return strchr(String, Find);
+}
+
 int32 FCString::GetVarArgs(char* Dest, size_t DestSize, const char*& Fmt, va_list ArgPtr)
 {
 	int32 Result = vsnprintf(Dest, DestSize, Fmt, ArgPtr);

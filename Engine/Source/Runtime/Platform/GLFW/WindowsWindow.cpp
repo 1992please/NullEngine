@@ -6,6 +6,8 @@
 
 #include "Renderer/Components/GraphicsContext.h"
 #include "GLFW/glfw3.h"
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include "GLFW/glfw3native.h"
 
 static uint8_t s_GLFWWindowCount = 0;
 
@@ -53,6 +55,11 @@ void FWindowsWindow::SetVSync(bool enabled)
 		glfwSwapInterval(0);
 
 	bVSync = enabled;
+}
+
+void* FWindowsWindow::GetOSWindow() const
+{
+	return glfwGetWin32Window(glfwWindow);
 }
 
 void FWindowsWindow::Init(const FWindowDetails& InDetails)

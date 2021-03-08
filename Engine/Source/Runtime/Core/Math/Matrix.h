@@ -45,7 +45,6 @@ public:
 		return Result;
 	}
 
-	FORCEINLINE FVector GetScaledAxis(EAxis::Type Axis) const;
 	FORCEINLINE FVector4 TransformFVector4(const FVector4& V) const;
 	FORCEINLINE FVector4 TransformPosition(const FVector &V) const;
 	FORCEINLINE FVector InverseTransformPosition(const FVector &V) const;
@@ -54,9 +53,13 @@ public:
 
 	FORCEINLINE FVector GetOrigin() const;
 
+	inline FVector GetScaledAxis(EAxis::Type Axis) const;
+
 	inline FMatrix ApplyScale(float Scale) const;
 
 	inline FVector ExtractScaling(float Tolerance = SMALL_NUMBER);
+
+	inline FVector GetScaleVector(float Tolerance = SMALL_NUMBER) const;
 
 	inline float Determinant() const;
 
@@ -244,6 +247,27 @@ inline FMatrix FMatrix::ApplyScale(float Scale) const
 	return ScaleMatrix * (*this);
 }
 
+inline FVector FMatrix::GetScaleVector(float Tolerance/*=SMALL_NUMBER*/) const
+{
+	FVector Scale3D(1, 1, 1);
+
+	// For each row, find magnitude, and if its non-zero re-scale so its unit length.
+	for (int32 i = 0; i < 3; i++)
+	{
+		const float SquareSum = (M[i][0] * M[i][0]) + (M[i][1] * M[i][1]) + (M[i][2] * M[i][2]);
+		if (SquareSum > Tolerance)
+		{
+			Scale3D[i] = FMath::Sqrt(SquareSum);
+		}
+		else
+		{
+			Scale3D[i] = 0.f;
+		}
+	}
+
+	return Scale3D;
+}
+
 inline FVector FMatrix::ExtractScaling(float Tolerance/*=SMALL_NUMBER*/)
 {
 	FVector Scale3D(0, 0, 0);
@@ -333,4 +357,23 @@ inline void FMatrix::SetAxis(int32 i, const FVector& Axis)
 	M[i][0] = Axis.X;
 	M[i][1] = Axis.Y;
 	M[i][2] = Axis.Z;
+}
+
+inline FVector FMatrix::GetScaledAxis(EAxis::Type InAxis) const
+{
+	switch (InAxis)
+	{
+		case EAxis::X:
+			return FVector(M[0][0], M[0][1], M[0][2]);
+
+		case EAxis::Y:
+			return FVector(M[1][0], M[1][1], M[1][2]);
+
+		case EAxis::Z:
+			return FVector(M[2][0], M[2][1], M[2][2]);
+
+		default:
+			NE_CHECK(0)
+				return FVector::ZeroVector;
+	}
 }

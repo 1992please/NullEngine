@@ -161,7 +161,7 @@ struct FCString
 
 	static const char* Stristr(const char* Str, const char* Find);
 	static const char* Strstr(const char* String, const char* Find);
-
+	static const char* StrChar(const char* String, const char Find);
 	/**
 	* Only converts ASCII characters, same as CRT to[w]upper() with standard C locale
 	*/

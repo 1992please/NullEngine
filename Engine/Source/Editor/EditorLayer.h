@@ -15,7 +15,11 @@ public:
 	void OnUpdate(float DeltaTime) override;
 	virtual void OnImGuiRender() override;
 	void OnEvent(IEvent& InEvent) override;
-
+private:
+	void NewScene();
+	void OpenScene();
+	void SaveScene();
+	void SaveSceneAs();
 private:
 	IShader* FlatShader;
 	class ITexture2D* MarioTexture;
@@ -27,6 +31,8 @@ private:
 	float CameraRotation;
 
 	FScene Scene;
+	FString CurrentScenePath;
+
 	FEntity CameraEntity;
 
 	FEntity SelectedEntity;

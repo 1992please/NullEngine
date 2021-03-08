@@ -11,7 +11,6 @@ public:
 	};
 
 	FCameraComponent();
-	virtual ~FCameraComponent() = default;
 
 	void SetOrthographic(float InSize, float InNear, float InFar);
 	void SetPerspective(float InFov, float InNear, float InFar);
@@ -36,11 +35,11 @@ public:
 	FORCEINLINE void SetProjectionType(EProjectionType val) { ProjectionType = val; RecalculateProjection(); }
 
 	FORCEINLINE const FMatrix& GetProjectionMatrix() const { return ProjectionMatrix; }
+
 private:
 	void RecalculateProjection();
 private:
-
-	EProjectionType ProjectionType;
+	FMatrix ProjectionMatrix;
 
 	float AspectRatio;
 
@@ -54,7 +53,7 @@ private:
 	float OrthographicNear;
 	float OrthographicFar;
 
-	FMatrix ProjectionMatrix;
+	EProjectionType ProjectionType;
 
 public:
 	bool bPrimaryCamera;

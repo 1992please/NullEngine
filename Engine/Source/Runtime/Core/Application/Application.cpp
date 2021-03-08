@@ -54,20 +54,21 @@ void FApplication::Run()
 				}
 			}
 
-		}
-
-
 			{
 				ImGuiLayer->Begin();
 				{
 					NE_PROFILE_SCOPE("LayerStack OnImGUI")
-					for (FGraphicLayer* Layer : GraphicLayerStack)
-					{
-						Layer->OnImGuiRender();
-					}
+						for (FGraphicLayer* Layer : GraphicLayerStack)
+						{
+							Layer->OnImGuiRender();
+						}
 				}
 				ImGuiLayer->End();
 			}
+		}
+
+
+
 
 		pWindow->OnUpdate();
 
