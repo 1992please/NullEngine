@@ -20,6 +20,8 @@ public:
 	void OnResize(float InWidth, float InHeight);
 	FMatrix GetViewMatrix() const { return CameraTransform.ToInvMatrixNoScale(); }
 	const FMatrix& GetProjectionMatrix() const { return ProjectionMatrix; }
+
+	FORCEINLINE bool GetIsMovingCamera() const { return bIsMovingCamera; }
 private:
 	bool OnMouseScrolled(class FMouseScrolledEvent& InEvent);
 	bool OnWindowResized(class FWindowResizeEvent& InEvent);
@@ -43,7 +45,10 @@ private:
 
 	float CameraTranslationSpeed;
 	float CameraRotationSpeed;
-	
+	float ScrollOffset;
+
+	bool bIsMovingCamera;
+
 	FTransform CameraTransform;
 
 	FVector FocalPoint;

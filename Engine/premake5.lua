@@ -8,10 +8,13 @@ project "NullEngine"
     targetdir ("%{wks.location}/Binaries/" ..outputdir.. "/%{prj.name}")
     objdir    ("%{wks.location}/Intermediate/Build/" ..outputdir.. "/%{prj.name}")
 
+    pchheader "NullPCH.h"
+    pchsource "Source/Runtime/NullPCH.cpp"
+
     files 
     {
         "Source/Runtime/**.h", 
-        "Source/Runtime/**.cpp"
+        "Source/Runtime/**.cpp",
     }
 
     includedirs 
@@ -22,7 +25,7 @@ project "NullEngine"
         "%{IncludeDir.gl3w}",
         "%{IncludeDir.imgui}",
         "%{IncludeDir.stb_image}",
-        "%{IncludeDir.entt}"
+        "%{IncludeDir.entt}",
     }
 
     links
@@ -32,9 +35,6 @@ project "NullEngine"
         "imgui",
         "opengl32.lib"
     }
-
-    pchheader "NullPCH.h"
-    pchsource "Source/Runtime/NullPCH.cpp"
 
     filter "system:windows"
         systemversion "latest"

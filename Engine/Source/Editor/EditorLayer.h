@@ -15,6 +15,7 @@ public:
 	void OnUpdate(float DeltaTime) override;
 	virtual void OnImGuiRender() override;
 	void OnEvent(IEvent& InEvent) override;
+	bool OnKeyPressed(class FKeyPressedEvent& InEvent);
 private:
 	void NewScene();
 	void OpenScene();
@@ -39,7 +40,8 @@ private:
 	FSceneHierarchyPanel SceneHierarchyPanel;
 	FEntityPropertiesPanel EntityPropertiesPanel;
 	FEditorCamera EditorCamera;
-	
+	int32 GizmoType;
+
 	bool bIsViewportFocused;
 	bool bIsViewportHovered;
 	FVector2 ViewportSize;

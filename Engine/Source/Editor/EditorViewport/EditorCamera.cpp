@@ -9,8 +9,8 @@
 
 FEditorCamera::FEditorCamera(float InAspectRatio)
 	: AspectRatio(InAspectRatio)
-	, CameraTranslationSpeed(1.0f)
-	, CameraRotationSpeed(180.0f)
+	, CameraTranslationSpeed(10.0f)
+	, CameraRotationSpeed(180.f)
 	, PerspectiveFOV(45.f)
 	, NearClip(0.01f)
 	, FarClip(1000.0f)
@@ -18,6 +18,7 @@ FEditorCamera::FEditorCamera(float InAspectRatio)
 	, ProjectionType(PROJ_Perspective)
 	, FocalPoint(FVector::ZeroVector)
 	, MousePosition(FVector::ZeroVector)
+	, bIsMovingCamera(false)
 {
 	RecalculateProjection();
 }
@@ -26,12 +27,13 @@ void FEditorCamera::OnUpdate(float DeltaTime)
 {
 	NE_PROFILE_FUNCTION();
 
-	FVector2 CameraDelta(ForceInit);
+
 	FVector CurrentMousePosition = FApplicationInput::GetMousePos();
 	const FVector DeltaMouse = CurrentMousePosition - MousePosition;
 	MousePosition = CurrentMousePosition;
 	const bool LAlt = FApplicationInput::IsKeyPressed(EKeyCode::NE_KEY_LEFT_ALT);
 
+	bIsMovingCamera = false;
 	if (FApplicationInput::IsMouseButtonPressed(EKeyCode::NE_MOUSE_BUTTON_MIDDLE))
 	{
 		// Pan the camera based on the focal length
@@ -52,36 +54,51 @@ void FEditorCamera::OnUpdate(float DeltaTime)
 		}
 		else
 		{
+			FVector CameraDelta(FVector::ZeroVector);
+
 			// First Person Camera Movement
+			CameraTranslationSpeed = FMath::Max(CameraTranslationSpeed, 1.0f);
+			FVector ForwardVec = CameraTransform.GetUnitAxis(EAxis::Z);
+			FVector RightVec = CameraTransform.GetUnitAxis(EAxis::X);
+			FVector UpVec = CameraTransform.GetUnitAxis(EAxis::Y);
 
-			//if (FApplicationInput::IsKeyPressed(NE_KEY_W))
-			//{
-			//	CameraDelta.Y += Delta;
-			//}
+			float MovementSpeed = DeltaTime * CameraTranslationSpeed;
+			if (FApplicationInput::IsKeyPressed(NE_KEY_W))
+			{
+				CameraDelta += ForwardVec * MovementSpeed;
+			}
+			else if (FApplicationInput::IsKeyPressed(NE_KEY_S))
+			{
+				CameraDelta -= ForwardVec * MovementSpeed;
+			}
+			if (FApplicationInput::IsKeyPressed(NE_KEY_D))
+			{
+				CameraDelta += RightVec * MovementSpeed;
+			}
+			else if (FApplicationInput::IsKeyPressed(NE_KEY_A))
+			{
+				CameraDelta -= RightVec * MovementSpeed;
+			}
+			if (FApplicationInput::IsKeyPressed(NE_KEY_Q))
+			{
+				CameraDelta -= UpVec * MovementSpeed;
+			}
+			else if (FApplicationInput::IsKeyPressed(NE_KEY_E))
+			{
+				CameraDelta += UpVec * MovementSpeed;
+			}
 
-			//if (FApplicationInput::IsKeyPressed(NE_KEY_S))
-			//{
-			//	CameraDelta.Y -= Delta;
-			//}
-
-			//if (FApplicationInput::IsKeyPressed(NE_KEY_D))
-			//{
-			//	CameraDelta.X += Delta;
-			//}
-
-			//if (FApplicationInput::IsKeyPressed(NE_KEY_A))
-			//{
-			//	CameraDelta.X -= Delta;
-			//}
+			FQuat CurrentRotation = CameraTransform.GetRotation();
+			CurrentRotation = FQuat(FVector::UpVector, FMath::DegreesToRadian(DeltaMouse.X) * .3f) * FQuat(RightVec, FMath::DegreesToRadian(DeltaMouse.Y) * .3f) * CurrentRotation;
+			CameraTransform.SetRotation(CurrentRotation);
+			CameraTransform.Translate(CameraDelta);
+			bIsMovingCamera = true;
 		}
 	}
 
 
 
-	if (!CameraDelta.IsNearlyZero())
-	{
-		CameraTransform.Translate(CameraDelta);
-	}
+
 }
 
 void FEditorCamera::OnEvent(IEvent& InEvent)
@@ -105,12 +122,8 @@ void FEditorCamera::OnResize(float InWidth, float InHeight)
 bool FEditorCamera::OnMouseScrolled(class FMouseScrolledEvent& InEvent)
 {
 	NE_PROFILE_FUNCTION();
-	if (ProjectionType == PROJ_Orthographic)
-	{
-		OrthographicSize -= InEvent.GetYOffset() * .1f;
-		OrthographicSize = FMath::Max(OrthographicSize, .25f);
-		RecalculateProjection();
-	}
+
+	ScrollOffset += InEvent.GetYOffset();
 	return false;
 }
 

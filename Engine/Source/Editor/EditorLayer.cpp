@@ -2,6 +2,7 @@
 #include "Core/FileSystem/FileUtils.h"
 #include "Core/FileSystem/CFile.h"
 #include "imgui/imgui.h"
+#include "imgui/ImGuizmo.h"
 
 struct FMovemntClass : FScript
 {
@@ -41,6 +42,7 @@ FEditorLayer::FEditorLayer()
 	, ViewportSize(1.0f, 1.0f)
 	, SceneHierarchyPanel(Scene, SelectedEntity)
 	, EntityPropertiesPanel(Scene, SelectedEntity)
+	, GizmoType(ImGuizmo::TRANSLATE)
 {
 }
 struct TestClass
@@ -135,8 +137,7 @@ void FEditorLayer::OnUpdate(float DeltaTime)
 		Scene.OnViewportResize((uint32)ViewportSize.X, (uint32)ViewportSize.Y);
 	}
 
-	if(bIsViewportFocused)
-		EditorCamera.OnUpdate(DeltaTime);
+	EditorCamera.OnUpdate(DeltaTime);
 
 	FRenderer2D::ResetStatistics();
 	{
@@ -218,11 +219,35 @@ void FEditorLayer::OnImGuiRender()
 		{
 			bIsViewportFocused = ImGui::IsWindowFocused();
 			bIsViewportHovered = ImGui::IsWindowHovered();
-			FApplication::GetApplication()->SetImGUIBlockingEvents(!bIsViewportFocused || !bIsViewportHovered);
+			//FApplication::GetApplication()->SetImGUIBlockingEvents(!bIsViewportFocused && !bIsViewportHovered);
 			ImVec2 ViewportPanelSize = ImGui::GetContentRegionAvail();
 			ViewportSize = { ViewportPanelSize.x, ViewportPanelSize.y };
 
 			ImGui::Image((void*)(size_t)FrameBuffer->GetColorAttachmentRendererID(), ImVec2(ViewportSize.X, ViewportSize.Y), ImVec2(0, 1), ImVec2(1, 0));
+
+			if (SelectedEntity)
+			{
+				ImGuizmo::SetOrthographic(false);
+				ImGuizmo::SetDrawlist();
+
+				float windowWidth = (float)ImGui::GetWindowWidth();
+				float windowHeight = (float)ImGui::GetWindowHeight();
+				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+				FTransform& SelectedEntityTransform = SelectedEntity.GetComponent<FTransformComponent>().Transform;
+
+				FMatrix EntityMat = SelectedEntityTransform.ToMatrixWithScale();
+				ImGuizmo::Manipulate(EditorCamera.GetViewMatrix(), EditorCamera.GetProjectionMatrix(), ImGuizmo::OPERATION(GizmoType), ImGuizmo::LOCAL, EntityMat);
+
+				if (ImGuizmo::IsUsing())
+				{
+					SelectedEntityTransform.SetFromMatrix(EntityMat);
+/*					SelectedEntityTransform.SetPosition(EntityMat.GetOrigin());
+					SelectedEntityTransform.SetScale3D(EntityMat.ExtractScaling());
+					SelectedEntityTransform.SetRotation(FQuat(EntityMat))*/;
+
+				}
+			}
 		}
 		ImGui::End();
 	}
@@ -234,7 +259,75 @@ void FEditorLayer::OnImGuiRender()
 
 void FEditorLayer::OnEvent(IEvent& InEvent)
 {
+	switch (InEvent.GetEventType())
+	{
+		//case EventType::WindowResize:	InEvent.bHandled |= OnWindowResized(static_cast<FWindowResizeEvent&>(InEvent)); break;
+		case EventType::KeyPressed:	InEvent.bHandled |= OnKeyPressed(static_cast<FKeyPressedEvent&>(InEvent)); break;
+	}
+
 	EditorCamera.OnEvent(InEvent);
+}
+
+bool FEditorLayer::OnKeyPressed(FKeyPressedEvent& InEvent)
+{
+	if (InEvent.GetRepeatCount() > 0 || EditorCamera.GetIsMovingCamera())
+		return false;
+
+	bool ControlPressed = FApplicationInput::IsKeyPressed(NE_KEY_LEFT_CONTROL) || FApplicationInput::IsKeyPressed(NE_KEY_RIGHT_CONTROL);
+	bool AltPressed = FApplicationInput::IsKeyPressed(NE_KEY_LEFT_ALT) || FApplicationInput::IsKeyPressed(NE_KEY_RIGHT_ALT);
+	bool ShiftPressed = FApplicationInput::IsKeyPressed(NE_KEY_LEFT_SHIFT) || FApplicationInput::IsKeyPressed(NE_KEY_RIGHT_SHIFT);
+	switch (InEvent.GetKeyCode())
+	{
+		case NE_KEY_Q:
+		{
+			//GizmoType = INDEX_NONE;
+		}
+		break;
+		case NE_KEY_W:
+		{
+			GizmoType = ImGuizmo::TRANSLATE;
+		}
+		break;
+		case NE_KEY_E:
+		{
+			GizmoType = ImGuizmo::ROTATE;
+		}
+		break;
+		case NE_KEY_R:
+		{
+			GizmoType = ImGuizmo::SCALE;
+		}
+		break;
+		case NE_KEY_S:
+		{
+			if (ControlPressed && ShiftPressed)
+			{
+				SaveSceneAs();
+			}
+			else if (ControlPressed)
+			{
+				SaveScene();
+			}
+		}
+		break;
+		case NE_KEY_N:
+		{
+			if (ControlPressed)
+			{
+				NewScene();
+			}
+		}
+		break;
+		case NE_KEY_O:
+		{
+			if (ControlPressed)
+			{
+				OpenScene();
+			}
+		}
+		break;
+	}
+	return true;
 }
 
 void FEditorLayer::NewScene()

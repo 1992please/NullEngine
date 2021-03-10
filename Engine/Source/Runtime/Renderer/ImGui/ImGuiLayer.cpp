@@ -2,11 +2,12 @@
 #include "ImGuiLayer.h"
 
 #include "imgui.h"
+#include "ImGuizmo.h"
+
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "Core/Application/ApplicationWindow.h"
 #include "Core/Application/Application.h"
-
 #include "GLFW/glfw3.h"
 
 FImGuiLayer::FImGuiLayer()
@@ -54,12 +55,12 @@ void FImGuiLayer::OnDettach()
 
 void FImGuiLayer::OnEvent(IEvent& InEvent)
 {
-	if (bBlockEvents)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		InEvent.bHandled |= InEvent.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
-		InEvent.bHandled |= InEvent.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
-	}
+	//if (bBlockEvents)
+	//{
+	//	ImGuiIO& io = ImGui::GetIO();
+	//	InEvent.bHandled |= InEvent.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+	//	InEvent.bHandled |= InEvent.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+	//}
 }
 
 void FImGuiLayer::OnImGuiRender()
@@ -76,6 +77,7 @@ void FImGuiLayer::Begin()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+	ImGuizmo::BeginFrame();
 }
 
 void FImGuiLayer::End()

@@ -18,6 +18,8 @@ public:
 	FORCEINLINE FQuat(const FQuat& Q);
 	explicit FQuat(const FMatrix& M);
 	explicit FORCEINLINE FQuat(const VectorRegister& V);
+	FORCEINLINE FQuat(const FVector& Axis, float AngleRad);
+	// R = A * B, applies rotation B then A
 	FORCEINLINE FQuat operator*(const FQuat& Q) const;
 	FORCEINLINE FQuat operator*=(const FQuat& Q);
 
@@ -107,6 +109,18 @@ inline FQuat::FQuat(const FMatrix& M)
 		Z = qt[2];
 		W = qt[3];
 	}
+}
+
+FORCEINLINE FQuat::FQuat(const FVector& Axis, float AngleRad)
+{
+	const float half_a = 0.5f * AngleRad;
+	float s, c;
+	FMath::SinCos(&s, &c, half_a);
+
+	X = s * Axis.X;
+	Y = s * Axis.Y;
+	Z = s * Axis.Z;
+	W = c;
 }
 
 FORCEINLINE FQuat::FQuat(const VectorRegister& V)
